@@ -128,7 +128,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
 };
 
 // Load GeoJSON data and add markers for each material to the map
-d3.json('data/centroid_all.geojson').then(geojsonData => {
+d3.json('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/centroid_all.geojson').then(geojsonData => {
     addMaterialMarkers(geojsonData, 'steel', materialColors.steel);
     addMaterialMarkers(geojsonData, 'brick', materialColors.brick);
     addMaterialMarkers(geojsonData, 'glass', materialColors.glass);
@@ -182,7 +182,7 @@ document.getElementById('toggleStone').addEventListener('click', () => {
 
 // Geojson background----------------------------------------------
 // Fetch and load the GeoJSON file
-fetch('data/new-york-city-boroughs.geojson')
+fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/new-york-city-boroughs.geojson')
     .then(response => response.json())
     .then(data => {
         // Add the GeoJSON layer with style options to make it a background layer
@@ -207,7 +207,7 @@ fetch('data/new-york-city-boroughs.geojson')
 
 
 // Load Hex GeoJSON (hex_all.geojson)-------------------------------
-fetch('data/hex_all.geojson')
+fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.geojson')
     .then(response => {
         if (!response.ok) {
             throw new Error('Error loading GeoJSON file');

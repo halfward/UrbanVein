@@ -12,13 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.closeGuide = function() {
         overlay.style.display = 'none';
         if (dontShowAgain.checked) {
-            localStorage.setItem('hideGuide', 'true'); // Save the choice in localStorage
+            localStorage.setItem('hideGuide', 'true'); 
         }
     };
 
-    // Add event listener to show the guide overlay when the guideButton is clicked
+    // Event listener
     guideButton.addEventListener('click', () => {
-        overlay.style.display = 'flex'; // Show the overlay when the button is clicked
+        overlay.style.display = 'flex';
     });
 });
 
@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize the map
 const nycBounds = L.latLngBounds(
-    [40.4774, -74.2591], // Southwest corner (Staten Island area)
-    [40.9176, -73.7004]  // Northeast corner (Bronx/Westchester area)
+    [40.4774, -74.2591], // SW corner
+    [40.9176, -73.7004]  // NE corner
 );
 const mainMap = L.map('mainMap', {
     center: [40.7128, -74.0060],
@@ -51,16 +51,16 @@ const materialColors = {
     stone: '#007bff'     // Blue for stone
 };
 const materialOffsets = {
-    brick: { lat: 0.0003, lng: -0.0004 },    // Upperleft
-    stone: { lat: 0.0003, lng: 0.0004 },     // Upperright
+    brick: { lat: 0.0003, lng: -0.0004 },     // Upper left
+    stone: { lat: 0.0003, lng: 0.0004 },      // Upper right
     concrete: { lat: -0.0003, lng: -0.0004 }, // Lower left
-    glass: { lat: -0.0003, lng: 0.0004 }     // Lower right
+    glass: { lat: -0.0003, lng: 0.0004 }      // Lower right
 };
 
-// Create a layer group for each material
+// Create layer groups
 let steelLayer, brickLayer, glassLayer, concreteLayer, stoneLayer;
 
-// Function to add markers for each material with individual blending modes
+// Add markers for each material with individual blending modes
 const addMaterialMarkers = (geojsonData, material, color) => {
     const filteredFeatures = geojsonData.features.filter(feature => feature.properties[material] > 0);
     const binnedDataValues = filteredFeatures.map(feature => feature.properties[material]);
@@ -68,7 +68,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
         .domain(binnedDataValues)
         .range([0, 0.4, 0.8, 1.2, 1.6, 2, 2.4]);
 
-    const materialLayerGroup = L.layerGroup();  // Create a layer group for each material
+    const materialLayerGroup = L.layerGroup();  // Create layer groups
 
     filteredFeatures.forEach(feature => {
         const coordinates = feature.geometry.coordinates;
@@ -101,7 +101,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
                 circle.bindPopup(tooltipContent).openPopup();  // Use bindPopup to show the content
             });
 
-            circle.addTo(materialLayerGroup);  // Add the circle to the material's layer group
+            circle.addTo(materialLayerGroup);  // Add the circle to layer groups
         }
     });
 
@@ -124,7 +124,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
             break;
     }
 
-    materialLayerGroup.addTo(mainMap);  // Add the layer group to the map initially
+    materialLayerGroup.addTo(mainMap);  // Add the layer group to the map
 };
 
 // Load GeoJSON data and add markers for each material to the map
@@ -138,7 +138,7 @@ d3.json('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/centroid
     console.error('Error loading centroid GeoJSON:', error);
 });
 
-// Function to toggle the layer visibility and button state (on/off)
+// Layer toggle function
 const toggleLayerVisibility = (layer, buttonId) => {
     const button = document.getElementById(buttonId);
     
@@ -153,7 +153,7 @@ const toggleLayerVisibility = (layer, buttonId) => {
     }
 };
 
-// Add event listeners for buttons to toggle layer visibility with on/off styling
+// Button event listeners
 document.getElementById('toggleSteel').addEventListener('click', () => {
     toggleLayerVisibility(steelLayer, 'toggleSteel');
 });
@@ -234,7 +234,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
 
         // Function to calculate quantiles for each material
         function calculateQuantiles(values, numBins) {
-            values.sort((a, b) => a - b);  // Sort the values in ascending order
+            values.sort((a, b) => a - b);  // Ascending order sort
             const quantiles = [];
             for (let i = 1; i <= numBins; i++) {
                 const index = Math.floor((i / numBins) * values.length);
@@ -323,8 +323,8 @@ const config = {
         maintainAspectRatio: false,
         scales: {
             r: {
-                min: 0,  // Set the minimum value of the radial scale
-                max: 5,  // Set the maximum value of the radial scale
+                min: 0,
+                max: 5,
                 grid: {
                     color: 'rgba(0, 0, 0, 0.2)', 
                     lineWidth: 1, 
@@ -368,9 +368,9 @@ const config = {
 // Create the chart instance
 const RoseChart = new Chart(document.getElementById('RoseChart'), config);
 
-// Quantile calculation (same as before)
+// Quantile calculation
 function calculateQuantiles(values, numBins) {
-    values.sort((a, b) => a - b);  // Sort the values in ascending order
+    values.sort((a, b) => a - b);  // Ascending order sort
     const quantiles = [];
     for (let i = 1; i <= numBins; i++) {
         const index = Math.floor((i / numBins) * values.length);
@@ -382,7 +382,7 @@ function calculateQuantiles(values, numBins) {
 function getQuantileBin(value, quantiles) {
     for (let i = 0; i < quantiles.length; i++) {
         if (value <= quantiles[i]) {
-            return i;  // Return the bin index (0, 1, 2, ...)
+            return i;  // Return the bin index
         }
     }
     return quantiles.length - 1;  // If value is greater than the highest quantile
@@ -801,15 +801,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const fullscreenButton = document.getElementById("fullscreenButton");
         
         fullscreenButton.addEventListener("click", () => {
-          if (!document.fullscreenElement) {
+            if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch((err) => {
-              console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+                console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
             });
-          } else {
+            } else {
             document.exitFullscreen().catch((err) => {
-              console.error(`Error attempting to exit fullscreen mode: ${err.message} (${err.name})`);
+                console.error(`Error attempting to exit fullscreen mode: ${err.message} (${err.name})`);
             });
-          }
+        }
         });
-      });
-      
+    });

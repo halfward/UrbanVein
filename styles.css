@@ -1,0 +1,637 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; 
+    background-color: rgb(255, 255, 255);
+}
+
+body {
+    font-family: 'Bahnschrift', sans-serif;
+}
+
+/* Change the background and text color when text is selected */
+::selection {
+    background-color: #ffcc00; 
+    color: #000000; 
+}
+/* For Webkit browsers (Chrome, Safari, etc.), you can target them specifically */
+::-webkit-selection {
+    background-color: #ffcc00;
+    color: #000000;
+}
+/* For Firefox */
+::-moz-selection {
+    background-color: #ffcc00;
+    color: #000000;
+}
+
+
+/* Tutorial */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.overlay-content {
+    background: white;
+    padding: 20px;
+    max-width: 500px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+
+
+/* Link Style ---------------------------------------------- */
+a {
+    color: #585f5f;
+    text-decoration: underline; 
+}
+a:visited {
+    color: #585f5f;
+}
+a:active {
+    color: #1900ff; 
+}
+
+
+
+
+/* Sidebar styles */
+#sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 360px; /* Full width when expanded */
+    height: 100%;
+    background-color: rgba(255, 255, 255);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    transform: translateX(0); /* Expanded position */
+    transition: transform 0.3s ease; /* Smooth transition for sliding */
+    border-right: 1.5px solid #bfcdcd; 
+}
+/* Collapsed state */
+#sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+/* Button to toggle sidebar */
+#toggleButton {
+    position: absolute;
+    left: 360px;
+    top: 28px;
+    padding: 8px 0px;
+    cursor: pointer;
+    z-index: 1001; 
+    background-color: #e6ecec;
+    color: #bfcdcd; /* Set text color to bfcdcd */
+    border: 1.5px solid #bfcdcd; 
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    transition: left 0.3s ease; /* Smooth transition for button position */
+}
+
+#toggleIcon {
+    fill: transparent; /* Set fill to transparent */
+    transition: transform 0.3s ease; /* Add transition for any scaling */
+    stroke-width: 2px; 
+    stroke-linecap: "round"; 
+    stroke-linejoin: "round";
+}
+
+/* Logo styles */
+#logo {
+    display: block; /* Ensures the image takes up space and doesn't inline with other content */
+    width: 55%; /* Makes the logo responsive to the sidebar width */
+    height: auto; /* Maintains the aspect ratio of the image */
+    padding-top: 23px;
+    padding-left: 30px;
+    padding-bottom: 15px;
+    box-sizing: border-box; /* Ensures padding is included in width calculation */
+}
+
+
+/* Version History---------------------------------------- */
+/* Styles for clickable text */
+.clickable-text {
+    cursor: pointer;
+    color: #bfcdcd; 
+    display: block; 
+    z-index: 2000;
+}
+.clickable-text:hover {
+    text-decoration: underline; /* Underline on hover */
+    color: #a1b3b3; /* Change color on hover to indicate interaction */
+}
+/* Popup Styles */
+.popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(205, 205, 205, 0.6);
+    backdrop-filter: blur(5px); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+.popup-content {
+    max-width: 300px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    overflow: auto;
+}
+
+
+.close {
+    cursor: pointer;
+    float: left; /* Position close button */
+    font-size: 20px;
+    margin-top: -12px;
+    margin-left: -6px;
+}
+
+
+
+/* Navigation--------------------------------------------------- */
+.nav-button {
+    display: inline-block; /* Makes them inline elements */
+    padding: 3px 10px; /* Add some padding for better click area */
+    margin: 3px; /* Space between buttons */
+    color: #8f9a9a; /* Text color */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    text-align: center; /* Center text */
+    transition: color 0.3s ease; /* Smooth transition */
+    font-weight: 500;
+    position: relative; /* Ensure position is relative for the pseudo-element */
+    background-color: transparent; /* Background transparent */
+}
+.nav-button:nth-child(2) {
+    margin-left: 25px; /* Indent */
+}
+
+.nav-button {
+    position: relative;
+}
+
+.nav-button:hover {
+    color: black;
+}
+
+.nav-button.active {
+    color: black; 
+}
+
+.nav-button::after {
+    content: '';
+    position: absolute;
+    bottom: -5.25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 10px);
+    height: 3px;
+    background-color: black;
+    transition: left 0.3s ease;
+    opacity: 0; 
+}
+
+.nav-button.active::after {
+    opacity: 1;
+}
+
+.active-line {
+    height: 3px; /* Height of the line */
+    background-color: black; /* Color of the line */
+    transition: left 0.3s ease, width 0.3s ease; /* Smooth transition for movement */
+    position: absolute;
+    bottom: -5px; /* Position it below the buttons */
+    opacity: 1; /* Ensure the line is visible */
+}
+
+.active-line.hidden {
+    opacity: 0; /* To hide the line initially if you want */
+}
+
+
+.options-icon {
+    width: 13px; /* Adjust size as needed */
+    height: 13px; /* Adjust size as needed */
+    margin-left: 15px; /* Space between the button and the icon */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: fill 0.3s ease; /* Smooth transition */
+    filter: invert(0);
+}
+.options-icon:hover {
+    filter: brightness(0) saturate(100%) invert(0%); /* Change to black on hover */
+}
+
+
+.navButtonAContainer,
+.navButtonBContainer,
+.navButtonCContainer {
+    margin: 0;
+    padding: 0; 
+    display: flex; 
+    margin-left: 35px; 
+}
+
+
+.nav-button-2 {
+    display: inline;
+    padding: 5px 18.5px;
+    margin: 0;
+    margin-right: -1.5px;
+    color: #8f9a9a;
+    cursor: pointer; 
+    text-align: center;
+    transition: background-color 0.3s ease; 
+    font-weight: 400;
+    position: relative;
+    background-color: #e6ecec; 
+    border: 1.5px solid #bfcdcd; 
+    border-bottom: transparent;
+}
+#legendButton, #dataButton, #pastButton {
+    border-top-left-radius: 6px; 
+}
+#satButton, #refButton, #futureButton {
+    border-top-right-radius: 6px; 
+}
+.nav-button-2:hover {
+    background-color: white
+}
+.nav-button-2.active {
+    background-color: white;
+    z-index: 1005;
+    position: relative;
+}
+.nav-button-2.active::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgb(255, 255, 255);
+    z-index: 1003;
+}
+
+
+
+.sidebar-line {
+    width: 100%;
+    border: none;
+    height: 1.5px;
+    background-color: #bfcdcd;
+    margin: 0 auto;
+
+}
+.sidebar-line-2 {
+    width: 100%;
+    border: none;
+    height: 1.5px;
+    background-color: #bfcdcd;
+    transform: translateY(-9px);
+}
+
+
+
+/* Rose Chart------------------------------------------------ */
+#RoseChart {
+    width: 120px;
+    margin: 0 auto;
+    margin-top: 5px;
+    display: block;
+    position: absolute;
+}
+
+
+
+
+
+/* Content------------------------------------------------ */
+.content-text {
+    opacity: 1; 
+    transition: opacity 0.5s ease; 
+    width: 290px; 
+    margin-left: 35px; 
+    margin-top: 25px;
+}
+.content-text h2{
+    color: #333;
+    font-weight: regular;
+    font-size: 1rem;
+}
+.content-text p {
+    color: #8f9a9a;
+    font-size: 0.9rem;
+}
+/* Toggle Buttons------------------------------------------- */
+#layerControls {
+    position: absolute;
+    margin-top: 200px;
+    margin-left: 2.5px;
+}
+
+#toggleSteel,
+#toggleBrick,
+#toggleGlass,
+#toggleConcrete,
+#toggleStone {
+    color: black; 
+    padding: 0 9px; 
+    padding-top: 3px;
+    padding-bottom: 1px;
+    border: 0px; 
+    border-radius: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    background-color: #dd75ff;
+    font-family: 'Bahnschrift', sans-serif;
+    transform: translateX(40px);
+    box-sizing: border-box; 
+    line-height: 1.5; 
+    transition: padding-top 0.3s ease, padding-bottom 0.3s ease,margin 0.3s ease; 
+}
+
+#toggleBrick {
+    background-color: #fd8564;
+}
+#toggleGlass {
+    background-color: #6af1bd;
+}
+#toggleConcrete {
+    background-color: #ffdd32;
+}
+#toggleStone {
+    background-color: #6bbcff;
+}
+#layerControls button:hover {
+    padding-top: 5px;
+    padding-bottom: 3px;
+    margin-top: -4px;
+}
+#layerControls button.off {
+    background-color: transparent;
+}
+
+
+/* Scroll Text------------------------------------------- */
+.scrollable-text-data {
+    width: 280px;
+    margin-top: 50px;
+    margin-left: 40px;
+    max-height: 27vh; 
+    overflow-y: auto;
+    color: #8f9a9a;
+    font-size: 0.9rem;
+    border-top: 1.5px solid #e1e7e7;
+    border-bottom: 1.5px solid #e1e7e7;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #bfcdcd transparent;
+}
+.scrollable-text-ref {
+    position: absolute;
+    width: 285px;
+    margin-top: 20px;
+    margin-left: 40px;
+    max-height: 35vh; 
+    overflow-y: auto;
+    color: #8f9a9a;
+    font-size: 0.9rem;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #bfcdcd transparent;
+}
+.scrollable-text-c {
+    width: 280px;
+    margin-top: 240px;
+    margin-left: 40px;
+    max-height: 27vh; 
+    overflow-y: auto;
+    color: #8f9a9a;
+    font-size: 0.9rem;
+    border-top: 1.5px solid #e1e7e7;
+    border-bottom: 1.5px solid #e1e7e7;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #bfcdcd transparent;
+}
+
+/* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+.scrollable-text::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scrollable-text::-webkit-scrollbar-track {
+    background: transparent; /* Transparent track */
+}
+
+.scrollable-text::-webkit-scrollbar-thumb {
+    background-color: #8f9a9a; /* Color of the scrollbar */
+    border-radius: 10px; /* Rounded scrollbar thumb */
+    border: 1px solid transparent; /* Adds slight padding around the thumb */
+}
+
+
+
+
+
+.sidebar {
+    position: relative; /* Ensure it acts as a positioning reference for absolute children */
+    padding-bottom: 60px; /* Add space at the bottom so content above doesn't overlap with buttons */
+}
+
+
+
+
+/* Bottom buttons */
+.sidebar-bottom-buttons {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+}
+.button-with-icon {
+    display: flex;
+    align-items: center; /* Use center instead of middle */
+    position: relative; /* Ensure icons can be positioned correctly */
+}
+.sidebar-button {
+    width: 180.75px;
+    padding: 12px 0;
+    color: #8f9a9a;
+    background-color: rgb(255, 255, 255);
+    border: 1.5px solid #bfcdcd; 
+    border-bottom: none; 
+    border-left: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Added color transition */
+    font-family: 'Bahnschrift', sans-serif;
+    font-size: 1rem;
+    box-sizing: border-box;
+    text-indent: 15px; 
+}
+.button-with-icon:hover .sidebar-button {
+    color: black;
+}
+.icon {
+    position: absolute;
+    margin-top: 0px; 
+    margin-left: 42px; 
+    width: 20px; 
+    height: auto;
+    transition: filter 0.3s ease; 
+}
+.button-with-icon:hover .icon {
+    filter: brightness(0%);
+}
+
+
+
+/* Main Map Container */
+#mainMap {
+    width: 100%;
+    height: 100vh;
+    background-color: #ebeeef;
+}
+
+
+
+.leaflet-circle-steel,
+.leaflet-circle-brick,
+.leaflet-circle-glass,
+.leaflet-circle-concrete,
+.leaflet-circle-stone {
+    mix-blend-mode: hard-light;
+}
+
+
+
+/* Style for the entire popup */
+.leaflet-popup {
+    max-width: 300px; 
+    padding: 10px;
+    font-family: 'Bahnschrift', sans-serif;
+    line-height: 1.5; 
+}
+
+/* Style for the title or heading part of the popup */
+.leaflet-popup-content {
+    font-weight: semibold;
+    font-size: 0.8rem; 
+    color: #8f9a9a; 
+}
+
+
+.leaflet-popup-close-button {
+    color: #ff0000; /* Red color for the close button */
+    font-size: 16px;  /* Size of the close button */
+    padding: 5px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+}
+.leaflet-popup-close-button:hover {
+    background-color: #ffebeb;
+    cursor: pointer;
+}
+
+
+
+
+.leaflet-control {
+    z-index: 1001;
+}
+.leaflet-control-zoom {
+    position: fixed;
+    top: 90%; 
+    right: 25px; 
+    transform: translateY(-50%); 
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    border: none !important;
+}
+.leaflet-control-zoom a {
+    box-shadow: none; 
+    outline: none;
+    color: black;
+    font-family: 'Bahnschrift', sans-serif;
+    font-weight: lighter;
+}
+
+
+
+/* Dark mode-----------------------------------------------*/
+.darkmode .options-icon {
+    filter: invert(0.9); 
+}
+.darkmode #sidebar {
+    filter: invert(0.9); 
+}
+.darkmode #toggleButton {
+    filter: invert(0.9); 
+}
+.darkmode #mainMap {
+    filter: invert(1); 
+}
+
+.options-popup-content {
+    position: absolute;
+    top: 50px; /* Adjust based on where you want it to appear */
+    left: 400px;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 150px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: none; /* Hidden by default */
+    z-index: 1010;
+}
+
+.popup-button {
+    font-family: 'Bahnschrift', sans-serif;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+}
+
+.popup-button:hover {
+    background-color: #f0f0f0;
+}
+
+.popup-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}

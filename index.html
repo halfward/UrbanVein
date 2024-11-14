@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Vein</title>
+
+    
+
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="icon" href="images/icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Tutorial -->
+    <div id="GuideOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Welcome to Urban Vein</h2>
+            <p>This is a quick guide on how to use the site.</p>
+            <label>
+            <input type="checkbox" id="dontShowAgain"> Don't show this again
+            </label>
+            <button onclick="closeGuide()">Close</button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div id="sidebar">
+        <div style="display: flex; align-items: center;">
+            <img src="images/logo.png" alt="Logo" id="logo">
+            <span id="versionHistoryLink" class="clickable-text" style="margin-top: 18px; color: #bfcdcd; font-size: 0.7rem; display: block;"></span>
+            <!-- Popup Modal -->
+            <div id="popup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <span class="close" id="closePopup">&times;</span>
+                    <pre id="versionHistoryContent"></pre> <!-- Preformatted text area for version history -->
+                </div>
+            </div>
+        </div>        
+        <div class="nav-button" id="aboutButton">ABOUT</div>
+        <div class="nav-button" id="storiesButton">STORIES</div>
+        <div class="nav-button" id="explorerButton">EXPLORER</div>
+
+        <img src="images/options.svg" alt="Options" id="optionsIcon" class="options-icon">
+        <div id="options-popup" class="options-popup-content">
+            <button class="popup-button" id="fullscreenButton">
+                <img src="images/fullscreen.svg" alt="Fullscreen Icon" class="popup-icon"">
+                <span>Fullscreen</span>
+            </button>
+            <button class="popup-button" id="darkModeButton">
+                <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="popup-icon">
+                <span>Dark Mode</span>
+            </button>
+            <button class="popup-button" id="guideButton">
+                <img src="images/guide.svg" alt="Guide Icon" class="popup-icon">
+                <span>Guide</span>
+            </button>
+        </div>
+        
+        <hr class="sidebar-line">
+    
+        <!-- Content containers -->
+        <div id="aboutContentText" class="content-text" style="display: none;">
+            <h2>Estimating Building Material Distribution</h2>
+            <p>Urban Vein is a student project developed by <a href="www.linkedin.com/in/hao-lee-arch">Hao Lee</a> for the Computational Design Practices program at <a href="https://www.arch.columbia.edu/">GSAPP Columbia</a>. Urban Vein explores the relationships between building materials and their spatial distributions in urban contexts.</p>
+            <p> This initiative has evolved through three semesters of intensive study within the Colloquium courses, guided by faculty members William Martin, Violet Witney, Laura Kurgan, Snoweria Zhang, Catherine Griffith, and Seth Thompson.</p>
+        </div>
+    
+        <div id="storiesContentText" class="content-text" style="display: none;">
+            <h2>Looking Forward and Backward</h2>
+            <p>Explore various stories and experiences related to this practice.</p>
+        </div>
+    
+        <div id="exploreContentText" class="content-text" style="display: block;">
+            <h2>Building Material Distribution</h2>
+            <p>This map combines <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC PLUTO data</a> with inferred building typologies and uses machine learning to create a comprehensive material dataset. Each material’s density is represented by its own circle size and color, providing a general distribution overview within each material.</p>
+        </div>
+        <br>
+
+        <!-- About -->
+        <div id="navButtonAContainer" class="navButtonAContainer">
+            <div id="dataButton" class="nav-button-2">Data</div>
+            <div id="mediaButton" class="nav-button-2">Media</div>
+            <div id="refButton" class="nav-button-2">References</div>
+        </div>
+
+        <!-- Stories -->
+        <div id="navButtonBContainer" class="navButtonBContainer">
+            <div id="pastButton" class="nav-button-2">Past</div>
+            <div id="presentButton" class="nav-button-2">Present</div>
+            <div id="futureButton" class="nav-button-2">Future</div>
+        </div>
+
+        <!-- Explorer -->
+        <div id="navButtonCContainer" class="navButtonCContainer">
+            <div id="legendButton" class="nav-button-2">Legend</div>
+            <div id="timelineButton" class="nav-button-2">Timeline</div>
+            <div id="satButton" class="nav-button-2">Satellite</div>
+        </div>
+
+
+        <hr class="sidebar-line-2">
+
+
+        <div>
+            <canvas id="RoseChart"></canvas>
+        </div>
+
+        <div id="layerControls">
+            <button id="toggleBrick">Brick</button>
+            <button id="toggleConcrete">Concrete</button>
+            <button id="toggleGlass">Glass</button>
+            <button id="toggleStone">Stone</button>
+            <button id="toggleSteel">Steel</button>
+        </div>
+        
+        <div id="scrollableTextData" class="scrollable-text-data" style="display: none;">
+            <p>
+                Urban Vein leverages computational thinking and advanced digital tools to explore the relationship between materiality and urban design, with a focus on sustainability. Using material data and machine learning, the project maps and analyzes NYC’s built environment through construction materials, uncovering hidden historical trends, current environmental impacts, and future speculations. This material-centric approach provides an unbiased view of the city’s lifecycle—from resource acquisition to disposal—highlighting critical narratives such as demolition patterns, material trends, and underground resources. Ultimately, Urban Vein offers data-driven insights that challenge conventional architectural perspectives and inform the future of sustainable urban development.
+            </p>
+        </div>
+
+        <div id="scrollableTextRef" class="scrollable-text-ref" style="display: none;">
+            <p>
+                <a href="https://climate-conflict.org/www/data-pages/hazards">Climate-Conflict-Vulnerability Index</a>
+                <br>
+                by <a href="https://truth-and-beauty.net/">Moritz Stefaner</a>
+                <br><br>
+                <a href="https://mappinghny.com/?lng=-73.9760&lat=40.7220&zoom=12.50&maps=[{%22center%22:{%22lat%22:40.722,%22lng%22:-73.976},%22demographicOpacity%22:1,%22demographicsFilters%22:{},%22filters%22:{},%22layers%22:[{%22id%22:%22dwellings-dot-density-birthplace%22,%22dotDensityValues%22:[{%22label%22:%22England+and+Scotland%22,%22dotDensityColor%22:%22%23FBD44A%22,%22fieldName%22:%22bpl_4_41000%22},{%22label%22:%22Ireland%22,%22dotDensityColor%22:%22%23EC8457%22,%22fieldName%22:%22bpl_4_41400%22},{%22label%22:%22Russia%22,%22dotDensityColor%22:%22%23F17CBA%22,%22fieldName%22:%22bpl_3_46999%22},{%22label%22:%22Germany%22,%22dotDensityColor%22:%22%235AC2CD%22,%22fieldName%22:%22bpl_4_45300%22},{%22label%22:%22Caribbean+%26+West+Indies%22,%22dotDensityColor%22:%22%2367D78D%22,%22fieldName%22:%22bpl_2_14%22},{%22label%22:%22Italy%22,%22dotDensityColor%22:%22%23DE92F1%22,%22fieldName%22:%22bpl_4_43400%22}]}],%22rasterOpacity%22:1,%22year%22:%221880%22,%22zoom%22:12.5}]&rasterOpacity0=1">Mapping Historical New York: A Digital Atlas</a>
+                <br>
+                by <a href="https://c4sr.columbia.edu/">Center for Spatial Research</a>
+                <br><br>
+                <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">NYC Construction Dashboard 2022</a>
+                <br>
+                by DOB Analytics
+                <br><br>
+                <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/BAMB_MaterialsPassports_BestPractice.pdf#page=54">Materials Passports - Best Practices</a>
+                <br>
+                by Matthias Heinrich and Werner Lang
+                <br><br>
+                <a href="https://www.circularise.com/industry/construction">Circularise</a>
+                <br>
+                by <a href="https://www.circularise.com">Circularise</a>
+                <br><br>
+                <a href="https://www.zillow.com/z/zestimate/">Zestimate</a>
+                <br>
+                by <a href="https://www.zillow.com">Zillow</a>
+            </p>
+        </div> 
+        
+
+        <div id="scrollableTextC" class="scrollable-text-c" style="display: none;">
+            <p>This map uses individual quantile classifications for each material instead of a universal one. This decision is based on several key considerations:
+                <br><br>
+                1. Data Precision and Integrity<br>
+                Uncertainty of the Data: The dataset we are working with is based on approximations and educated estimates rather than precise measurements. As such, it is essential to avoid creating over-confident visual representations that could imply a level of accuracy that the data does not possess.
+                Avoiding Over-Interpretation: By using separate bins for each material, we ensure that the inherent fuzziness and uncertainty of the data are accurately represented. This prevents the data from being interpreted as more definitive or certain than it actually is.
+                <br><br>
+                2. Material Weight Differences<br>
+                Inherent Disparities in Material Properties: Different materials, such as steel, concrete, or brick, have vastly different weights and properties. These differences make it inaccurate to compare the values of one material to another using a universal bin. A direct comparison between materials could distort the understanding of their distribution, as the weight and volume of each material influence its presence in the dataset.
+                Material-Specific Comparisons: Instead, by using separate bins for each material, we ensure that each material’s distribution is evaluated within its own context. This method allows for an accurate comparison of a single material against its own distribution, ensuring that variations in material properties do not skew the analysis.
+                <br><br>
+                3. Enabling Meaningful Comparison<br>
+                Local vs. Citywide Comparison: The use of individual bins allows for a more granular comparison of material distributions. For instance, when comparing a specific region's material composition to that of the entire city of New York, this approach ensures that the data reflects the unique characteristics of each material while still situating it in the context of the broader urban landscape.
+                Contextual Analysis: By separating the bins for each material, users can directly compare the relative prevalence of materials in a given area with citywide averages, offering deeper insights into regional material characteristics and urban trends.
+                <br><br>
+                4. Enhanced Analytical Flexibility<br>
+                Customizable Binning: Using distinct bins for each material allows for flexibility in data analysis. The ability to adjust the number of bins or reclassify values within each material’s category enables more nuanced visualizations and tailored interpretations, ensuring that the presentation of the data is both relevant and insightful.</p>
+        </div>
+
+        <div class="sidebar-bottom-buttons">
+            <div class="button-with-icon">
+                <button id="share" class="sidebar-button">Share</button>
+                <img src="images/share.png" alt="Share" class="icon">
+            </div>
+            <div class="button-with-icon">
+                <button id="follow" class="sidebar-button">Follow</button>
+                <img src="images/follow.png" alt="Follow" class="icon">
+            </div>
+        </div>
+    </div>
+    <button id="toggleButton">
+        <svg id="toggleIcon" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M14 7l-7 7 7 7" stroke="currentColor" />
+        </svg>
+    </button>
+    
+
+    <div id="mainMap"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <script src="main.js"></script>
+</body>
+</html>

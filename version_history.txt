@@ -35,6 +35,7 @@ Version 0.1.4 (2024-11-13)
 
 To-Do List:
 - Define corresponding material weight ranges.
+- Add surrounding geojson bkg.
 - Different bin sizes for different zoom levels.
 - Apply hexbinned geojson for tooltip info.
 - Guide on how to view the data.

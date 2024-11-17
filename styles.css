@@ -429,7 +429,7 @@ a:active {
     width: 280px;
     margin-top: 240px;
     margin-left: 40px;
-    max-height: 27vh; 
+    max-height: calc(100vh - 640px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;

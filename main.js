@@ -182,11 +182,11 @@ document.getElementById('toggleStone').addEventListener('click', () => {
 
 // Geojson background----------------------------------------------
 // Fetch and load the GeoJSON file
-fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/new-york-city-boroughs.geojson')
+fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.geojson')
     .then(response => response.json())
     .then(data => {
         // Add the GeoJSON layer with style options to make it a background layer
-        const boroughsLayer = L.geoJSON(data, {
+        const coastlineLayer = L.geoJSON(data, {
             style: {
                 weight: 0,               
                 fillColor: 'white',
@@ -194,7 +194,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/new-york-c
             }
         }).addTo(mainMap);
 
-        boroughsLayer.bringToBack(); 
+        coastlineLayer.bringToBack(); 
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
 
@@ -300,16 +300,16 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
 
 // Rose Chart------------------------------------------------------------
 const data = {
-    labels: ['Brick', 'Concrete', 'Glass', 'Stone', 'Steel'],
+    labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
     datasets: [{
         label: 'Total weight (t)',
         data: [0, 0, 0, 0, 0],  // Initialize with zero
         backgroundColor: [
-            '#fd8564',
-            '#ffdd32',
-            '#6af1bd',
+            '#dd75ff',
             '#6bbcff',
-            '#dd75ff'
+            '#6af1bd',
+            '#ffdd32',
+            '#fd8564'
         ],
         borderWidth: 0
     }]
@@ -693,6 +693,12 @@ exploreButton.addEventListener('click', () => {
     isExploreActive = true;   // Set Explore as active
     isAboutActive = false;    // Unset About
     isStoriesActive = false;  // Unset Stories
+
+    // Automatically activate the legendButton
+    isLegendActive = true;
+    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
+    document.getElementById('legendButton').classList.add('active'); // Add 'active' to legendButton
+
     updateExploreAndLegendDisplay();
     updateAboutAndDataDisplay();
     updateAboutAndRefDisplay();
@@ -702,10 +708,17 @@ aboutButton.addEventListener('click', () => {
     isAboutActive = true;    // Set About as active
     isExploreActive = false; // Unset Explore
     isStoriesActive = false; // Unset Stories
+
+    // Automatically activate the dataButton
+    isDataActive = true;
+    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
+    document.getElementById('dataButton').classList.add('active'); // Add 'active' to dataButton
+
     updateExploreAndLegendDisplay();
     updateAboutAndDataDisplay();
     updateAboutAndRefDisplay();
 });
+
 
 storiesButton.addEventListener('click', () => {
     isAboutActive = false;   // Unset About

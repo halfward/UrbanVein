@@ -1,7 +1,50 @@
-Version 0.1.0 (2024-11-02)
-- Initial release with a collapsable sidebar and a steel base map.
+To-Do List:
+- Add placeholder thumbnails for stories.
+- Define corresponding material weight ranges.
+- Different bin sizes for different zoom levels.
+- Apply hexbinned geojson for tooltip info.
+- Guide on how to view the data.
+- Typical typology diagrams (use value + js to dynamically update?)
+- Borough diagram comparisons.
+- Add presentation as a single story. skim swim and dive
 
-Version 0.1.1 (2024-11-04)
+How can you motivate the problem?
+What anecdotes do you have?
+
+
+Version Alpha 0.1.5 (2024-11-17)
+- Added NJ coastline background.
+- Added data, media, and stories content.
+- Added fullscreen popup for the visualization archive in the media tab.
+- Adjusted the fullscreen svg size.
+- Overall layout adjustment.
+- Reformatted version history.
+
+Version Alpha 0.1.4 (2024-11-13)
+- Added real-time spider diagram update function.
+- Added guide screen and button.
+- Added tabs for about and stories sections.
+- Added reference content (precedents).
+- Adjusted the tab display.
+
+Version Alpha 0.1.3 (2024-11-11)
+- Map change: Switched back from a QGIS WGS84 map to d3 dots.
+- Map change: Applied layer hard light blend modes and an overall map hard light blend mode.
+- Added layer toggle buttons.
+- Added dark mode and fullscreen toggles.
+- Added zoom buttons.
+- Added a rose chart.
+- Adjusted the tooltip from appearing on hover to click (right now the click only registers the circle not the hex).
+- Adjusted the tooltip contents.
+
+Version Alpha 0.1.2 (2024-11-06)
+- Map change: Switched from d3 dots to a QGIS WGS84 map.
+- Map change: Added a white rectangle behind map.png for hard light display.
+- Map change: Added hex_all.geojson for tooltip info on hover.
+- Map change: Added min/max zoom and map bounds.
+- Removed satellite map function.
+
+Version Alpha 0.1.1 (2024-11-04)
 - Added satellite function (WIP).
 - Added Legend, Timeline, and Satellite tabs under the EXPLORER tab.
 - Added scrollable content for the Legend tab.
@@ -9,44 +52,5 @@ Version 0.1.1 (2024-11-04)
 - Map change: Added concrete, stone, brick, and glass d3 dots onto the base map.
 - Map change: Added new-york-city-boroughs.geojson as a basemap background.
 
-Version 0.1.2 (2024-11-06)
-- Map change: Switched from d3 dots to a QGIS WGS84 map.
-- Map change: Added a white rectangle behind map.png for hard light display.
-- Map change: Added hex_all.geojson for tooltip info on hover.
-- Map change: Added min/max zoom and map bounds.
-- Removed satellite map function.
-
-Version 0.1.3 (2024-11-11)
-- Map change: Switched back from a QGIS WGS84 map to d3 dots.
-- Map change: Applied layer hard light blend modes and an overall map hard light blend mode.
-- Added layer toggle buttons.
-- Added dark mode and fullscreen toggles.
-- Added zoom buttons.
-- Added a rose chart.
-- Adjusted the tooltip from appearing on hover to click (right now the click only registers the circle not the hex.)
-- Adjsuted the tooltip contents.
-
-Version 0.1.4 (2024-11-13)
-- Added real-time spider diagram update function.
-- Added guide screen and button.
-- Added tabs for about and stories sections.
-- Added reference content.
-- Adjusted the tab display.
-
-To-Do List:
-- Define corresponding material weight ranges.
-- Add surrounding geojson bkg.
-- Different bin sizes for different zoom levels.
-- Apply hexbinned geojson for tooltip info.
-- Guide on how to view the data.
-- Typical typology diagrams.
-- Borough diagram comparisons.
-- Add precedents.
-- Add poster material. (media tab) about has... data, media, and references!
-- Add presentation as a single story!! skim swim and dive
-finish the whole project in the first sentence/image.
-
-
-What do you want the takeaways to be for the skimmers, swimmers, and divers for your own project?
-How can you motivate the problem?
-What anecdotes do you have?
+Version Alpha 0.1.0 (2024-11-02)
+- Initial release with a collapsable sidebar and a steel base map.

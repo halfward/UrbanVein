@@ -44,7 +44,7 @@ body {
 .overlay-content {
     background: white;
     padding: 20px;
-    max-width: 500px;
+    max-width: 600px;
     text-align: center;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -115,7 +115,7 @@ a:active {
 /* Logo styles */
 #logo {
     display: block; /* Ensures the image takes up space and doesn't inline with other content */
-    width: 55%; /* Makes the logo responsive to the sidebar width */
+    width: 45%; /* Makes the logo responsive to the sidebar width */
     height: auto; /* Maintains the aspect ratio of the image */
     padding-top: 23px;
     padding-left: 30px;
@@ -143,7 +143,7 @@ a:active {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(205, 205, 205, 0.6);
+    background-color: rgba(205, 205, 205, 0.1);
     backdrop-filter: blur(5px); 
     display: flex;
     justify-content: center;
@@ -152,6 +152,7 @@ a:active {
 }
 .popup-content {
     max-width: 300px;
+    max-height: 50%;
     padding: 20px;
     background-color: white;
     border-radius: 8px;
@@ -347,6 +348,10 @@ a:active {
     color: #8f9a9a;
     font-size: 0.9rem;
 }
+h3 {
+    font-size: 1rem;
+    color: #585f5f;
+}
 /* Toggle Buttons------------------------------------------- */
 #layerControls {
     position: absolute;
@@ -385,7 +390,7 @@ a:active {
     background-color: #ffdd32;
 }
 #toggleStone {
-    background-color: #6bbcff;
+    background-color: #6bcbff;
 }
 #layerControls button:hover {
     padding-top: 5px;
@@ -400,24 +405,46 @@ a:active {
 /* Scroll Text------------------------------------------- */
 .scrollable-text-data {
     width: 280px;
-    margin-top: 50px;
+    margin-top: 0px;
     margin-left: 40px;
-    max-height: 27vh; 
+    max-height: calc(100vh - 498px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;
-    border-top: 1.5px solid #e1e7e7;
     border-bottom: 1.5px solid #e1e7e7;
     padding-right: 10px;
     scrollbar-width: thin;
     scrollbar-color: #bfcdcd transparent;
 }
-.scrollable-text-ref {
-    position: absolute;
-    width: 285px;
-    margin-top: 20px;
+.scrollable-text-media {
+    width: 280px;
+    margin-top: 0px;
     margin-left: 40px;
-    max-height: 35vh; 
+    max-height: calc(100vh - 498px);
+    overflow-y: auto;
+    color: #8f9a9a;
+    font-size: 0.9rem;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #bfcdcd transparent;
+}
+.scrollable-text-ref {
+    width: 280px;
+    margin-top: 0px;
+    margin-left: 40px;
+    max-height: calc(100vh - 498px);
+    overflow-y: auto;
+    color: #8f9a9a;
+    font-size: 0.9rem;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #bfcdcd transparent;
+}
+.scrollable-text-stories {
+    width: 280px;
+    margin-top: 0px;
+    margin-left: 40px;
+    max-height: calc(100vh - 514.5px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;
@@ -427,9 +454,9 @@ a:active {
 }
 .scrollable-text-c {
     width: 280px;
-    margin-top: 240px;
+    margin-top: 260px;
     margin-left: 40px;
-    max-height: calc(100vh - 640px);
+    max-height: calc(100vh - 620px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;
@@ -463,6 +490,79 @@ a:active {
     position: relative; /* Ensure it acts as a positioning reference for absolute children */
     padding-bottom: 60px; /* Add space at the bottom so content above doesn't overlap with buttons */
 }
+
+
+
+/* Fullscreen popup----------------------------------------- */
+.popup-fullscreen {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(134, 134, 134, 0.4);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+}
+
+.fullscreen-popup-content {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    margin: auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.large-image-container {
+    width: 80%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.large-image-container img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+.image-gallery img {
+    max-height: 100px;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s ease;
+}
+
+.image-gallery img:hover {
+    transform: scale(1.1);
+}
+
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+
 
 
 

@@ -190,7 +190,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.
             style: {
                 weight: 0,               
                 fillColor: 'white',
-                fillOpacity: .4          
+                fillOpacity: .5          
             }
         }).addTo(mainMap);
 
@@ -306,7 +306,7 @@ const data = {
         data: [0, 0, 0, 0, 0],  // Initialize with zero
         backgroundColor: [
             '#dd75ff',
-            '#6bbcff',
+            '#6bcbff',
             '#6af1bd',
             '#ffdd32',
             '#fd8564'
@@ -527,23 +527,24 @@ function updateVersionHistory() {
         })
         .then(data => {
             const lines = data.split('\n');
-            let latestVersion = '';
-            for (let i = lines.length - 1; i >= 0; i--) {
+            let firstVersion = '';
+            for (let i = 0; i < lines.length; i++) { // Start from the first line
                 if (lines[i].startsWith('Version')) {
-                    latestVersion = lines[i].trim();
-                    break;
+                    firstVersion = lines[i].trim();
+                    break; // Stop as soon as the first version is found
                 }
             }
 
             const versionHistoryLink = document.getElementById('versionHistoryLink');
-            if (versionHistoryLink && latestVersion) {
-                versionHistoryLink.textContent = latestVersion;
+            if (versionHistoryLink && firstVersion) {
+                versionHistoryLink.textContent = firstVersion;
             }
         })
         .catch(error => {
             console.error('Error fetching version history:', error);
         });
 }
+
 
 
 
@@ -636,10 +637,17 @@ const storiesButton = document.getElementById('storiesButton');
 
 // Select all nav-2 buttons (second layer)
 const navButtons = document.querySelectorAll('.nav-button-2');
+
 const scrollableTextData = document.getElementById('scrollableTextData'); 
+const scrollableTextMedia = document.getElementById('scrollableTextMedia'); 
 const scrollableTextRef = document.getElementById('scrollableTextRef'); 
-const roseChart = document.getElementById('RoseChart'); 
+
+const scrollableTextPast = document.getElementById('scrollableTextPast'); 
+const scrollableTextPresent = document.getElementById('scrollableTextPresent'); 
+const scrollableTextFuture = document.getElementById('scrollableTextFuture'); 
+
 const scrollableTextC = document.getElementById('scrollableTextC'); 
+const roseChart = document.getElementById('RoseChart'); 
 const layerControls = document.getElementById('layerControls');
 
 // Variables to track button states
@@ -648,7 +656,12 @@ let isAboutActive = false;
 let isStoriesActive = false;
 
 let isDataActive = false;
+let isMediaActive = false;
 let isRefActive = false;
+
+let isPastActive = false;
+let isPresentActive = false;
+let isFutureActive = false;
 
 let isLegendActive = false;
 
@@ -660,9 +673,21 @@ function updateDisplay(element, condition) {
 function updateAboutAndDataDisplay() {
     updateDisplay(scrollableTextData, isAboutActive && isDataActive);
 }
-
+function updateAboutAndMediaDisplay() {
+    updateDisplay(scrollableTextMedia, isAboutActive && isMediaActive);
+}
 function updateAboutAndRefDisplay() {
     updateDisplay(scrollableTextRef, isAboutActive && isRefActive);
+}
+
+function updateStoriesAndPastDisplay() {
+    updateDisplay(scrollableTextPast, isStoriesActive && isPastActive);
+}
+function updateStoriesAndPresentDisplay() {
+    updateDisplay(scrollableTextPresent, isStoriesActive && isPresentActive);
+}
+function updateStoriesAndFutureDisplay() {
+    updateDisplay(scrollableTextFuture, isStoriesActive && isFutureActive);
 }
 
 function updateExploreAndLegendDisplay() {
@@ -678,14 +703,27 @@ function updateContent(buttonId) {
     console.log('Updating content for:', buttonId);
 
     // Set active states based on button ID
-    isLegendActive = (buttonId === 'legendButton'); 
     isDataActive = (buttonId === 'dataButton'); 
+    isMediaActive = (buttonId === 'mediaButton'); 
     isRefActive = (buttonId === 'refButton');
 
-    // Update the display elements for Explore/Legend states
-    updateExploreAndLegendDisplay();
+    isPastActive = (buttonId === 'pastButton');
+    isPresentActive = (buttonId === 'presentButton');
+    isFutureActive = (buttonId === 'futureButton');
+
+    isLegendActive = (buttonId === 'legendButton'); 
+    
+
+    // Update the display elements for different states
     updateAboutAndDataDisplay();
+    updateAboutAndMediaDisplay();
     updateAboutAndRefDisplay();
+
+    updateStoriesAndPastDisplay();
+    updateStoriesAndPresentDisplay();
+    updateStoriesAndFutureDisplay();
+
+    updateExploreAndLegendDisplay();
 }
 
 // Add click event listeners to main navigation buttons to track About, Stories, and Explore states
@@ -699,9 +737,15 @@ exploreButton.addEventListener('click', () => {
     navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
     document.getElementById('legendButton').classList.add('active'); // Add 'active' to legendButton
 
-    updateExploreAndLegendDisplay();
     updateAboutAndDataDisplay();
+    updateAboutAndMediaDisplay();
     updateAboutAndRefDisplay();
+
+    updateStoriesAndPastDisplay();
+    updateStoriesAndPresentDisplay();
+    updateStoriesAndFutureDisplay();
+
+    updateExploreAndLegendDisplay();
 });
 
 aboutButton.addEventListener('click', () => {
@@ -714,9 +758,15 @@ aboutButton.addEventListener('click', () => {
     navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
     document.getElementById('dataButton').classList.add('active'); // Add 'active' to dataButton
 
-    updateExploreAndLegendDisplay();
     updateAboutAndDataDisplay();
+    updateAboutAndMediaDisplay();
     updateAboutAndRefDisplay();
+
+    updateStoriesAndPastDisplay();
+    updateStoriesAndPresentDisplay();
+    updateStoriesAndFutureDisplay();
+    
+    updateExploreAndLegendDisplay();
 });
 
 
@@ -724,9 +774,21 @@ storiesButton.addEventListener('click', () => {
     isAboutActive = false;   // Unset About
     isExploreActive = false; // Unset Explore
     isStoriesActive = true;  // Set Stories as active
-    updateExploreAndLegendDisplay();
+
+    // Automatically activate the pastButton
+    isPastActive = true;
+    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
+    document.getElementById('pastButton').classList.add('active'); // Add 'active' to pastButton
+
     updateAboutAndDataDisplay();
+    updateAboutAndMediaDisplay();
     updateAboutAndRefDisplay();
+
+    updateStoriesAndPastDisplay();
+    updateStoriesAndPresentDisplay();
+    updateStoriesAndFutureDisplay();
+    
+    updateExploreAndLegendDisplay();
 });
 
 // Add click event listener to each second-layer button in navButtonAContainer, navButtonBContainer, and navButtonCContainer
@@ -748,9 +810,117 @@ navButtons.forEach(button => {
 isExploreActive = true; // Pre-select Explore as active
 isLegendActive = true;  // Pre-select Legend as active
 document.getElementById('legendButton').classList.add('active'); 
-updateExploreAndLegendDisplay(); 
 updateAboutAndDataDisplay();
+updateAboutAndMediaDisplay();
 updateAboutAndRefDisplay();
+
+updateStoriesAndPastDisplay();
+updateStoriesAndPresentDisplay();
+updateStoriesAndFutureDisplay();
+    
+updateExploreAndLegendDisplay();
+
+
+
+
+
+// Fullscreen-popup--------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const popup = document.getElementById('popupFullscreen');
+    const closePopup = document.getElementById('closePopup');
+    const largeImage = document.getElementById('largeImage');
+    const visualizationArchive = document.getElementById('visualizationArchive'); // The trigger
+    const imageGallery = document.querySelector('.image-gallery'); // For dynamically adding thumbnails
+
+    let thumbnailsGenerated = false;
+    let currentIndex = 0; // Keep track of the current image index
+    let imageArray = []; // Store image sources for navigation
+
+    // Function to open the popup with the selected large image
+    function openPopup(imageSrc) {
+        largeImage.src = imageSrc;
+        popup.style.display = 'flex';
+    }
+
+    // Function to initialize and add event listeners to thumbnails
+    function setupThumbnails() {
+        const thumbnails = document.querySelectorAll('.image-gallery img'); // Get thumbnails (dynamically updated)
+        thumbnails.forEach((thumbnail, index) => {
+            thumbnail.addEventListener('click', () => {
+                const largeSrc = thumbnail.getAttribute('data-large-src');
+                openPopup(largeSrc);
+                currentIndex = index; // Set current image index when clicked
+            });
+        });
+
+        // Create an array of image sources for navigation
+        imageArray = Array.from(thumbnails).map((thumbnail) => thumbnail.getAttribute('data-large-src'));
+    }
+
+    // Function to generate image gallery (thumbnails)
+    function generateThumbnails() {
+        if (thumbnailsGenerated) return; // Don't generate thumbnails again if already done
+
+        const images = [
+            "VA-01.webp", "VA-02.webp", "VA-03.webp", "VA-04.webp",
+            "VA-05.webp", "VA-06.webp", "VA-07.webp", "VA-08.webp",
+            "VA-09.webp", "VA-10.webp", "VA-11.webp", "VA-12.webp"
+        ];
+
+        images.forEach((image) => {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`;
+            thumbnail.alt = `Thumbnail ${image}`;
+            thumbnail.setAttribute('data-large-src', `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`);
+            imageGallery.appendChild(thumbnail);
+        });
+
+        setupThumbnails(); // Setup event listeners for the dynamically created thumbnails
+        thumbnailsGenerated = true; // Set flag to true after thumbnails are generated
+    }
+
+    // Open the popup when clicking on the "Visualization Archive" text
+    if (visualizationArchive) {
+        visualizationArchive.addEventListener('click', () => {
+            generateThumbnails(); // Generate and display thumbnails only once
+            const firstThumbnail = imageGallery.querySelector('img');
+            if (firstThumbnail) {
+                openPopup(firstThumbnail.getAttribute('data-large-src')); // Default large image (first thumbnail)
+                currentIndex = 0; // Set current image index to 0 for the first image
+            }
+        });
+    }
+
+    // Handle navigation using the arrow keys
+    function handleKeyNavigation(event) {
+        if (popup.style.display !== 'flex') return; // Only handle navigation if the popup is open
+
+        if (event.key === 'ArrowLeft') {
+            // Go to the previous image
+            currentIndex = (currentIndex === 0) ? imageArray.length - 1 : currentIndex - 1;
+        } else if (event.key === 'ArrowRight') {
+            // Go to the next image
+            currentIndex = (currentIndex === imageArray.length - 1) ? 0 : currentIndex + 1;
+        }
+
+        openPopup(imageArray[currentIndex]); // Update the large image based on the new index
+    }
+
+    // Add keydown event listener to handle arrow key navigation
+    document.addEventListener('keydown', handleKeyNavigation);
+
+    // Close the popup when the close button is clicked
+    closePopup.addEventListener('click', () => {
+        popup.style.display = 'none';
+    });
+
+    // Close the popup when clicking outside the content area
+    popup.addEventListener('click', (e) => {
+        if (e.target === popup) {
+            popup.style.display = 'none';
+        }
+    });
+});
 
 
 

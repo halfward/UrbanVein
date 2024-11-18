@@ -16,9 +16,11 @@ Version Alpha 0.1.5 (2024-11-17)
 - Added NJ coastline background.
 - Added data, media, and stories content.
 - Added fullscreen popup for the visualization archive in the media tab.
-- Adjusted the fullscreen svg size.
-- Overall layout adjustment.
+- Adjusted the fullscreen svg icon size.
+- Overall layout adjustment incl. text color & blurred sidebar background.
 - Reformatted version history.
+- Changed Urban Vein logo.
+- External links now open new tabs.
 
 Version Alpha 0.1.4 (2024-11-13)
 - Added real-time spider diagram update function.

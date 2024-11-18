@@ -9,7 +9,7 @@
 
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.png" type="image/x-icon">
+    <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -41,7 +41,7 @@
     <!-- Sidebar Content -->
     <div id="sidebar">
         <div style="display: flex; align-items: center;">
-            <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.png" alt="Logo" id="logo">
+            <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
             <span id="versionHistoryLink" class="clickable-text" style="margin-top: 18px; color: #bfcdcd; font-size: 0.7rem; display: block;"></span>
             <!-- Popup Modal -->
             <div id="popup" class="popup" style="display: none;">
@@ -84,7 +84,7 @@
     
         <div id="storiesContentText" class="content-text" style="display: none;">
             <h2>Looking Forward and Backward</h2>
-            <p>Explore various stories and experiences related to this practice.</p>
+            <p>Using material data and machine learning, the project maps and analyzes NYC’s built environment through construction materials, uncovering hidden historical trends, current environmental impacts, and future speculations. This material-centric approach provides an unbiased view of the city’s lifecycle—from resource acquisition to disposal—highlighting critical narratives such as demolition patterns, material trends, and underground resources. Ultimately, Urban Vein offers data-driven insights that challenge conventional architectural perspectives and inform the future of sustainable urban development.</p>
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
@@ -115,7 +115,8 @@
         </div>
 
 
-        <hr class="sidebar-line-2">
+        <hr class="sidebar-line-2a">
+        <hr class="sidebar-line-2b">
 
 
         <div>
@@ -135,42 +136,40 @@
                 <h3>Building Material Estimate</h3>
                 NYC buliding material estimate data<br>
                 by Hao Lee
-                <br><br>
+                
                 <h3>Base Map</h3>
                 <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC PLUTO Data</a><br>
                 by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
                 <br><br>
                 <a href="https://github.com/CityOfNewYork/nyc-geo-metadata/blob/main/Metadata/Metadata_BuildingFootprints.md">NYC Building Footprints</a><br>
                 by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
-                <br><br>
+
                 <h3>Base Map Background</h3>
                 <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">New York State Civil Boundaries</a><br>
                 by <a href="https://gis.ny.gov/">New York State GIS Resources</a>
                 <br><br>
                 <a href="https://gisdata-njdep.opendata.arcgis.com/datasets/3a79b8275ec64325999738b64be8fa14_8/explore?showTable=true">Coastline (2012) of New Jersey</a><br>
                 by <a href="https://gisdata-njdep.opendata.arcgis.com/">NJDEP Bureau of GIS</a>
-                <br><br>
+
                 <h3>Stories</h3>
                 <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">Construction Demolition Registrants</a><br>
                 by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
-                <br><br>
-                Urban Vein leverages computational thinking and advanced digital tools to explore the relationship between materiality and urban design, with a focus on sustainability. Using material data and machine learning, the project maps and analyzes NYC’s built environment through construction materials, uncovering hidden historical trends, current environmental impacts, and future speculations. This material-centric approach provides an unbiased view of the city’s lifecycle—from resource acquisition to disposal—highlighting critical narratives such as demolition patterns, material trends, and underground resources. Ultimately, Urban Vein offers data-driven insights that challenge conventional architectural perspectives and inform the future of sustainable urban development.
                 
             </p>
         </div>
 
         <div id="scrollableTextMedia" class="scrollable-text-media" style="display: none;">
-            <h3 id="visualizationArchive" style="cursor: pointer";><a>Visualization Archive</a></h3>
+            <h3 id="visualizationArchive" style="cursor: pointer"><a>Visualization Archive</a></h3>
             <p>
                 This is the visualization exploration process, done in QGIS.
             </p>
-            <h3><a>Collloquium II Review Poster</a></h3>
+            <h3 id="colloquiumPoster" style="cursor: pointer"><a>Collloquium II Review Poster</a></h3>
             <p>
                 This is the poster for colloquium II's end of semester review.
             </p>
-            <h3><a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">Colloquium I Website (External)</a></h3>
+            <h3 id="guerillaUrbanism" style="cursor: pointer"><a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">Guerilla Urbanism (External)</a></h3>
             <p>
-                This is colloquium I's website, which consists of two material-related projects, Booleanify and Balloonify.
+                This is colloquium I's project website, which consists of two material-related speculative projects, Booleanify and Balloonify.
             </p>
         </div>
 
@@ -180,7 +179,7 @@
                 <a href="https://climate-conflict.org/www/data-pages/hazards">Climate-Conflict-Vulnerability Index</a>
                 <br>
                 by <a href="https://truth-and-beauty.net/">Moritz Stefaner</a>
-                <br><br>
+
                 <h3>Mapping Platform</h3>
                 <a href="https://mappinghny.com/?lng=-73.9760&lat=40.7220&zoom=12.50&maps=[{%22center%22:{%22lat%22:40.722,%22lng%22:-73.976},%22demographicOpacity%22:1,%22demographicsFilters%22:{},%22filters%22:{},%22layers%22:[{%22id%22:%22dwellings-dot-density-birthplace%22,%22dotDensityValues%22:[{%22label%22:%22England+and+Scotland%22,%22dotDensityColor%22:%22%23FBD44A%22,%22fieldName%22:%22bpl_4_41000%22},{%22label%22:%22Ireland%22,%22dotDensityColor%22:%22%23EC8457%22,%22fieldName%22:%22bpl_4_41400%22},{%22label%22:%22Russia%22,%22dotDensityColor%22:%22%23F17CBA%22,%22fieldName%22:%22bpl_3_46999%22},{%22label%22:%22Germany%22,%22dotDensityColor%22:%22%235AC2CD%22,%22fieldName%22:%22bpl_4_45300%22},{%22label%22:%22Caribbean+%26+West+Indies%22,%22dotDensityColor%22:%22%2367D78D%22,%22fieldName%22:%22bpl_2_14%22},{%22label%22:%22Italy%22,%22dotDensityColor%22:%22%23DE92F1%22,%22fieldName%22:%22bpl_4_43400%22}]}],%22rasterOpacity%22:1,%22year%22:%221880%22,%22zoom%22:12.5}]&rasterOpacity0=1">Mapping Historical New York</a>
                 <br>
@@ -189,12 +188,12 @@
                 <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">NYC Construction Dashboard 2022</a>
                 <br>
                 by DOB Analytics
-                <br><br>
+
                 <h3>Material Estimation & Circular Economy</h3>
                 <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/BAMB_MaterialsPassports_BestPractice.pdf#page=54">Materials Passports - Best Practices</a>
                 <br>
                 by Matthias Heinrich and Werner Lang
-                <br><br>
+
                 <a href="https://www.circularise.com/industry/construction">Circularise</a>
                 <br>
                 by <a href="https://www.circularise.com">Circularise</a>
@@ -208,38 +207,38 @@
         <!-- Stories---------------------------------------------- -->
         <div id="scrollableTextPast" class="scrollable-text-stories" style="display: none;">
             <h3>Historical NYC</h3>
-            <p>WIP</p>
+            <p>Using materials to identify key decisions in city planning and urban development.</p>
         </div>
         <div id="scrollableTextPresent" class="scrollable-text-stories" style="display: none;">
             <h3>Underground NYC</h3>
-            <p>WIP</p>
+            <p>Concrete foundations.</p>
             <h3>Demolition Materials</h3>
-            <p>WIP</p>
+            <p>Demolition activity from the 1980s to 2023.</p>
             <h3>Material Carbon Footprints</h3>
-            <p>WIP</p>
+            <p>The carbon footprint of our built environment.</p>
         </div>
         <div id="scrollableTextFuture" class="scrollable-text-stories" style="display: none;">
-            <h3>Material Kingdoms</h3>
-            <p>WIP</p>
+            <h3>2124: The United Material Kingdoms</h3>
+            <p>Identifying material clusters.</p>
         </div>
 
         <!-- Explorer------------------------------------------- -->
         <div id="scrollableTextC" class="scrollable-text-c" style="display: none;">
             <p>This map uses individual quantile classifications for each material instead of a universal one. This decision is based on several key considerations:
                 <br><br>
-                1. Data Precision and Integrity<br>
+                <h3>1. Data Precision and Integrity</h3>
                 Uncertainty of the Data: The dataset we are working with is based on approximations and educated estimates rather than precise measurements. As such, it is essential to avoid creating over-confident visual representations that could imply a level of accuracy that the data does not possess.
                 Avoiding Over-Interpretation: By using separate bins for each material, we ensure that the inherent fuzziness and uncertainty of the data are accurately represented. This prevents the data from being interpreted as more definitive or certain than it actually is.
                 <br><br>
-                2. Material Weight Differences<br>
+                <h3>2. Material Weight Differences</h3>
                 Inherent Disparities in Material Properties: Different materials, such as steel, concrete, or brick, have vastly different weights and properties. These differences make it inaccurate to compare the values of one material to another using a universal bin. A direct comparison between materials could distort the understanding of their distribution, as the weight and volume of each material influence its presence in the dataset.
                 Material-Specific Comparisons: Instead, by using separate bins for each material, we ensure that each material’s distribution is evaluated within its own context. This method allows for an accurate comparison of a single material against its own distribution, ensuring that variations in material properties do not skew the analysis.
                 <br><br>
-                3. Enabling Meaningful Comparison<br>
+                <h3>3. Enabling Meaningful Comparison</h3>
                 Local vs. Citywide Comparison: The use of individual bins allows for a more granular comparison of material distributions. For instance, when comparing a specific region's material composition to that of the entire city of New York, this approach ensures that the data reflects the unique characteristics of each material while still situating it in the context of the broader urban landscape.
                 Contextual Analysis: By separating the bins for each material, users can directly compare the relative prevalence of materials in a given area with citywide averages, offering deeper insights into regional material characteristics and urban trends.
                 <br><br>
-                4. Enhanced Analytical Flexibility<br>
+                <h3>4. Enhanced Analytical Flexibility</h3>
                 Customizable Binning: Using distinct bins for each material allows for flexibility in data analysis. The ability to adjust the number of bins or reclassify values within each material’s category enables more nuanced visualizations and tailored interpretations, ensuring that the presentation of the data is both relevant and insightful.</p>
         </div>
 

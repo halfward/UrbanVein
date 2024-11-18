@@ -1,3 +1,15 @@
+// Link controls
+document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('a');
+    links.forEach(link => {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+    });
+});
+
+
+
+// Guide
 document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('GuideOverlay');
     const dontShowAgain = document.getElementById('dontShowAgain');
@@ -563,7 +575,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const navButtonAContainer = document.getElementById('navButtonAContainer');
     const navButtonBContainer = document.getElementById('navButtonBContainer');
     const navButtonCContainer = document.getElementById('navButtonCContainer');
-    const additionalSidebarLine = document.querySelector('.sidebar-line-2');
 
 
     // Function to update content based on button clicked
@@ -577,24 +588,20 @@ document.addEventListener("DOMContentLoaded", function() {
         navButtonAContainer.style.display = 'none';
         navButtonBContainer.style.display = 'none';
         navButtonCContainer.style.display = 'none';
-        additionalSidebarLine.style.display = 'none'; 
 
         // Show relevant content based on button ID
         switch (buttonId) {
             case 'aboutButton':
                 aboutContent.style.display = 'block';
                 navButtonAContainer.style.display = 'flex'; 
-                additionalSidebarLine.style.display = 'block'; 
                 break;
             case 'storiesButton':
                 storiesContent.style.display = 'block';
                 navButtonBContainer.style.display = 'flex'; 
-                additionalSidebarLine.style.display = 'block';
                 break;
             case 'explorerButton':
                 exploreContent.style.display = 'block';
                 navButtonCContainer.style.display = 'flex'; 
-                additionalSidebarLine.style.display = 'block'; 
                 break;
             default:
                 aboutContent.style.display = 'none';
@@ -603,7 +610,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 navButtonAContainer.style.display = 'none'; 
                 navButtonBContainer.style.display = 'none'; 
                 navButtonCContainer.style.display = 'flex'; 
-                additionalSidebarLine.style.display = 'block'; 
         }
     }
 

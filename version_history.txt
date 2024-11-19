@@ -7,6 +7,7 @@ To-Do List:
 - Typical typology diagrams (use value + js to dynamically update?)
 - Borough diagram comparisons.
 - Add presentation as a single story. skim swim and dive
+- The chart color doesnt line up with the map.
 
 How can you motivate the problem?
 What anecdotes do you have?
@@ -16,7 +17,10 @@ Version Alpha 0.1.5 (2024-11-17)
 - Added NJ coastline background.
 - Added data, media, and stories content.
 - Added fullscreen popup for the visualization archive in the media tab.
+- Added a function to turn chart colors transparent based on the material buttons' toggle states.
+- Added info & diagram for buliding material distribution data.
 - Adjusted the fullscreen svg icon size.
+- Adjusted the version history layout.
 - Overall layout adjustment incl. text color & blurred sidebar background.
 - Reformatted version history.
 - Changed Urban Vein logo.

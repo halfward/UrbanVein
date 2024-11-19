@@ -311,17 +311,18 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
 
 
 // Rose Chart------------------------------------------------------------
+// Initial chart data with original colors
 const data = {
     labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
     datasets: [{
         label: 'Total weight (t)',
         data: [0, 0, 0, 0, 0],  // Initialize with zero
         backgroundColor: [
-            '#dd75ff',
-            '#6bcbff',
-            '#6af1bd',
-            '#ffdd32',
-            '#fd8564'
+            '#cc75ff',  // Steel
+            '#6bcbff',  // Stone
+            '#6af1bd',  // Glass
+            '#ffdd32',  // Concrete
+            '#fd8564'   // Brick
         ],
         borderWidth: 0
     }]
@@ -346,6 +347,15 @@ const config = {
                     color: 'rgba(0, 0, 0, 0.2)',
                     lineWidth: 1,
                     z: 1 
+                },
+                ticks: {
+                    callback: function(value) {
+                        const romanNumerals = ['NULL','I', 'II', 'III', 'IV', 'V'];
+                        return romanNumerals[value]; 
+                    },
+                    z: 2,
+                    color: 'black',
+                    backgroundColor: 'transparent',
                 }
             }
         },
@@ -380,7 +390,39 @@ const config = {
 // Create the chart instance
 const RoseChart = new Chart(document.getElementById('RoseChart'), config);
 
-// Quantile calculation
+// Original colors for each layer
+const originalColors = {
+    Brick: '#fd8564',
+    Concrete: '#ffdd32',
+    Glass: '#6af1bd',
+    Stone: '#6bcbff',
+    Steel: '#cc75ff'
+};
+
+// Add event listeners to the buttons to toggle the layers' visibility
+document.getElementById('toggleBrick').addEventListener('click', () => toggleLayer('Brick'));
+document.getElementById('toggleConcrete').addEventListener('click', () => toggleLayer('Concrete'));
+document.getElementById('toggleGlass').addEventListener('click', () => toggleLayer('Glass'));
+document.getElementById('toggleStone').addEventListener('click', () => toggleLayer('Stone'));
+document.getElementById('toggleSteel').addEventListener('click', () => toggleLayer('Steel'));
+
+// Toggle function to change backgroundColor between original color and transparent
+function toggleLayer(layer) {
+    const layerIndex = data.labels.indexOf(layer);
+    
+    // If the color is transparent, reset to the original color
+    if (data.datasets[0].backgroundColor[layerIndex] === 'transparent') {
+        data.datasets[0].backgroundColor[layerIndex] = originalColors[layer];
+    } else {
+        // Otherwise, set the color to transparent
+        data.datasets[0].backgroundColor[layerIndex] = 'transparent';
+    }
+    
+    // Update the chart to reflect the changes
+    RoseChart.update();
+}
+
+// Quantile calculation (unchanged)
 function calculateQuantiles(values, numBins) {
     values.sort((a, b) => a - b);  // Ascending order sort
     const quantiles = [];
@@ -399,6 +441,7 @@ function getQuantileBin(value, quantiles) {
     }
     return quantiles.length - 1;  // If value is greater than the highest quantile
 }
+
 
 
 
@@ -499,22 +542,24 @@ document.addEventListener("DOMContentLoaded", function() {
     updateVersionHistory();
 
     // Add click event to the version history link
-    versionHistoryLink.addEventListener('click', function() {
-        fetch('version_history.txt')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(data => {
-                versionHistoryContent.textContent = data;
-                popup.style.display = 'flex';
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-    });
+versionHistoryLink.addEventListener('click', function() {
+    fetch('version_history.txt')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            // Replace newline characters with <br> for line breaks
+            versionHistoryContent.innerHTML = data.replace(/\n/g, '<br>'); 
+            popup.style.display = 'flex';
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+});
+
 
     // Close the popup
     closePopup.addEventListener('click', function() {
@@ -529,6 +574,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// Version history text update----------------------------
 function updateVersionHistory() {
     fetch('version_history.txt')
         .then(response => {
@@ -540,10 +586,10 @@ function updateVersionHistory() {
         .then(data => {
             const lines = data.split('\n');
             let firstVersion = '';
-            for (let i = 0; i < lines.length; i++) { // Start from the first line
+            for (let i = 0; i < lines.length; i++) { 
                 if (lines[i].startsWith('Version')) {
                     firstVersion = lines[i].trim();
-                    break; // Stop as soon as the first version is found
+                    break; 
                 }
             }
 
@@ -559,6 +605,28 @@ function updateVersionHistory() {
 
 
 
+// Material Info Popup
+// Get the elements
+const infoIcon = document.getElementById('materialInfo');
+const materialPopup = document.getElementById('materialPopup');
+const closePopup = document.getElementById('closePopup');
+
+// When the info icon is clicked, show the popup
+infoIcon.addEventListener('click', () => {
+    materialPopup.style.display = 'flex';
+});
+
+// When the close button is clicked, hide the popup
+closePopup.addEventListener('click', () => {
+    materialPopup.style.display = 'none';
+});
+
+// Optional: Close the popup if clicking outside the content area
+materialPopup.addEventListener('click', (event) => {
+    if (event.target === materialPopup) {
+        materialPopup.style.display = 'none';
+    }
+});
 
 
 
@@ -653,7 +721,7 @@ const scrollableTextPresent = document.getElementById('scrollableTextPresent');
 const scrollableTextFuture = document.getElementById('scrollableTextFuture'); 
 
 const scrollableTextC = document.getElementById('scrollableTextC'); 
-const roseChart = document.getElementById('RoseChart'); 
+const roseChart = document.getElementById('Chart'); 
 const layerControls = document.getElementById('layerControls');
 
 // Variables to track button states

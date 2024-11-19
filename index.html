@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Vein</title>
 
-    
-
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
@@ -42,12 +39,21 @@
     <div id="sidebar">
         <div style="display: flex; align-items: center;">
             <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
+
             <span id="versionHistoryLink" class="clickable-text" style="margin-top: 18px; color: #bfcdcd; font-size: 0.7rem; display: block;"></span>
-            <!-- Popup Modal -->
+            <!-- Version Popup Modal -->
             <div id="popup" class="popup" style="display: none;">
                 <div class="popup-content">
                     <span class="close" id="closePopup">&times;</span>
-                    <pre id="versionHistoryContent"></pre> <!-- Preformatted text area -->
+                    <p-popup id="versionHistoryContent"></p-popup>
+                </div>
+            </div>
+            <!-- Material Popup Modal -->
+            <div id="materialPopup" class="popup" style="display: none;">
+                <div class="popup-content">
+                    <span class="close" id="closePopup">&times;</span>
+                    <p-popup>Material info</p-popup>
+                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/data-diagram.webp" alt="DataDiagram" id="dataDiagram">
                 </div>
             </div>
         </div>        
@@ -88,7 +94,11 @@
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
-            <h2>Building Material Distribution Data</h2>
+            <h2>
+                Building Material Distribution Data
+                <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="materialInfo" class="info-icon">
+            </h2>
+            
             <p>This map combines <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC PLUTO data</a> with inferred building typologies and uses machine learning to create a comprehensive material dataset. Each material’s density is represented by its circle size and color.</p>
         </div>
         <br>
@@ -119,9 +129,11 @@
         <hr class="sidebar-line-2b">
 
 
-        <div>
+        <div id="Chart">
             <canvas id="RoseChart"></canvas>
+            <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="roseInfo" class="info-icon">
         </div>
+        
 
         <div id="layerControls">
             <button id="toggleBrick">Brick</button>
@@ -154,7 +166,6 @@
                 <h3>Stories</h3>
                 <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">Construction Demolition Registrants</a><br>
                 by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
-                
             </p>
         </div>
 
@@ -201,6 +212,10 @@
                 <a href="https://www.zillow.com/z/zestimate/">Zestimate</a>
                 <br>
                 by <a href="https://www.zillow.com">Zillow</a>
+
+                <h3>Speculation</h3>
+                <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">Roadmap 2050</a><br>
+                by <a href="https://www.oma.com/">OMA</a>
             </p>
         </div> 
 
@@ -224,7 +239,9 @@
 
         <!-- Explorer------------------------------------------- -->
         <div id="scrollableTextC" class="scrollable-text-c" style="display: none;">
-            <p>This map uses individual quantile classifications for each material instead of a universal one. This decision is based on several key considerations:
+            <p>
+                <h3>Quantitative Classification</h3>
+                This map uses individual quantile classifications for each material instead of a universal one. This decision is based on several key considerations:
                 <br><br>
                 <h3>1. Data Precision and Integrity</h3>
                 Uncertainty of the Data: The dataset we are working with is based on approximations and educated estimates rather than precise measurements. As such, it is essential to avoid creating over-confident visual representations that could imply a level of accuracy that the data does not possess.

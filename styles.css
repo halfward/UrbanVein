@@ -78,7 +78,7 @@ a:active {
     top: 0;
     width: 360px;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.65);
+    background-color: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(10px); 
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
     z-index: 1000;
@@ -99,19 +99,20 @@ a:active {
     padding: 8px 0px;
     cursor: pointer;
     z-index: 1001; 
-    background-color: #e6ecec;
-    color: #bfcdcd; /* Set text color to bfcdcd */
+    background-color: rgba(222, 229, 229, 0.5);
+    backdrop-filter: blur(10px); 
+    color: #bfcdcd; 
     border: 1.5px solid #bfcdcd; 
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-    transition: left 0.3s ease; /* Smooth transition for button position */
+    transition: left 0.3s ease; 
 }
 
 #toggleIcon {
-    fill: transparent; /* Set fill to transparent */
-    transition: transform 0.3s ease; /* Add transition for any scaling */
+    fill: transparent; 
+    transition: transform 0.3s ease;
     stroke-width: 2px; 
     stroke-linecap: "round"; 
     stroke-linejoin: "round";
@@ -119,7 +120,7 @@ a:active {
 
 /* Logo styles */
 #logo {
-    display: block; /* Ensures the image takes up space and doesn't inline with other content */
+    display: block;
     width: 45%; 
     height: auto;
     padding-top: 26px;
@@ -138,8 +139,8 @@ a:active {
     z-index: 2000;
 }
 .clickable-text:hover {
-    text-decoration: underline; /* Underline on hover */
-    color: #a1b3b3; /* Change color on hover to indicate interaction */
+    text-decoration: underline;
+    color: #a1b3b3; 
 }
 /* Popup Styles */
 .popup {
@@ -148,16 +149,16 @@ a:active {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(205, 205, 205, 0.1);
-    backdrop-filter: blur(5px); 
+    background-color: rgba(226, 229, 231, 0.6);
+    backdrop-filter: blur(10px); 
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
 }
 .popup-content {
-    max-width: 300px;
-    max-height: 50%;
+    width: 270px;
+    max-height: 70%;
     padding: 20px;
     background-color: white;
     border-radius: 8px;
@@ -168,33 +169,39 @@ a:active {
     white-space: normal;
     overflow: auto;
 }
-
-
+p-popup {
+    font-size: 0.8rem;
+}
 .close {
     cursor: pointer;
-    float: left; /* Position close button */
+    float: left; 
     font-size: 20px;
     margin-top: -12px;
     margin-left: -6px;
 }
 
 
+/* Data Diagram */
+#dataDiagram {
+    width: 260px;
+}
+
 
 /* Navigation--------------------------------------------------- */
 .nav-button {
-    display: inline-block; /* Makes them inline elements */
-    padding: 3px 10px; /* Add some padding for better click area */
-    margin: 3px; /* Space between buttons */
-    color: #8f9a9a; /* Text color */
-    cursor: pointer; /* Change cursor to pointer on hover */
-    text-align: center; /* Center text */
-    transition: color 0.3s ease; /* Smooth transition */
+    display: inline-block; 
+    padding: 3px 10px; 
+    margin: 3px; 
+    color: #8f9a9a; 
+    cursor: pointer; 
+    text-align: center; 
+    transition: color 0.3s ease; 
     font-weight: 500;
-    position: relative; /* Ensure position is relative for the pseudo-element */
-    background-color: transparent; /* Background transparent */
+    position: relative; 
+    background-color: transparent; 
 }
 .nav-button:nth-child(2) {
-    margin-left: 25px; /* Indent */
+    margin-left: 25px; 
 }
 
 .nav-button {
@@ -215,16 +222,17 @@ a:active {
     bottom: -5.25px;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 10px);
+    width: 0%;
     height: 3px;
-    background-color: black;
-    transition: left 0.3s ease;
-    opacity: 0; 
+    background-color: rgb(0, 0, 0);
+    transition: width 0.3s ease; 
+    opacity: 0;
 }
-
 .nav-button.active::after {
     opacity: 1;
+    width: calc(100% - 10px); 
 }
+
 
 .active-line {
     height: 3px; 
@@ -329,18 +337,6 @@ a:active {
 
 
 
-/* Rose Chart------------------------------------------------ */
-#RoseChart {
-    width: 120px;
-    margin: 0 auto;
-    margin-top: 5px;
-    display: block;
-    position: absolute;
-}
-
-
-
-
 
 /* Content------------------------------------------------ */
 .content-text {
@@ -363,10 +359,46 @@ h3 {
     font-size: 1rem;
     color: #585f5f;
 }
+
+/* Info icon----------------------------------------- */
+.info-icon {
+    position: absolute;
+    width: 18px; 
+    height: 18px; 
+    cursor: pointer; 
+    transition: fill 0.3s ease; 
+    filter: invert(0);
+}
+.info-icon:hover {
+    filter: brightness(0) saturate(100%) invert(0%);
+}
+#materialInfo {
+    margin-left: 10px;
+}
+#roseInfo {
+    margin-left: 240px;
+    margin-top: 180px;
+}
+
+
+
+/* Rose Chart------------------------------------------------ */
+#RoseChart {
+    width: 120px;
+    margin: 0 auto;
+    margin-top: 25px;
+    display: block;
+    position: absolute;
+}
+canvas {
+    background-color: transparent !important;
+}
+
+
 /* Toggle Buttons------------------------------------------- */
 #layerControls {
     position: absolute;
-    margin-top: 200px;
+    margin-top: 220px;
     margin-left: 2.5px;
 }
 
@@ -418,7 +450,7 @@ h3 {
     width: 280px;
     margin-top: 0px;
     margin-left: 40px;
-    max-height: calc(100vh - 498px);
+    max-height: calc(100vh - 485px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;
@@ -431,7 +463,7 @@ h3 {
     width: 280px;
     margin-top: 0px;
     margin-left: 40px;
-    max-height: calc(100vh - 498px);
+    max-height: calc(100vh - 485px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;
@@ -443,7 +475,7 @@ h3 {
     width: 280px;
     margin-top: 0px;
     margin-left: 40px;
-    max-height: calc(100vh - 498px);
+    max-height: calc(100vh - 485px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;
@@ -455,7 +487,7 @@ h3 {
     width: 280px;
     margin-top: 0px;
     margin-left: 40px;
-    max-height: calc(100vh - 514.5px);
+    max-height: calc(100vh - 508.5px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;
@@ -467,7 +499,7 @@ h3 {
     width: 280px;
     margin-top: 260px;
     margin-left: 40px;
-    max-height: calc(100vh - 620px);
+    max-height: calc(100vh - 615px);
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.9rem;

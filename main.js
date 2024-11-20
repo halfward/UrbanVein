@@ -107,11 +107,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
                 className: `leaflet-circle-${material}`,
             });
 
-            // Bind the tooltip to the click event
-            circle.on('click', function() {
-                const tooltipContent = `Average FAR<br>Average Building Age<br>Prominent Material<br>I have ${feature.properties[material]} kgs of ${material}`;
-                circle.bindPopup(tooltipContent).openPopup();  // Use bindPopup to show the content
-            });
+
 
             circle.addTo(materialLayerGroup);  // Add the circle to layer groups
         }
@@ -217,8 +213,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.
 
 
 
-
-// Load Hex GeoJSON (hex_all.geojson)-------------------------------
+// Adding Hex Geojson for Rose Chart Values & Tooltips
 fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.geojson')
     .then(response => {
         if (!response.ok) {
@@ -227,7 +222,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
         return response.json();
     })
     .then(geojsonData => {
-        const materials = ['brick', 'concrete', 'glass', 'stone', 'steel', ];
+        const materials = ['steel', 'stone', 'glass', 'concrete', 'brick'];
         let allValues = {};
 
         // Collect all values for each material across the GeoJSON
@@ -246,7 +241,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
 
         // Function to calculate quantiles for each material
         function calculateQuantiles(values, numBins) {
-            values.sort((a, b) => a - b);  // Ascending order sort
+            values.sort((a, b) => a - b); // Ascending order sort
             const quantiles = [];
             for (let i = 1; i <= numBins; i++) {
                 const index = Math.floor((i / numBins) * values.length);
@@ -266,13 +261,23 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
         function getQuantileBin(value, quantiles) {
             for (let i = 0; i < quantiles.length; i++) {
                 if (value <= quantiles[i]) {
-                    return i;  // Return the class index (0-5)
+                    return i; // Return the class index (0-5)
                 }
             }
             return quantiles.length - 1; // If the value is higher than the last quantile
         }
 
-        // Add geoJSON layer and bind mouseover event
+        // Helper function to format large numbers
+        function formatNumber(value) {
+            if (value >= 1e6) {
+                return (value / 1e6).toFixed(2) + ' million'; 
+            } else if (value >= 1e3) {
+                return (value / 1e3).toFixed(2) + ' thousand'; 
+            }
+            return value.toString();
+        }
+
+        // Add geoJSON layer and bind mouseover and click events
         const geojsonLayer = L.geoJSON(geojsonData, {
             style: {
                 weight: 0,
@@ -290,12 +295,28 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
                             const binIndex = getQuantileBin(materialValue, quantiles[material]);
                             return binIndex;
                         }
-                        return 0;  // Default to 0 if no data
+                        return 0;
                     });
 
                     // Update the rose chart data based on the material data
                     RoseChart.data.datasets[0].data = materialData;
                     RoseChart.update();
+                });
+
+                layer.on('click', () => {
+                    // Extract and display values for all materials with formatted numbers
+                    const materialValues = materials.map(material => {
+                        const materialKey = `binned_data_${material}_sum`;
+                        const rawValue = feature.properties[materialKey];
+                        const formattedValue = rawValue ? formatNumber(rawValue) : 'N/A';
+                        return `${material.charAt(0).toUpperCase() + material.slice(1)}: ${formattedValue}`;
+                    }).join('<br>');
+
+                    // Add a Leaflet popup
+                    const popup = L.popup()
+                        .setLatLng(layer.getBounds().getCenter()) // Center of the hexagon
+                        .setContent(`<strong>Material Values</strong><br>${materialValues}`)
+                        .openOn(mainMap);
                 });
             }
         }).addTo(mainMap);
@@ -306,6 +327,8 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.ge
     .catch(error => {
         console.error('Error loading GeoJSON data:', error);
     });
+
+
 
 
 
@@ -339,7 +362,7 @@ const config = {
                 min: 0,
                 max: 5,
                 grid: {
-                    color: 'rgba(0, 0, 0, 0.2)', 
+                    color: '#bfcdcd', 
                     lineWidth: 1, 
                     z: 1 
                 },
@@ -354,7 +377,7 @@ const config = {
                         return romanNumerals[value]; 
                     },
                     z: 2,
-                    color: 'black',
+                    color: '#8f9a9a',
                     backgroundColor: 'transparent',
                 }
             }
@@ -406,7 +429,9 @@ document.getElementById('toggleGlass').addEventListener('click', () => toggleLay
 document.getElementById('toggleStone').addEventListener('click', () => toggleLayer('Stone'));
 document.getElementById('toggleSteel').addEventListener('click', () => toggleLayer('Steel'));
 
-// Toggle function to change backgroundColor between original color and transparent
+
+
+// Color toggle function----------------------------------------
 function toggleLayer(layer) {
     const layerIndex = data.labels.indexOf(layer);
     
@@ -588,7 +613,8 @@ function updateVersionHistory() {
             let firstVersion = '';
             for (let i = 0; i < lines.length; i++) { 
                 if (lines[i].startsWith('Version')) {
-                    firstVersion = lines[i].trim();
+                    // Extract the version text and remove the date if present
+                    firstVersion = lines[i].split('(')[0].trim();
                     break; 
                 }
             }
@@ -602,6 +628,7 @@ function updateVersionHistory() {
             console.error('Error fetching version history:', error);
         });
 }
+
 
 
 
@@ -766,10 +793,21 @@ function updateStoriesAndFutureDisplay() {
 
 function updateExploreAndLegendDisplay() {
     const shouldDisplay = isExploreActive && isLegendActive;
+
+    // Update the display property for flex layout
+    if (shouldDisplay) {
+        layerControls.style.display = 'flex';
+        layerControls.style.flexWrap = 'wrap'; 
+        layerControls.style.justifyContent = 'space-between'; 
+    } else {
+        layerControls.style.display = 'none';
+    }
+
+    // Update other elements
     updateDisplay(roseChart, shouldDisplay);
     updateDisplay(scrollableTextC, shouldDisplay);
-    updateDisplay(layerControls, shouldDisplay);
 }
+
 
 
 // Function to update content based on second-layer button clicked

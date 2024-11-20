@@ -13,9 +13,10 @@
     <!-- Tutorial -->
     <div id="GuideOverlay" class="overlay">
         <div class="overlay-content">
-            <h2>Welcome to Urban Vein</h2>
-            <p>Each dot represents a type of building material in a 100m hexagon in NYC.</p>
-            <p>This is a quick guide on how to use the site.</p>
+            <h2>Welcome to Urban Vein!</h2>
+            <p>Each dot represents a type of building material in NYC.</p>
+            <p>Use the left panel to access stories and different features.</p>
+            <p>Click on the map to see more building info.</p>
             <label>
             <input type="checkbox" id="dontShowAgain"> Don't show this again
             </label>
@@ -90,7 +91,8 @@
     
         <div id="storiesContentText" class="content-text" style="display: none;">
             <h2>Looking Forward and Backward</h2>
-            <p>Using material data and machine learning, the project maps and analyzes NYC’s built environment through construction materials, uncovering hidden historical trends, current environmental impacts, and future speculations. This material-centric approach provides an unbiased view of the city’s lifecycle—from resource acquisition to disposal—highlighting critical narratives such as demolition patterns, material trends, and underground resources. Ultimately, Urban Vein offers data-driven insights that challenge conventional architectural perspectives and inform the future of sustainable urban development.</p>
+            <p>Urban Vein maps and analyzes NYC through its construction materials, revealing hidden historical trends, current environmental impacts, and future possibilities. This material-focused perspective uncovers the city's lifecycle—from resource extraction to disposal—highlighting demolition patterns, material trends, and untapped underground resources.</p>
+            <p>Below are stories to explore and follow!</p>
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
@@ -105,23 +107,23 @@
 
         <!-- About -->
         <div id="navButtonAContainer" class="navButtonAContainer">
-            <div id="dataButton" class="nav-button-2">Data</div>
-            <div id="mediaButton" class="nav-button-2">Media</div>
-            <div id="refButton" class="nav-button-2">References</div>
+            <div id="dataButton" class="nav-button-2">DATA</div>
+            <div id="mediaButton" class="nav-button-2">MEDIA</div>
+            <div id="refButton" class="nav-button-2">REFERENCES</div>
         </div>
 
         <!-- Stories -->
         <div id="navButtonBContainer" class="navButtonBContainer">
-            <div id="pastButton" class="nav-button-2">Past</div>
-            <div id="presentButton" class="nav-button-2">Present</div>
-            <div id="futureButton" class="nav-button-2">Future</div>
+            <div id="pastButton" class="nav-button-2">PAST</div>
+            <div id="presentButton" class="nav-button-2">PRESENT</div>
+            <div id="futureButton" class="nav-button-2">FUTURE</div>
         </div>
 
         <!-- Explorer -->
         <div id="navButtonCContainer" class="navButtonCContainer">
-            <div id="legendButton" class="nav-button-2">Legend</div>
-            <div id="timelineButton" class="nav-button-2">Timeline</div>
-            <div id="satButton" class="nav-button-2">Maps</div>
+            <div id="legendButton" class="nav-button-2">LEGEND</div>
+            <div id="timelineButton" class="nav-button-2">TIMELINE</div>
+            <div id="satButton" class="nav-button-2">MAPS</div>
         </div>
 
 
@@ -136,11 +138,11 @@
         
 
         <div id="layerControls">
-            <button id="toggleBrick">Brick</button>
-            <button id="toggleConcrete">Concrete</button>
-            <button id="toggleGlass">Glass</button>
-            <button id="toggleStone">Stone</button>
-            <button id="toggleSteel">Steel</button>
+            <button id="toggleBrick">BRICK</button>
+            <button id="toggleConcrete">CONCRETE</button>
+            <button id="toggleGlass">GLASS</button>
+            <button id="toggleStone">STONE</button>
+            <button id="toggleSteel">STEEL</button>
         </div>
         
         <div id="scrollableTextData" class="scrollable-text-data" style="display: none;">
@@ -174,11 +176,11 @@
             <p>
                 This is the visualization exploration process, done in QGIS.
             </p>
-            <h3 id="colloquiumPoster" style="cursor: pointer"><a>Collloquium II Review Poster</a></h3>
+            <h3 id="colloquiumPoster" style="cursor: pointer"><a>Collloquium II: Review Poster</a></h3>
             <p>
                 This is the poster for colloquium II's end of semester review.
             </p>
-            <h3 id="guerillaUrbanism" style="cursor: pointer"><a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">Guerilla Urbanism (External)</a></h3>
+            <h3 id="guerillaUrbanism" style="cursor: pointer"><a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">Colloquium I: Guerilla Urbanism (Link)</a></h3>
             <p>
                 This is colloquium I's project website, which consists of two material-related speculative projects, Booleanify and Balloonify.
             </p>
@@ -204,7 +206,7 @@
                 <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/BAMB_MaterialsPassports_BestPractice.pdf#page=54">Materials Passports - Best Practices</a>
                 <br>
                 by Matthias Heinrich and Werner Lang
-
+                <br><br>
                 <a href="https://www.circularise.com/industry/construction">Circularise</a>
                 <br>
                 by <a href="https://www.circularise.com">Circularise</a>
@@ -221,19 +223,27 @@
 
         <!-- Stories---------------------------------------------- -->
         <div id="scrollableTextPast" class="scrollable-text-stories" style="display: none;">
-            <h3>Historical NYC</h3>
+            <h3><u>Historical NYC</u></h3>
+            <img src="images/placeholder-1.webp" style="width: 100%; height: 90px;">
             <p>Using materials to identify key decisions in city planning and urban development.</p>
+            <h3><u>Demolition Materials</u></h3>
+            <img src="images/placeholder-3.webp" style="width: 100%; height: 90px;">
+            <p>Demolition activity from the 1980s to 2023.</p>
         </div>
         <div id="scrollableTextPresent" class="scrollable-text-stories" style="display: none;">
-            <h3>Underground NYC</h3>
+            <h3><u>Intro to Urban Vein</u></h3>
+            <img src="images/placeholder-5.webp" style="width: 100%; height: 90px;">
+            <p>What is Urban Vein? Why is it important?</p>
+            <h3><u>Underground NYC</u></h3>
+            <img src="images/placeholder-2.webp" style="width: 100%; height: 90px;">
             <p>Concrete foundations.</p>
-            <h3>Demolition Materials</h3>
-            <p>Demolition activity from the 1980s to 2023.</p>
-            <h3>Material Carbon Footprints</h3>
+            <h3><u>Material Carbon Footprints</u></h3>
+            <img src="images/placeholder-4.webp" style="width: 100%; height: 90px;">
             <p>The carbon footprint of our built environment.</p>
         </div>
         <div id="scrollableTextFuture" class="scrollable-text-stories" style="display: none;">
-            <h3>2124: The United Material Kingdoms</h3>
+            <h3><u>2124: The United Material Kingdoms</u></h3>
+            <img src="images/placeholder-5.webp" style="width: 100%; height: 90px;">
             <p>Identifying material clusters.</p>
         </div>
 
@@ -261,11 +271,11 @@
 
         <div class="sidebar-bottom-buttons">
             <div class="button-with-icon">
-                <button id="share" class="sidebar-button">Share</button>
+                <button id="share" class="sidebar-button">SHARE</button>
                 <img src="images/share.png" alt="Share" class="icon">
             </div>
             <div class="button-with-icon">
-                <button id="follow" class="sidebar-button">Follow</button>
+                <button id="follow" class="sidebar-button">CONNECT</button>
                 <img src="images/follow.png" alt="Follow" class="icon">
             </div>
         </div>

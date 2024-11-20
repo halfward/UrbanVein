@@ -1,17 +1,20 @@
 To-Do List:
-- Add placeholder thumbnails for stories.
 - Define corresponding material weight ranges.
 - Different bin sizes for different zoom levels.
 - Apply hexbinned geojson for tooltip info.
-- Guide on how to view the data.
+- Guide
 - Typical typology diagrams (use value + js to dynamically update?)
 - Borough diagram comparisons.
-- Add presentation as a single story. skim swim and dive
-- The chart color doesnt line up with the map.
+- Add presentation as a single story. (do a sidebar popup with different stage buttons & text/diagrams)
+- Put a qr code on the poster.
 
 How can you motivate the problem?
 What anecdotes do you have?
 
+Version Alpha 0.1.6 (2024-11-20)
+- Overall visual & text content update.
+- Replaced placeholder images for stories.
+- Changed the "follow" button to "connect."
 
 Version Alpha 0.1.5 (2024-11-17)
 - Added NJ coastline background.
@@ -19,12 +22,14 @@ Version Alpha 0.1.5 (2024-11-17)
 - Added fullscreen popup for the visualization archive in the media tab.
 - Added a function to turn chart colors transparent based on the material buttons' toggle states.
 - Added info & diagram for buliding material distribution data.
+- Added placeholder images for stories.
 - Adjusted the fullscreen svg icon size.
 - Adjusted the version history layout.
 - Overall layout adjustment incl. text color & blurred sidebar background.
 - Reformatted version history.
 - Changed Urban Vein logo.
 - External links now open new tabs.
+- Fixed the issue where the diagram color doesn't line up with the map colors.
 
 Version Alpha 0.1.4 (2024-11-13)
 - Added real-time spider diagram update function.

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Vein</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
@@ -12,15 +16,19 @@
 <body>
     <!-- Tutorial -->
     <div id="GuideOverlay" class="overlay">
-        <div class="overlay-content">
-            <h2>Welcome to Urban Vein!</h2>
-            <p>Each dot represents a type of building material in NYC.</p>
-            <p>Use the left panel to access stories and different features.</p>
-            <p>Click on the map to see more building info.</p>
-            <label>
+        <div id="OverlayContent" class="overlay-content">
+            <h2 style="margin: 10px 0 0 0;">Welcome to Urban Vein!</h2>
+            
+            <img src="images/intro-image.png" alt="Intro" class="intro">
+            <br>
+            
+            <p style="line-height: 0.3;">Each dot represents a type of building material.</p>
+            <p style="line-height: 0.3;">Click on the map to see more info.</p>
+            <br>
+            <p style="line-height: 0.3; color: #8f9a9a;">Click outside this window to close the guide.</p>
+            <label style="color: #8f9a9a;">
             <input type="checkbox" id="dontShowAgain"> Don't show this again
             </label>
-            <button onclick="closeGuide()">Close</button>
         </div>
     </div>
 
@@ -41,20 +49,28 @@
         <div style="display: flex; align-items: center;">
             <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
 
-            <span id="versionHistoryLink" class="clickable-text" style="margin-top: 18px; color: #bfcdcd; font-size: 0.7rem; display: block;"></span>
+            <span id="versionHistoryLink" class="clickable-text" style="margin-top: 18px; color: #8f9a9a; font-size: 0.8rem; display: block;"></span>
             <!-- Version Popup Modal -->
             <div id="popup" class="popup" style="display: none;">
                 <div class="popup-content">
-                    <span class="close" id="closePopup">&times;</span>
+                    <span class="popupCloseButton" id="closePopup">&times;</span>
                     <p-popup id="versionHistoryContent"></p-popup>
                 </div>
             </div>
             <!-- Material Popup Modal -->
-            <div id="materialPopup" class="popup" style="display: none;">
+            <div id="materialPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
-                    <span class="close" id="closePopup">&times;</span>
+                    <button class="popupCloseButton" id="closePopup">&times;</button>
                     <p-popup>Material info</p-popup>
                     <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/data-diagram.webp" alt="DataDiagram" id="dataDiagram">
+                </div>
+            </div>
+            <!-- Rose Popup Modal -->
+            <div id="rosePopup" class="popup hidden" style="display: none;">
+                <div class="popup-content" style="height: 270px;">
+                    <button class="popupCloseButton" id="closePopup">&times;</button><br>
+                    <p-popup>Early 20th Century Commercial High-Rises<br>Built Year: 1900-1920<br>Type: Commercial<br>Floor Count: 10-20<br>Example: The Flatiron Building</p-popup>
+                    <canvas id="RoseChartRefA"></canvas>
                 </div>
             </div>
         </div>        
@@ -82,7 +98,7 @@
     
         <!-- Content containers -->
         <div id="aboutContentText" class="content-text" style="display: none;">
-            <h2>A Building Material Map Platform</h2>
+            <h2>A Material Map</h2>
             <p>
                 Urban Vein explores the relationships between building materials and their spatial distributions in urban contexts.
             </p>
@@ -90,14 +106,14 @@
         </div>
     
         <div id="storiesContentText" class="content-text" style="display: none;">
-            <h2>Looking Forward and Backward</h2>
+            <h2>Mateirals of Memory and Vision</h2>
             <p>Urban Vein maps and analyzes NYC through its construction materials, revealing hidden historical trends, current environmental impacts, and future possibilities. This material-focused perspective uncovers the city's lifecycle—from resource extraction to disposal—highlighting demolition patterns, material trends, and untapped underground resources.</p>
             <p>Below are stories to explore and follow!</p>
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
             <h2>
-                Building Material Distribution Data
+                Building Material Distribution
                 <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="materialInfo" class="info-icon">
             </h2>
             
@@ -123,7 +139,7 @@
         <div id="navButtonCContainer" class="navButtonCContainer">
             <div id="legendButton" class="nav-button-2">LEGEND</div>
             <div id="timelineButton" class="nav-button-2">TIMELINE</div>
-            <div id="satButton" class="nav-button-2">MAPS</div>
+            <div id="mapsButton" class="nav-button-2">MAPS</div>
         </div>
 
 
@@ -133,6 +149,7 @@
 
         <div id="Chart">
             <canvas id="RoseChart"></canvas>
+            <p style="font-size: 0.9rem; font-weight: 500; position: absolute; margin-top: 180px; margin-left: 245px; color: #bfcdcd;">COMPARE</p>
             <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="roseInfo" class="info-icon">
         </div>
         
@@ -145,7 +162,7 @@
             <button id="toggleSteel">STEEL</button>
         </div>
         
-        <div id="scrollableTextData" class="scrollable-text-data" style="display: none;">
+        <div id="scrollableTextData" class="scrollable-text-about" style="display: none;">
             <p>
                 <h3>Building Material Estimate</h3>
                 NYC buliding material estimate data<br>
@@ -171,7 +188,7 @@
             </p>
         </div>
 
-        <div id="scrollableTextMedia" class="scrollable-text-media" style="display: none;">
+        <div id="scrollableTextMedia" class="scrollable-text-about" style="display: none;">
             <h3 id="visualizationArchive" style="cursor: pointer"><a>Visualization Archive</a></h3>
             <p>
                 This is the visualization exploration process, done in QGIS.
@@ -186,7 +203,7 @@
             </p>
         </div>
 
-        <div id="scrollableTextRef" class="scrollable-text-ref" style="display: none;">
+        <div id="scrollableTextRef" class="scrollable-text-about" style="display: none;">
             <p>
                 <h3>Visualization</h3>
                 <a href="https://climate-conflict.org/www/data-pages/hazards">Climate-Conflict-Vulnerability Index</a>
@@ -231,13 +248,16 @@
             <p>Demolition activity from the 1980s to 2023.</p>
         </div>
         <div id="scrollableTextPresent" class="scrollable-text-stories" style="display: none;">
-            <h3><u>Intro to Urban Vein</u></h3>
+            <div id="scrollytelling-container"></div>
+            <h3 id="introUrbanVein">
+                <u>Intro to Urban Vein</u>
+            </h3>
             <img src="images/placeholder-5.webp" style="width: 100%; height: 90px;">
             <p>What is Urban Vein? Why is it important?</p>
             <h3><u>Underground NYC</u></h3>
             <img src="images/placeholder-2.webp" style="width: 100%; height: 90px;">
             <p>Concrete foundations.</p>
-            <h3><u>Material Carbon Footprints</u></h3>
+            <h3><u>The Carbon Impact of Bulidilng Materials</u></h3>
             <img src="images/placeholder-4.webp" style="width: 100%; height: 90px;">
             <p>The carbon footprint of our built environment.</p>
         </div>
@@ -248,6 +268,19 @@
         </div>
 
         <!-- Explorer------------------------------------------- -->
+        <div id="scrollableTextTimeline" class="scrollable-text-timeline" style="display: none;">
+            <h3>Timeline here</h3>
+        </div>
+
+        <div id="scrollableTextMaps" class="scrollable-text-timeline" style="display: none;">
+            <h3>Add layer order/transparency control here</h3>
+            <h3>Satellite</h3>
+            <h3>OpenStreetMap</h3>
+            <h3>Bedrock Elevation</h3>
+            <h3>Demolition Heatmap</h3>
+            <h3>Material Carbon Footprints</h3>
+        </div>
+
         <div id="scrollableTextC" class="scrollable-text-c" style="display: none;">
             <p>
                 <h3>Quantitative Classification</h3>
@@ -285,7 +318,8 @@
             <path d="M14 7l-7 7 7 7" stroke="currentColor" />
         </svg>
     </button>
-    
+
+
 
     <div id="mainMap"></div>
 

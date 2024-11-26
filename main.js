@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // Guide
 document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('GuideOverlay');
+    const overlayContent = document.getElementById('OverlayContent'); 
     const dontShowAgain = document.getElementById('dontShowAgain');
-    const guideButton = document.getElementById('guideButton'); 
 
     // Check localStorage to see if the overlay should be hidden
     if (!localStorage.getItem('hideGuide')) {
-      overlay.style.display = 'flex'; // Show the overlay if 'hideGuide' is not set
+        overlay.style.display = 'flex'; // Show the overlay if 'hideGuide' is not set
     }
 
     // Function to close the Guide overlay
@@ -28,11 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Event listener
-    guideButton.addEventListener('click', () => {
-        overlay.style.display = 'flex';
+    // Close the overlay when clicking outside of it
+    document.addEventListener('click', (event) => {
+        // Check if the clicked element is outside the overlayContent and overlay is visible
+        if (overlay.style.display === 'flex' && !overlayContent.contains(event.target)) {
+            closeGuide();
+        }
     });
 });
+
+
 
 
 
@@ -193,12 +198,18 @@ document.getElementById('toggleStone').addEventListener('click', () => {
 fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.geojson')
     .then(response => response.json())
     .then(data => {
+        // Check if the #mainMap element has the 'darkmode' class
+        const isDarkMode = document.getElementById('mainMap').classList.contains('darkmode');
+
+        // Set the fillColor based on the dark mode class
+        const fillColor = isDarkMode ? 'grey' : 'white';
+
         // Add the GeoJSON layer with style options to make it a background layer
         const coastlineLayer = L.geoJSON(data, {
             style: {
-                weight: 0,               
-                fillColor: 'white',
-                fillOpacity: .5          
+                weight: 0,                // No border
+                fillColor: fillColor,     // Dynamically set fillColor
+                fillOpacity: .5           // Semi-transparent fill
             }
         }).addTo(mainMap);
 
@@ -213,120 +224,168 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.
 
 
 
-// Adding Hex Geojson for Rose Chart Values & Tooltips
-fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.geojson')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error loading GeoJSON file');
-        }
-        return response.json();
-    })
-    .then(geojsonData => {
-        const materials = ['steel', 'stone', 'glass', 'concrete', 'brick'];
-        let allValues = {};
 
-        // Collect all values for each material across the GeoJSON
-        geojsonData.features.forEach(feature => {
-            materials.forEach(material => {
-                const materialKey = `binned_data_${material}_sum`;
-                const materialValue = feature.properties[materialKey];
-                if (materialValue) {
-                    if (!allValues[material]) {
-                        allValues[material] = [];
+    let lockedData = null; // Variable to store the fixed values when clicked
+    let isHovering = false; // Flag to check if currently hovering over a GeoJSON feature
+    
+    fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.geojson')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error loading GeoJSON file');
+            }
+            return response.json();
+        })
+        .then(geojsonData => {
+            const materials = ['steel', 'stone', 'glass', 'concrete', 'brick'];
+            let allValues = {};
+    
+            // Collect all values for each material across the GeoJSON
+            geojsonData.features.forEach(feature => {
+                materials.forEach(material => {
+                    const materialKey = `binned_data_${material}_sum`;
+                    const materialValue = feature.properties[materialKey];
+                    if (materialValue) {
+                        if (!allValues[material]) {
+                            allValues[material] = [];
+                        }
+                        allValues[material].push(materialValue);
                     }
-                    allValues[material].push(materialValue);
+                });
+            });
+    
+            // Function to calculate quantiles for each material
+            function calculateQuantiles(values, numBins) {
+                values.sort((a, b) => a - b); // Ascending order sort
+                const quantiles = [];
+                for (let i = 1; i <= numBins; i++) {
+                    const index = Math.floor((i / numBins) * values.length);
+                    quantiles.push(values[index]);
+                }
+                return quantiles;
+            }
+    
+            // Calculate quantiles for each material
+            const numBins = 6;
+            const quantiles = {};
+            materials.forEach(material => {
+                quantiles[material] = calculateQuantiles(allValues[material], numBins);
+            });
+    
+            // Function to classify a value into its corresponding quantile bin
+            function getQuantileBin(value, quantiles) {
+                for (let i = 0; i < quantiles.length; i++) {
+                    if (value <= quantiles[i]) {
+                        return i; // Return the class index (0-5)
+                    }
+                }
+                return quantiles.length - 1; // If the value is higher than the last quantile
+            }
+    
+            // Helper function to format large numbers
+            function formatNumber(value) {
+                if (value >= 1e6) {
+                    return (value / 1e6).toFixed(2) + ' million'; 
+                } else if (value >= 1e3) {
+                    return (value / 1e3).toFixed(2) + ' thousand'; 
+                }
+                return value.toString();
+            }
+    
+            // Add geoJSON layer and bind mouseover and click events
+            const geojsonLayer = L.geoJSON(geojsonData, {
+                style: {
+                    weight: 0,
+                    opacity: 0,
+                    fillOpacity: 0
+                },
+                interactive: true,
+                onEachFeature: (feature, layer) => {
+                    layer.on('mouseover', () => {
+                        isHovering = true; // Set hovering flag
+    
+                        // Extract values for the hovered feature
+                        let materialData = materials.map(material => {
+                            const materialKey = `binned_data_${material}_sum`;
+                            const materialValue = feature.properties[materialKey];
+                            if (materialValue) {
+                                const binIndex = getQuantileBin(materialValue, quantiles[material]);
+                                return binIndex;
+                            }
+                            return 0;
+                        });
+    
+                        // Check if all values are 0
+                        const allZero = materialData.every(value => value === 0);
+                        if (allZero && lockedData) {
+                            // Display locked data if all hovered values are 0
+                            RoseChart.data.datasets[0].data = lockedData;
+                        } else {
+                            // Update the rose chart with hovered data
+                            RoseChart.data.datasets[0].data = materialData;
+                        }
+                        RoseChart.update();
+                    });
+    
+                    layer.on('mouseout', () => {
+                        isHovering = false; // Clear hovering flag
+    
+                        // Revert to locked data if no hover data is available
+                        if (lockedData) {
+                            RoseChart.data.datasets[0].data = lockedData;
+                            RoseChart.update();
+                        }
+                    });
+    
+                    layer.on('click', () => {
+                        // Extract and lock values for the clicked feature
+                        const materialData = materials.map(material => {
+                            const materialKey = `binned_data_${material}_sum`;
+                            const materialValue = feature.properties[materialKey];
+                            if (materialValue) {
+                                const binIndex = getQuantileBin(materialValue, quantiles[material]);
+                                return binIndex;
+                            }
+                            return 0;
+                        });
+    
+                        lockedData = materialData;
+    
+                        // Update the rose chart with locked data
+                        RoseChart.data.datasets[0].data = materialData;
+                        RoseChart.update();
+    
+                        const materialValues = materials.map(material => {
+                            const materialKey = `binned_data_${material}_sum`;
+                            const rawValue = feature.properties[materialKey];
+                            const formattedValue = rawValue ? formatNumber(rawValue) : 'N/A';
+                            return `${material.charAt(0).toUpperCase() + material.slice(1)}: ${formattedValue}`;
+                        }).join('<br>');
+    
+                        // Add a Leaflet popup
+                        const popup = L.popup()
+                            .setLatLng(layer.getBounds().getCenter()) // Center of the hexagon
+                            .setContent(`<strong>Average FAR</strong><br><strong>Average Building Age</strong><br><strong>Prominent Building Use</strong><br><strong>Material Values</strong><br>${materialValues}`)
+                            .openOn(mainMap);
+                    });
+                }
+            }).addTo(mainMap);
+    
+            // Handle mousemove outside any GeoJSON features
+            mainMap.on('mousemove', () => {
+                if (!isHovering && lockedData) {
+                    // Revert to locked data when not hovering or all values are 0
+                    RoseChart.data.datasets[0].data = lockedData;
+                    RoseChart.update();
                 }
             });
+    
+            // Set the z-index to ensure it's above any other layers
+            geojsonLayer.setZIndex(10);
+        })
+        .catch(error => {
+            console.error('Error loading GeoJSON data:', error);
         });
-
-        // Function to calculate quantiles for each material
-        function calculateQuantiles(values, numBins) {
-            values.sort((a, b) => a - b); // Ascending order sort
-            const quantiles = [];
-            for (let i = 1; i <= numBins; i++) {
-                const index = Math.floor((i / numBins) * values.length);
-                quantiles.push(values[index]);
-            }
-            return quantiles;
-        }
-
-        // Calculate quantiles for each material
-        const numBins = 6;
-        const quantiles = {};
-        materials.forEach(material => {
-            quantiles[material] = calculateQuantiles(allValues[material], numBins);
-        });
-
-        // Function to classify a value into its corresponding quantile bin
-        function getQuantileBin(value, quantiles) {
-            for (let i = 0; i < quantiles.length; i++) {
-                if (value <= quantiles[i]) {
-                    return i; // Return the class index (0-5)
-                }
-            }
-            return quantiles.length - 1; // If the value is higher than the last quantile
-        }
-
-        // Helper function to format large numbers
-        function formatNumber(value) {
-            if (value >= 1e6) {
-                return (value / 1e6).toFixed(2) + ' million'; 
-            } else if (value >= 1e3) {
-                return (value / 1e3).toFixed(2) + ' thousand'; 
-            }
-            return value.toString();
-        }
-
-        // Add geoJSON layer and bind mouseover and click events
-        const geojsonLayer = L.geoJSON(geojsonData, {
-            style: {
-                weight: 0,
-                opacity: 0,
-                fillOpacity: 0
-            },
-            interactive: true,
-            onEachFeature: (feature, layer) => {
-                layer.on('mouseover', () => {
-                    // Extract values for the hovered feature
-                    let materialData = materials.map(material => {
-                        const materialKey = `binned_data_${material}_sum`;
-                        const materialValue = feature.properties[materialKey];
-                        if (materialValue) {
-                            const binIndex = getQuantileBin(materialValue, quantiles[material]);
-                            return binIndex;
-                        }
-                        return 0;
-                    });
-
-                    // Update the rose chart data based on the material data
-                    RoseChart.data.datasets[0].data = materialData;
-                    RoseChart.update();
-                });
-
-                layer.on('click', () => {
-                    // Extract and display values for all materials with formatted numbers
-                    const materialValues = materials.map(material => {
-                        const materialKey = `binned_data_${material}_sum`;
-                        const rawValue = feature.properties[materialKey];
-                        const formattedValue = rawValue ? formatNumber(rawValue) : 'N/A';
-                        return `${material.charAt(0).toUpperCase() + material.slice(1)}: ${formattedValue}`;
-                    }).join('<br>');
-
-                    // Add a Leaflet popup
-                    const popup = L.popup()
-                        .setLatLng(layer.getBounds().getCenter()) // Center of the hexagon
-                        .setContent(`<strong>Material Values</strong><br>${materialValues}`)
-                        .openOn(mainMap);
-                });
-            }
-        }).addTo(mainMap);
-
-        // Set the z-index to ensure it's above any other layers
-        geojsonLayer.setZIndex(10);
-    })
-    .catch(error => {
-        console.error('Error loading GeoJSON data:', error);
-    });
+    
 
 
 
@@ -362,23 +421,24 @@ const config = {
                 min: 0,
                 max: 5,
                 grid: {
-                    color: '#bfcdcd', 
-                    lineWidth: 1, 
-                    z: 1 
+                    color: '#bfcdcd', // Grid lines color
+                    lineWidth: 1, // Grid line width
+                    z: 1,
+                    circular: true, // Ensures circular grid
                 },
                 angleLines: {
-                    color: 'rgba(0, 0, 0, 0.2)',
+                    color: 'rgba(0, 0, 0, 0.2)', // Angle line color
                     lineWidth: 1,
-                    z: 1 
+                    z: 1,
                 },
                 ticks: {
-                    callback: function(value) {
-                        const romanNumerals = ['NULL','I', 'II', 'III', 'IV', 'V'];
-                        return romanNumerals[value]; 
+                    callback: function (value) {
+                        const romanNumerals = ['NULL', 'I', 'II', 'III', 'IV', 'V'];
+                        return romanNumerals[value]; // Converts numeric values to Roman numerals
                     },
                     z: 2,
-                    color: '#8f9a9a',
-                    backgroundColor: 'transparent',
+                    color: '#8f9a9a', 
+                    padding: 0,
                 }
             }
         },
@@ -387,28 +447,29 @@ const config = {
                 display: false
             },
             tooltip: {
-                backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+                backgroundColor: 'rgba(255, 255, 255, 0.9)', // Tooltip background color
                 titleFont: {
-                    family: 'Bahnschrift, sans-serif', 
+                    family: 'Bahnschrift, sans-serif',
                     size: 14,
                     weight: 'normal'
                 },
-                titleColor: 'black', 
+                titleColor: 'black',
                 bodyFont: {
-                    family: 'Bahnschrift, sans-serif', 
+                    family: 'Bahnschrift, sans-serif',
                     size: 12,
                     weight: 'normal'
                 },
-                bodyColor: 'black', 
-                borderColor: 'rgba(0, 0, 0, 0.1)', 
+                bodyColor: 'black',
+                borderColor: 'rgba(0, 0, 0, 0.1)',
                 borderWidth: 1,
-                cornerRadius: 6, 
-                displayColors: false, 
-                padding: 10 
+                cornerRadius: 6,
+                displayColors: false,
+                padding: 10
             }
         }
     }
 };
+
 
 // Create the chart instance
 const RoseChart = new Chart(document.getElementById('RoseChart'), config);
@@ -469,6 +530,90 @@ function getQuantileBin(value, quantiles) {
 
 
 
+
+
+
+
+const dataA = {
+    labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
+    datasets: [{
+        label: 'Total weight (t)',
+        data: [1, 2, 3, 4, 5],
+        backgroundColor: [
+            '#cc75ff',  // Steel
+            '#6bcbff',  // Stone
+            '#6af1bd',  // Glass
+            '#ffdd32',  // Concrete
+            '#fd8564'   // Brick
+        ],
+        borderWidth: 0
+    }]
+};
+
+const configA = {
+    type: 'polarArea',
+    data: dataA,
+    options: {
+        responsive: false, 
+        maintainAspectRatio: true, 
+        scales: {
+            r: {
+                min: 0,
+                max: 5,
+                grid: {
+                    color: '#bfcdcd',
+                    lineWidth: 1,
+                    z: 1,
+                    circular: true,
+                },
+                angleLines: {
+                    color: 'rgba(0, 0, 0, 0.2)',
+                    lineWidth: 1,
+                    z: 1,
+                },
+                ticks: {
+                    callback: function (value) {
+                        const romanNumerals = ['NULL', 'I', 'II', 'III', 'IV', 'V'];
+                        return romanNumerals[value];
+                    },
+                    z: 2,
+                    color: '#8f9a9a',
+                    padding: 0,
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleFont: {
+                    family: 'Bahnschrift, sans-serif',
+                    size: 14,
+                    weight: 'normal'
+                },
+                titleColor: 'black',
+                bodyFont: {
+                    family: 'Bahnschrift, sans-serif',
+                    size: 12,
+                    weight: 'normal'
+                },
+                bodyColor: 'black',
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1,
+                cornerRadius: 6,
+                displayColors: false,
+                padding: 10
+            }
+        }
+    }
+};
+
+
+
+// Create the chart instance
+const RoseChartRefA = new Chart(document.getElementById('RoseChartRefA'), configA);
 
 
 
@@ -573,15 +718,16 @@ versionHistoryLink.addEventListener('click', function() {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+            console.log('Fetched response:', response); // Log the raw response
             return response.text();
         })
         .then(data => {
-            // Replace newline characters with <br> for line breaks
-            versionHistoryContent.innerHTML = data.replace(/\n/g, '<br>'); 
+            console.log('Fetched data:', data); // Log the fetched text
+            versionHistoryContent.innerHTML = data.replace(/\n/g, '<br>');
             popup.style.display = 'flex';
         })
         .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
+            console.error('Fetch operation error:', error);
         });
 });
 
@@ -612,7 +758,7 @@ function updateVersionHistory() {
             const lines = data.split('\n');
             let firstVersion = '';
             for (let i = 0; i < lines.length; i++) { 
-                if (lines[i].startsWith('Version')) {
+                if (lines[i].startsWith('Alpha')) {
                     // Extract the version text and remove the date if present
                     firstVersion = lines[i].split('(')[0].trim();
                     break; 
@@ -633,27 +779,59 @@ function updateVersionHistory() {
 
 
 // Material Info Popup
-// Get the elements
-const infoIcon = document.getElementById('materialInfo');
-const materialPopup = document.getElementById('materialPopup');
-const closePopup = document.getElementById('closePopup');
+document.addEventListener('DOMContentLoaded', () => {
+    const infoIcon = document.getElementById('materialInfo');
+    const roseInfoIcon = document.getElementById('roseInfo');
+    const materialPopup = document.getElementById('materialPopup');
+    const rosePopup = document.getElementById('rosePopup');
+    const closePopup = document.querySelector('.popupCloseButton'); 
 
-// When the info icon is clicked, show the popup
-infoIcon.addEventListener('click', () => {
-    materialPopup.style.display = 'flex';
+    // Check if the closePopup button exists
+    if (closePopup) {
+        // This listener is for closing the popup when clicking the close button
+        closePopup.addEventListener('click', (event) => {
+            console.log("Close button clicked"); 
+            event.stopPropagation(); // Prevent the click event from bubbling up
+            materialPopup.classList.add('hidden'); // Trigger slide-up animation
+            setTimeout(() => {
+                materialPopup.style.display = 'none'; // Hide
+            }, 500);
+            rosePopup.classList.add('hidden'); // Trigger slide-up animation
+            setTimeout(() => {
+                rosePopup.style.display = 'none'; // Hide
+            }, 500);
+        });
+    } 
+
+    // Show the popup with animation when the info icon is clicked
+    infoIcon.addEventListener('click', () => {
+        console.log("Material popup clicked"); // Debugging
+        materialPopup.classList.remove('hidden');
+        materialPopup.style.display = 'flex'; // Ensure the popup is visible
+    });
+
+    roseInfoIcon.addEventListener('click', () => {
+        console.log("Material popup clicked"); // Debugging
+        rosePopup.classList.remove('hidden');
+        rosePopup.style.display = 'flex'; // Ensure the popup is visible
+    });
+
+    // Optional: Close the popup when clicking outside the content area (this still works)
+    materialPopup.addEventListener('click', (event) => {
+        if (event.target === materialPopup) {
+            closePopup.click();
+        }
+    });
+
+    rosePopup.addEventListener('click', (event) => {
+        if (event.target === rosePopup) {
+            closePopup.click();
+        }
+    });
 });
 
-// When the close button is clicked, hide the popup
-closePopup.addEventListener('click', () => {
-    materialPopup.style.display = 'none';
-});
 
-// Optional: Close the popup if clicking outside the content area
-materialPopup.addEventListener('click', (event) => {
-    if (event.target === materialPopup) {
-        materialPopup.style.display = 'none';
-    }
-});
+
 
 
 
@@ -673,7 +851,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // Function to update content based on button clicked
-    function updateContent(buttonId) {
+    function updatecontentMain(buttonId) {
         // Hide all content divs
         aboutContent.style.display = 'none';
         storiesContent.style.display = 'none';
@@ -710,19 +888,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Attach event listeners to buttons
     document.getElementById('aboutButton').addEventListener('click', function() {
-        updateContent('aboutButton');
+        updatecontentMain('aboutButton');
     });
 
     document.getElementById('storiesButton').addEventListener('click', function() {
-        updateContent('storiesButton');
+        updatecontentMain('storiesButton');
     });
 
     document.getElementById('explorerButton').addEventListener('click', function() {
-        updateContent('explorerButton');
+        updatecontentMain('explorerButton');
     });
 
     // Initialize by showing the Explorer content or any default section
-    updateContent('explorerButton');
+    updatecontentMain('explorerButton');
+    
 });
 
 
@@ -731,25 +910,28 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Second Tab Logic
 
-// Select the main buttons (first layer)
+// Main navigation buttons
 const exploreButton = document.getElementById('explorerButton');
 const aboutButton = document.getElementById('aboutButton');
 const storiesButton = document.getElementById('storiesButton');
 
-// Select all nav-2 buttons (second layer)
+// Second-layer navigation buttons
 const navButtons = document.querySelectorAll('.nav-button-2');
 
-const scrollableTextData = document.getElementById('scrollableTextData'); 
-const scrollableTextMedia = document.getElementById('scrollableTextMedia'); 
-const scrollableTextRef = document.getElementById('scrollableTextRef'); 
+// Content elements
+const scrollableTextData = document.getElementById('scrollableTextData');
+const scrollableTextMedia = document.getElementById('scrollableTextMedia');
+const scrollableTextRef = document.getElementById('scrollableTextRef');
 
-const scrollableTextPast = document.getElementById('scrollableTextPast'); 
-const scrollableTextPresent = document.getElementById('scrollableTextPresent'); 
-const scrollableTextFuture = document.getElementById('scrollableTextFuture'); 
+const scrollableTextPast = document.getElementById('scrollableTextPast');
+const scrollableTextPresent = document.getElementById('scrollableTextPresent');
+const scrollableTextFuture = document.getElementById('scrollableTextFuture');
 
-const scrollableTextC = document.getElementById('scrollableTextC'); 
-const roseChart = document.getElementById('Chart'); 
+const scrollableTextC = document.getElementById('scrollableTextC');
+const roseChart = document.getElementById('Chart');
 const layerControls = document.getElementById('layerControls');
+const scrollableTextTimeline = document.getElementById('scrollableTextTimeline');
+const scrollableTextMaps = document.getElementById('scrollableTextMaps');
 
 // Variables to track button states
 let isExploreActive = false;
@@ -765,12 +947,28 @@ let isPresentActive = false;
 let isFutureActive = false;
 
 let isLegendActive = false;
+let isTimelineActive = false;
+let isMapsActive = false;
 
-
+// Helper function to toggle element visibility
 function updateDisplay(element, condition) {
     element.style.display = condition ? 'block' : 'none';
 }
 
+// Reset all second-layer content visibility
+function resetSecondLayerContent() {
+    const allSecondLayerContent = [
+        scrollableTextData, scrollableTextMedia, scrollableTextRef,
+        scrollableTextPast, scrollableTextPresent, scrollableTextFuture,
+        scrollableTextC, roseChart, layerControls,
+        scrollableTextTimeline, scrollableTextMaps
+    ];
+    allSecondLayerContent.forEach(content => {
+        if (content) content.style.display = 'none';
+    });
+}
+
+// Update individual display groups
 function updateAboutAndDataDisplay() {
     updateDisplay(scrollableTextData, isAboutActive && isDataActive);
 }
@@ -797,8 +995,8 @@ function updateExploreAndLegendDisplay() {
     // Update the display property for flex layout
     if (shouldDisplay) {
         layerControls.style.display = 'flex';
-        layerControls.style.flexWrap = 'wrap'; 
-        layerControls.style.justifyContent = 'space-between'; 
+        layerControls.style.flexWrap = 'wrap';
+        layerControls.style.justifyContent = 'space-between';
     } else {
         layerControls.style.display = 'none';
     }
@@ -807,130 +1005,117 @@ function updateExploreAndLegendDisplay() {
     updateDisplay(roseChart, shouldDisplay);
     updateDisplay(scrollableTextC, shouldDisplay);
 }
+function updateExploreAndTimelineDisplay() {
+    updateDisplay(scrollableTextTimeline, isExploreActive && isTimelineActive);
+}
+function updateExploreAndMapsDisplay() {
+    updateDisplay(scrollableTextMaps, isExploreActive && isMapsActive);
+}
+
+// Function to update display elements based on active states
+function updateDisplays() {
+    resetSecondLayerContent(); // Reset all second-layer content visibility
+    updateAboutAndDataDisplay();
+    updateAboutAndMediaDisplay();
+    updateAboutAndRefDisplay();
+    updateStoriesAndPastDisplay();
+    updateStoriesAndPresentDisplay();
+    updateStoriesAndFutureDisplay();
+    updateExploreAndLegendDisplay();
+    updateExploreAndTimelineDisplay();
+    updateExploreAndMapsDisplay();
+}
+
+// Helper function to manage active button states
+function setActiveButton(buttonId) {
+    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
+    const activeButton = document.getElementById(buttonId);
+    if (activeButton) {
+        activeButton.classList.add('active'); // Add 'active' to the specified button
+    }
+}
+
+// Reset layer states when switched to another major tab
+function resetSecondLayerStates() {
+    isDataActive = false;
+    isMediaActive = false;
+    isRefActive = false;
+    isPastActive = false;
+    isPresentActive = false;
+    isFutureActive = false;
+    isLegendActive = false;
+    isTimelineActive = false;
+    isMapsActive = false;
+}
 
 
+// Event listeners for main navigation buttons
+exploreButton.addEventListener('click', () => {
+    resetSecondLayerStates();
+    isExploreActive = true;
+    isAboutActive = false;
+    isStoriesActive = false;
+    isLegendActive = true;
+    setActiveButton('legendButton'); // Set legendButton as active
+    updateDisplays();
+});
 
-// Function to update content based on second-layer button clicked
+aboutButton.addEventListener('click', () => {
+    resetSecondLayerStates();
+    isAboutActive = true;
+    isExploreActive = false;
+    isStoriesActive = false;
+    isDataActive = true;
+    setActiveButton('dataButton'); // Set dataButton as active
+    updateDisplays();
+});
+
+storiesButton.addEventListener('click', () => {
+    resetSecondLayerStates();
+    isStoriesActive = true;
+    isExploreActive = false;
+    isAboutActive = false;
+    isPastActive = true;
+    setActiveButton('pastButton'); // Set pastButton as active
+    updateDisplays();
+});
+
+// Add click event listeners to nav-2 buttons
+navButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        setActiveButton(button.id); // Update active state for clicked button
+        updateContent(button.id);
+    });
+});
+
+// Function to handle content updates
 function updateContent(buttonId) {
     console.log('Updating content for:', buttonId);
 
     // Set active states based on button ID
-    isDataActive = (buttonId === 'dataButton'); 
-    isMediaActive = (buttonId === 'mediaButton'); 
+    isDataActive = (buttonId === 'dataButton');
+    isMediaActive = (buttonId === 'mediaButton');
     isRefActive = (buttonId === 'refButton');
 
     isPastActive = (buttonId === 'pastButton');
     isPresentActive = (buttonId === 'presentButton');
     isFutureActive = (buttonId === 'futureButton');
 
-    isLegendActive = (buttonId === 'legendButton'); 
-    
+    isLegendActive = (buttonId === 'legendButton');
+    isTimelineActive = (buttonId === 'timelineButton');
+    isMapsActive = (buttonId === 'mapsButton');
 
-    // Update the display elements for different states
-    updateAboutAndDataDisplay();
-    updateAboutAndMediaDisplay();
-    updateAboutAndRefDisplay();
-
-    updateStoriesAndPastDisplay();
-    updateStoriesAndPresentDisplay();
-    updateStoriesAndFutureDisplay();
-
-    updateExploreAndLegendDisplay();
+    // Update display elements based on states
+    updateDisplays();
 }
 
-// Add click event listeners to main navigation buttons to track About, Stories, and Explore states
-exploreButton.addEventListener('click', () => {
-    isExploreActive = true;   // Set Explore as active
-    isAboutActive = false;    // Unset About
-    isStoriesActive = false;  // Unset Stories
-
-    // Automatically activate the legendButton
-    isLegendActive = true;
-    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
-    document.getElementById('legendButton').classList.add('active'); // Add 'active' to legendButton
-
-    updateAboutAndDataDisplay();
-    updateAboutAndMediaDisplay();
-    updateAboutAndRefDisplay();
-
-    updateStoriesAndPastDisplay();
-    updateStoriesAndPresentDisplay();
-    updateStoriesAndFutureDisplay();
-
-    updateExploreAndLegendDisplay();
-});
-
-aboutButton.addEventListener('click', () => {
-    isAboutActive = true;    // Set About as active
-    isExploreActive = false; // Unset Explore
-    isStoriesActive = false; // Unset Stories
-
-    // Automatically activate the dataButton
-    isDataActive = true;
-    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
-    document.getElementById('dataButton').classList.add('active'); // Add 'active' to dataButton
-
-    updateAboutAndDataDisplay();
-    updateAboutAndMediaDisplay();
-    updateAboutAndRefDisplay();
-
-    updateStoriesAndPastDisplay();
-    updateStoriesAndPresentDisplay();
-    updateStoriesAndFutureDisplay();
-    
-    updateExploreAndLegendDisplay();
-});
+// Set default states on page load
+isExploreActive = true;
+isLegendActive = true;
+setActiveButton('legendButton'); 
+updateDisplays(); // Update displays based on default state
 
 
-storiesButton.addEventListener('click', () => {
-    isAboutActive = false;   // Unset About
-    isExploreActive = false; // Unset Explore
-    isStoriesActive = true;  // Set Stories as active
-
-    // Automatically activate the pastButton
-    isPastActive = true;
-    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
-    document.getElementById('pastButton').classList.add('active'); // Add 'active' to pastButton
-
-    updateAboutAndDataDisplay();
-    updateAboutAndMediaDisplay();
-    updateAboutAndRefDisplay();
-
-    updateStoriesAndPastDisplay();
-    updateStoriesAndPresentDisplay();
-    updateStoriesAndFutureDisplay();
-    
-    updateExploreAndLegendDisplay();
-});
-
-// Add click event listener to each second-layer button in navButtonAContainer, navButtonBContainer, and navButtonCContainer
-navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        console.log('Button clicked:', button.id); // Debug log
-        // Remove 'active' class from all buttons
-        navButtons.forEach(btn => btn.classList.remove('active'));
-
-        // Add 'active' class to the clicked button
-        button.classList.add('active');
-
-        // Update content based on the selected button
-        updateContent(button.id);
-    });
-});
-
-// Set initial states on page load
-isExploreActive = true; // Pre-select Explore as active
-isLegendActive = true;  // Pre-select Legend as active
-document.getElementById('legendButton').classList.add('active'); 
-updateAboutAndDataDisplay();
-updateAboutAndMediaDisplay();
-updateAboutAndRefDisplay();
-
-updateStoriesAndPastDisplay();
-updateStoriesAndPresentDisplay();
-updateStoriesAndFutureDisplay();
-    
-updateExploreAndLegendDisplay();
 
 
 
@@ -1107,3 +1292,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         });
     });
+
+
+
+
+
+// Dynamic Scrollable Text Height - Explorer
+    function updateMaxHeightExplorer() {
+        const totalHeight =
+            (document.querySelector('#logo')?.offsetHeight || 0) +
+            (document.querySelector('#aboutButton')?.offsetHeight || 0) +
+            (document.querySelector('#exploreContentText')?.offsetHeight || 0) +
+            (document.querySelector('#navButtonCContainer')?.offsetHeight || 0) +
+            (document.querySelector('#layerControls')?.offsetHeight || 0) +
+            (document.querySelector('.sidebar-bottom-buttons')?.offsetHeight || 0) +
+            308;
+    
+        const scrollableTextElement = document.querySelector('.scrollable-text-c'); // Target element
+        if (scrollableTextElement) {
+            scrollableTextElement.style.maxHeight = `calc(100vh - ${totalHeight}px)`;
+        }
+    }
+    
+    // Run on page load
+    updateMaxHeightExplorer();
+    
+    // Add event listener to handle dynamic resizing
+    window.addEventListener('resize', updateMaxHeightExplorer);

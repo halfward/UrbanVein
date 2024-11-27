@@ -1,81 +1,82 @@
-To-Do List:
-- ***Other 4 boroughs.
-- Define corresponding material weight ranges.
-- Different bin sizes for different zoom levels.
-- Apply hexbinned geojson for tooltip info.
-- Guide button doesn't work now.
-- Typical typology diagrams (use value + js to dynamically update?)
-- Borough diagram comparisons.
-- Use Scrollama to add presentation as a single story.
-- Put a qr code on the poster.
+to-do list:
+- ***other 4 boroughs.
+- chart.js tooltip should display material weight ranges.
+- different bin sizes for different zoom levels.
+- apply hexbinned geojson for tooltip info.
+- guide button doesn't work now.
+- typical typology diagrams (use value + js to dynamically update?)
+- borough diagram comparisons.
+- use scrollama to add presentation as a single story.
+- put a qr code on the poster.
 - use maplibre instead of leaflet.
-How can you motivate the problem?
-What anecdotes do you have?
+how can you motivate the problem?
+what anecdotes do you have?
 
-Alpha 0.2.1 (2024-11-24)
-- Added guide screen diagram.
-- Added rose chart popup space with page-switching function.
-- Added example rose charts.
-- Added a function where the rose chart will lock its data when you click on the map.
-- Added dynamic scrollable text height for Explorer
-- Removed guide screen close button.
-- Adjusted the guide screen close function.
-- Adusted the popup display & animation.
-- Changed font family to Roboto Condensed for better browsing experience across all platforms.
-- Fixed the popup close function for the rose chart.
+alpha 0.2.1 (2024-11-24)
+- added guide screen diagram.
+- added rose chart popup space with page-switching function.
+- added example rose charts.
+- added a function where the rose chart will lock its data when you click on the map.
+- added dynamic scrollable text height for explorer
+- removed guide screen close button.
+- adjusted the guide screen close function.
+- adusted the popup display & animation.
+- adjusted the overall visual & text color scheme.
+- changed font family to roboto condensed for better browsing experience across all platforms.
+- fixed the popup close function for the rose chart.
 
-Alpha 0.2.0 (2024-11-20)
-- Overall visual & text content update.
-- Replaced placeholder images for stories.
-- Changed the "follow" button to "connect."
-- Fixed the bug where non-default tab content will show up when switching major tabs.
+alpha 0.2.0 (2024-11-20)
+- overall visual & text content update.
+- replaced placeholder images for stories.
+- changed the "follow" button to "connect."
+- fixed the bug where non-default tab content will show up when switching major tabs.
 
-Alpha 0.1.5 (2024-11-17)
-- Added NJ coastline background.
-- Added data, media, and stories content.
-- Added fullscreen popup for the visualization archive in the media tab.
-- Added a function to turn chart colors transparent based on the material buttons' toggle states.
-- Added info & diagram for buliding material distribution data.
-- Added placeholder images for stories.
-- Adjusted the fullscreen svg icon size.
-- Adjusted the version history layout.
-- Overall layout adjustment incl. text color & blurred sidebar background.
-- Reformatted version history.
-- Changed Urban Vein logo.
-- External links now open new tabs.
-- Fixed the issue where the diagram color doesn't line up with the map colors.
+alpha 0.1.5 (2024-11-17)
+- added nj coastline background.
+- added data, media, and stories content.
+- added fullscreen popup for the visualization archive in the media tab.
+- added a function to turn chart colors transparent based on the material buttons' toggle states.
+- added info & diagram for buliding material distribution data.
+- added placeholder images for stories.
+- adjusted the fullscreen svg icon size.
+- adjusted the version history layout.
+- overall layout adjustment incl. text color & blurred sidebar background.
+- reformatted version history.
+- changed urban vein logo.
+- external links now open new tabs.
+- fixed the issue where the diagram color doesn't line up with the map colors.
 
-Alpha 0.1.4 (2024-11-13)
-- Added real-time spider diagram update function.
-- Added guide screen and button.
-- Added tabs for about and stories sections.
-- Added reference content (precedents).
-- Adjusted the tab display.
+alpha 0.1.4 (2024-11-13)
+- added real-time spider diagram update function.
+- added guide screen and button.
+- added tabs for about and stories sections.
+- added reference content (precedents).
+- adjusted the tab display.
 
-Alpha 0.1.3 (2024-11-11)
-- Map change: Switched back from a QGIS WGS84 map to d3 dots.
-- Map change: Applied layer hard light blend modes and an overall map hard light blend mode.
-- Added layer toggle buttons.
-- Added dark mode and fullscreen toggles.
-- Added zoom buttons.
-- Added a rose chart.
-- Adjusted the tooltip from appearing on hover to click (right now the click only registers the circle not the hex).
-- Adjusted the tooltip contents.
+alpha 0.1.3 (2024-11-11)
+- map change: switched back from a qgis wgs84 map to d3 dots.
+- map change: applied layer hard light blend modes and an overall map hard light blend mode.
+- added layer toggle buttons.
+- added dark mode and fullscreen toggles.
+- added zoom buttons.
+- added a rose chart.
+- adjusted the tooltip from appearing on hover to click (right now the click only registers the circle not the hex).
+- adjusted the tooltip contents.
 
-Alpha 0.1.2 (2024-11-06)
-- Map change: Switched from d3 dots to a QGIS WGS84 map.
-- Map change: Added a white rectangle behind map.png for hard light display.
-- Map change: Added hex_all.geojson for tooltip info on hover.
-- Map change: Added min/max zoom and map bounds.
-- Removed satellite map function.
+alpha 0.1.2 (2024-11-06)
+- map change: switched from d3 dots to a qgis wgs84 map.
+- map change: added a white rectangle behind map.png for hard light display.
+- map change: added hex_all.geojson for tooltip info on hover.
+- map change: added min/max zoom and map bounds.
+- removed satellite map function.
 
-Alpha 0.1.1 (2024-11-04)
-- Added satellite function (WIP).
-- Added Legend, Timeline, and Satellite tabs under the EXPLORER tab.
-- Added scrollable content for the Legend tab.
-- Added version history window.
-- Map change: Added concrete, stone, brick, and glass d3 dots onto the base map.
-- Map change: Added new-york-city-boroughs.geojson as a basemap background.
+alpha 0.1.1 (2024-11-04)
+- added satellite function (wip).
+- added legend, timeline, and satellite tabs under the explorer tab.
+- added scrollable content for the legend tab.
+- added version history window.
+- map change: added concrete, stone, brick, and glass d3 dots onto the base map.
+- map change: added new-york-city-boroughs.geojson as a basemap background.
 
-Alpha 0.1.0 (2024-11-02)
-- Initial release with a collapsable sidebar and a steel base map.
+alpha 0.1.0 (2024-11-02)
+- initial release with a collapsable sidebar and a steel base map.

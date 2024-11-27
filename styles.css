@@ -238,7 +238,7 @@ p-popup {
     cursor: pointer; 
     text-align: center; 
     transition: color 0.3s ease; 
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.9rem;
     position: relative; 
     background-color: transparent; 
@@ -343,7 +343,6 @@ p-popup {
     background-color: transparent
 }
 .nav-button-2.active {
-    color: #b0bdbd;
     background-color: transparent;
     border-bottom: transparent;
     z-index: 1005;
@@ -393,9 +392,10 @@ p-popup {
     margin-top: 25px;
 }
 .content-text h2{
-    color: #333;
+    color: #8f9a9a;
     font-weight: regular;
     font-size: 1rem;
+    font-weight: 500;
 }
 .content-text p {
     color: #8f9a9a;
@@ -404,8 +404,8 @@ p-popup {
 }
 h3 {
     font-size: 0.9rem;
-    color: #585f5f;
-    font-weight: 700;
+    color: #8f9a9a;
+    font-weight: 500;
 }
 
 /* Info icon----------------------------------------- */
@@ -527,16 +527,16 @@ canvas {
 #toggleGlass,
 #toggleConcrete,
 #toggleStone {
-    color: #585f5f; 
+    color: black; 
     padding: 0 10px; 
     padding-top: 2px;
     padding-bottom: 1px;
     border: 0px; 
     border-radius: 5px;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 0.7rem;
     cursor: pointer;
-    background-color: #dd75ff;
+    background-color: #ec49fd;
     font-family: 'Roboto Condensed', sans-serif;
     transform: translateX(40px);
     box-sizing: border-box; 
@@ -545,19 +545,19 @@ canvas {
 }
 
 #toggleBrick {
-    background-color: #fd8564;
+    background-color: #f96947;
 }
 #toggleGlass {
-    background-color: #6af1bd;
+    background-color: #49fcd7;
 }
 #toggleConcrete {
-    background-color: #ffdd32;
+    background-color: #ddfa47;
 }
 #toggleStone {
-    background-color: #6bcbff;
+    background-color: #49b1fd;
 }
 #layerControls button:hover {
-    padding-top: 5px;
+    padding-top: 4px;
     padding-bottom: 3px;
     margin-top: -4px;
 }
@@ -734,7 +734,7 @@ canvas {
     transition: background-color 0.3s ease, color 0.3s ease; /* Added color transition */
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 600;
     box-sizing: border-box;
     text-indent: 15px; 
 }

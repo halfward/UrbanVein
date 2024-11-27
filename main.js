@@ -61,11 +61,11 @@ const mainMap = L.map('mainMap', {
 
 
 const materialColors = {
-    steel: '#b200ff',    // Purple for steel
-    brick: '#ff3829',    // Orange for brick
-    concrete: '#ffe300', // Yellow for concrete
-    glass: '#39fa7a',    // Green for glass
-    stone: '#007bff'     // Blue for stone
+    steel: '#d100ff',    // Purple for steel 
+    brick: '#ff3100',    // Orange for brick 
+    concrete: '#d7ff00', // Yellow for concrete 
+    glass: '#00ff93',    // Green for glass 
+    stone: '#005cff'     // Blue for stone 
 };
 const materialOffsets = {
     brick: { lat: 0.0003, lng: -0.0004 },     // Upper left
@@ -400,11 +400,11 @@ const data = {
         label: 'Total weight (t)',
         data: [0, 0, 0, 0, 0],  // Initialize with zero
         backgroundColor: [
-            '#cc75ff',  // Steel
-            '#6bcbff',  // Stone
-            '#6af1bd',  // Glass
-            '#ffdd32',  // Concrete
-            '#fd8564'   // Brick
+            '#ec49fd',  // Steel
+            '#49b1fd',  // Stone
+            '#49fcd7',  // Glass
+            '#ddfa47',  // Concrete
+            '#f96947'   // Brick
         ],
         borderWidth: 0
     }]
@@ -476,11 +476,11 @@ const RoseChart = new Chart(document.getElementById('RoseChart'), config);
 
 // Original colors for each layer
 const originalColors = {
-    Brick: '#fd8564',
-    Concrete: '#ffdd32',
-    Glass: '#6af1bd',
-    Stone: '#6bcbff',
-    Steel: '#cc75ff'
+    Brick: '#f95447',
+    Concrete: '#ddfa47',
+    Glass: '#49fcd7',
+    Stone: '#49b1fd',
+    Steel: '#b247fa'
 };
 
 // Add event listeners to the buttons to toggle the layers' visibility
@@ -774,7 +774,7 @@ function updateVersionHistory() {
             const lines = data.split('\n');
             let firstVersion = '';
             for (let i = 0; i < lines.length; i++) { 
-                if (lines[i].startsWith('Alpha')) {
+                if (lines[i].startsWith('alpha')) {
                     // Extract the version text and remove the date if present
                     firstVersion = lines[i].split('(')[0].trim();
                     break; 

@@ -12,17 +12,17 @@ body {
 
 /* Change the background and text color when text is selected */
 ::selection {
-    background-color: #ffcc00; 
+    background-color: #dfdfdf; 
     color: #000000; 
 }
 /* For Webkit browsers (Chrome, Safari, etc.), you can target them specifically */
 ::-webkit-selection {
-    background-color: #ffcc00;
+    background-color: #dfdfdf;
     color: #000000;
 }
 /* For Firefox */
 ::-moz-selection {
-    background-color: #ffcc00;
+    background-color: #dfdfdf;
     color: #000000;
 }
 
@@ -186,7 +186,6 @@ a:active {
     scrollbar-color: #bfcdcd transparent;
     transform: translateY(-150%); 
     animation: slideDownContent 0.5s ease forwards; 
-    /* pointer-events: auto; */
 }
 
 
@@ -443,7 +442,7 @@ h3 {
 #RoseChartRefA, #RoseChartRefB, #RoseChartRefC {
     width: 180px;
     margin: 0 auto;
-    margin-top: 190px;
+    margin-top: 170px;
     display: block;
     position: absolute;
     left: 50%;
@@ -545,7 +544,7 @@ canvas {
 }
 
 #toggleBrick {
-    background-color: #f96947;
+    background-color: #ff785a;
 }
 #toggleGlass {
     background-color: #49fcd7;
@@ -618,19 +617,16 @@ canvas {
     scrollbar-color: #bfcdcd transparent;
 }
 
-/* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
-.scrollable-text::-webkit-scrollbar {
-    width: 4px;
+.scrollable-text-c::-webkit-scrollbar-thumb {
+    background-color: #8f9a9a; /* Thumb color */
+    border-radius: 1px; /* Round corners */
+    border: 1px solid transparent; /* Padding around the thumb */
+    box-sizing: border-box; /* Ensures the border is included in the dimensions */
 }
 
-.scrollable-text::-webkit-scrollbar-track {
+.scrollable-text-c::-webkit-scrollbar-track {
     background: transparent; /* Transparent track */
-}
-
-.scrollable-text::-webkit-scrollbar-thumb {
-    background-color: #8f9a9a; /* Color of the scrollbar */
-    border-radius: 10px; /* Rounded scrollbar thumb */
-    border: 1px solid transparent; /* Adds slight padding around the thumb */
+    border-radius: 10px; /* Match the thumb's corners */
 }
 
 

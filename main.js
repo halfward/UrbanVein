@@ -395,16 +395,16 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.
 // Rose Chart------------------------------------------------------------
 // Initial chart data with original colors
 const data = {
-    labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
+    labels: ['STEEL', 'STONE', 'GLASS', 'CONCRETE', 'BRICK'],
     datasets: [{
-        label: 'Total weight (t)',
+        label: 'density level',
         data: [0, 0, 0, 0, 0],  // Initialize with zero
         backgroundColor: [
             '#ec49fd',  // Steel
             '#49b1fd',  // Stone
             '#49fcd7',  // Glass
             '#ddfa47',  // Concrete
-            '#f96947'   // Brick
+            '#ff785a'   // Brick
         ],
         borderWidth: 0
     }]
@@ -449,13 +449,13 @@ const config = {
             tooltip: {
                 backgroundColor: 'rgba(255, 255, 255, 0.9)', // Tooltip background color
                 titleFont: {
-                    family: 'Bahnschrift, sans-serif',
+                    family: 'Roboto Condensed, sans-serif',
                     size: 14,
                     weight: 'normal'
                 },
                 titleColor: 'black',
                 bodyFont: {
-                    family: 'Bahnschrift, sans-serif',
+                    family: 'Roboto Condensed, sans-serif',
                     size: 12,
                     weight: 'normal'
                 },
@@ -476,11 +476,11 @@ const RoseChart = new Chart(document.getElementById('RoseChart'), config);
 
 // Original colors for each layer
 const originalColors = {
-    Brick: '#f95447',
+    Brick: '#ff785a',
     Concrete: '#ddfa47',
     Glass: '#49fcd7',
     Stone: '#49b1fd',
-    Steel: '#b247fa'
+    Steel: '#ec49fd'
 };
 
 // Add event listeners to the buttons to toggle the layers' visibility
@@ -538,14 +538,14 @@ function createDataObject(dataValues) {
     return {
         labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
         datasets: [{
-            label: 'Total weight (t)',
+            label: 'density level',
             data: dataValues,
             backgroundColor: [
-                '#cc75ff',  // Steel
-                '#6bcbff',  // Stone
-                '#6af1bd',  // Glass
-                '#ffdd32',  // Concrete
-                '#fd8564'   // Brick
+                '#ec49fd',  // Steel
+                '#49b1fd',  // Stone
+                '#49fcd7',  // Glass
+                '#ddfa47',  // Concrete
+                '#ff785a'   // Brick
             ],
             borderWidth: 0
         }]
@@ -598,13 +598,13 @@ function createPolarAreaConfig(data) {
                 tooltip: {
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     titleFont: {
-                        family: 'Bahnschrift, sans-serif',
+                        family: 'Roboto Condensed, sans-serif',
                         size: 14,
                         weight: 'normal'
                     },
                     titleColor: 'black',
                     bodyFont: {
-                        family: 'Bahnschrift, sans-serif',
+                        family: 'Roboto Condensed, sans-serif',
                         size: 12,
                         weight: 'normal'
                     },

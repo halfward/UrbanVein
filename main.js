@@ -533,87 +533,103 @@ function getQuantileBin(value, quantiles) {
 
 
 
+// Rose Chart References
+function createDataObject(dataValues) {
+    return {
+        labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
+        datasets: [{
+            label: 'Total weight (t)',
+            data: dataValues,
+            backgroundColor: [
+                '#cc75ff',  // Steel
+                '#6bcbff',  // Stone
+                '#6af1bd',  // Glass
+                '#ffdd32',  // Concrete
+                '#fd8564'   // Brick
+            ],
+            borderWidth: 0
+        }]
+    };
+}
 
-const dataA = {
-    labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
-    datasets: [{
-        label: 'Total weight (t)',
-        data: [1, 2, 3, 4, 5],
-        backgroundColor: [
-            '#cc75ff',  // Steel
-            '#6bcbff',  // Stone
-            '#6af1bd',  // Glass
-            '#ffdd32',  // Concrete
-            '#fd8564'   // Brick
-        ],
-        borderWidth: 0
-    }]
-};
+// Creating the data objects
+const dataA = createDataObject([1, 2, 3, 4, 5]);
+const dataB = createDataObject([5, 4, 3, 4, 5]);
+const dataC = createDataObject([1, 2, 2, 3, 2]);
 
-const configA = {
-    type: 'polarArea',
-    data: dataA,
-    options: {
-        responsive: false, 
-        maintainAspectRatio: true, 
-        scales: {
-            r: {
-                min: 0,
-                max: 5,
-                grid: {
-                    color: '#bfcdcd',
-                    lineWidth: 1,
-                    z: 1,
-                    circular: true,
-                },
-                angleLines: {
-                    color: 'rgba(0, 0, 0, 0.2)',
-                    lineWidth: 1,
-                    z: 1,
-                },
-                ticks: {
-                    callback: function (value) {
-                        const romanNumerals = ['NULL', 'I', 'II', 'III', 'IV', 'V'];
-                        return romanNumerals[value];
+
+function createPolarAreaConfig(data) {
+    return {
+        type: 'polarArea',
+        data: data,
+        options: {
+            responsive: false, 
+            maintainAspectRatio: true, 
+            scales: {
+                r: {
+                    min: 0,
+                    max: 5,
+                    grid: {
+                        color: '#bfcdcd',
+                        lineWidth: 1,
+                        z: 1,
+                        circular: true,
                     },
-                    z: 2,
-                    color: '#8f9a9a',
-                    padding: 0,
+                    angleLines: {
+                        color: 'rgba(0, 0, 0, 0.2)',
+                        lineWidth: 1,
+                        z: 1,
+                    },
+                    ticks: {
+                        callback: function (value) {
+                            const romanNumerals = ['NULL', 'I', 'II', 'III', 'IV', 'V'];
+                            return romanNumerals[value];
+                        },
+                        z: 2,
+                        color: '#8f9a9a',
+                        padding: 0,
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleFont: {
+                        family: 'Bahnschrift, sans-serif',
+                        size: 14,
+                        weight: 'normal'
+                    },
+                    titleColor: 'black',
+                    bodyFont: {
+                        family: 'Bahnschrift, sans-serif',
+                        size: 12,
+                        weight: 'normal'
+                    },
+                    bodyColor: 'black',
+                    borderColor: 'rgba(0, 0, 0, 0.1)',
+                    borderWidth: 1,
+                    cornerRadius: 6,
+                    displayColors: false,
+                    padding: 10
                 }
             }
-        },
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                titleFont: {
-                    family: 'Bahnschrift, sans-serif',
-                    size: 14,
-                    weight: 'normal'
-                },
-                titleColor: 'black',
-                bodyFont: {
-                    family: 'Bahnschrift, sans-serif',
-                    size: 12,
-                    weight: 'normal'
-                },
-                bodyColor: 'black',
-                borderColor: 'rgba(0, 0, 0, 0.1)',
-                borderWidth: 1,
-                cornerRadius: 6,
-                displayColors: false,
-                padding: 10
-            }
         }
-    }
-};
+    };
+}
 
+// Creating the configurations
+const configA = createPolarAreaConfig(dataA);
+const configB = createPolarAreaConfig(dataB);
+const configC = createPolarAreaConfig(dataC);
 
 
 // Create the chart instance
 const RoseChartRefA = new Chart(document.getElementById('RoseChartRefA'), configA);
+const RoseChartRefB = new Chart(document.getElementById('RoseChartRefB'), configB);
+const RoseChartRefC = new Chart(document.getElementById('RoseChartRefC'), configC);
 
 
 
@@ -778,13 +794,15 @@ function updateVersionHistory() {
 
 
 
-// Material Info Popup
+
+
+// Material popup
 document.addEventListener('DOMContentLoaded', () => {
     const infoIcon = document.getElementById('materialInfo');
     const roseInfoIcon = document.getElementById('roseInfo');
     const materialPopup = document.getElementById('materialPopup');
     const rosePopup = document.getElementById('rosePopup');
-    const closePopup = document.querySelector('.popupCloseButton'); 
+    const closePopup = document.getElementById('collapsePopup'); 
 
     // Check if the closePopup button exists
     if (closePopup) {
@@ -805,18 +823,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show the popup with animation when the info icon is clicked
     infoIcon.addEventListener('click', () => {
-        console.log("Material popup clicked"); // Debugging
+        console.log("Material popup clicked"); 
         materialPopup.classList.remove('hidden');
         materialPopup.style.display = 'flex'; // Ensure the popup is visible
     });
 
     roseInfoIcon.addEventListener('click', () => {
-        console.log("Material popup clicked"); // Debugging
+        console.log("Rose popup clicked"); 
         rosePopup.classList.remove('hidden');
         rosePopup.style.display = 'flex'; // Ensure the popup is visible
     });
 
-    // Optional: Close the popup when clicking outside the content area (this still works)
+    // Optional: Close the popup when clicking outside the content area
     materialPopup.addEventListener('click', (event) => {
         if (event.target === materialPopup) {
             closePopup.click();
@@ -829,6 +847,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 
 
 
@@ -1319,3 +1338,33 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Add event listener to handle dynamic resizing
     window.addEventListener('resize', updateMaxHeightExplorer);
+
+
+
+
+
+// Rose Chart Refs
+    const slides = document.querySelectorAll('.popup-slide');
+    let currentIndex = 0;
+    
+    // Update slide visibility
+    function updateSlides() {
+        slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === currentIndex);
+        });
+    }
+    
+    // Navigation buttons
+    document.getElementById('prevSlide').addEventListener('click', () => {
+        currentIndex = (currentIndex === 0) ? slides.length - 1 : currentIndex - 1;
+        updateSlides();
+    });
+    
+    document.getElementById('nextSlide').addEventListener('click', () => {
+        currentIndex = (currentIndex === slides.length - 1) ? 0 : currentIndex + 1;
+        updateSlides();
+    });
+    
+    // Initialize the first slide as active
+    updateSlides();
+    

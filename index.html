@@ -57,6 +57,7 @@
                     <p-popup id="versionHistoryContent"></p-popup>
                 </div>
             </div>
+
             <!-- Material Popup Modal -->
             <div id="materialPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
@@ -65,14 +66,30 @@
                     <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/data-diagram.webp" alt="DataDiagram" id="dataDiagram">
                 </div>
             </div>
+
             <!-- Rose Popup Modal -->
             <div id="rosePopup" class="popup hidden" style="display: none;">
-                <div class="popup-content" style="height: 270px;">
-                    <button class="popupCloseButton" id="closePopup">&times;</button><br>
-                    <p-popup>Early 20th Century Commercial High-Rises<br>Built Year: 1900-1920<br>Type: Commercial<br>Floor Count: 10-20<br>Example: The Flatiron Building</p-popup>
-                    <canvas id="RoseChartRefA"></canvas>
+                <div class="popup-content" style="height: 283px; overflow: hidden;">
+                    <div class="popup-slider">
+                        <div class="popup-slide active">
+                            <p-popup><h3 style="margin-top: 0;">Early 20th Century Commercial High-Rises</h3>Built Year: 1900-1920<br>Floor Count: 10-20<br>Example: The Flatiron Building</p-popup>
+                            <canvas id="RoseChartRefA"></canvas>
+                        </div>
+                        <div class="popup-slide">
+                            <p-popup><h3 style="margin-top: 0;">Early 20th Century Commercial High-Rises</h3>Built Year: 1900-1920<br>Floor Count: 10-20<br>Example: The Flatiron Building</p-popup>
+                            <canvas id="RoseChartRefB"></canvas>
+                        </div>
+                        <div class="popup-slide">
+                            <p-popup><h3 style="margin-top: 0;">Early 20th Century Commercial High-Rises</h3>Built Year: 1900-1920<br>Floor Count: 10-20<br>Example: The Flatiron Building</p-popup>
+                            <canvas id="RoseChartRefC"></canvas>
+                        </div>
+                    </div>
+                    <button class="popupCloseButton" id="collapsePopup">&times;</button>
+                    <button id="prevSlide" class="popup-arrow">⯇</button>
+                    <button id="nextSlide" class="popup-arrow">⯈</button>
                 </div>
             </div>
+
         </div>        
         <div class="nav-button" id="aboutButton">ABOUT</div>
         <div class="nav-button" id="storiesButton">STORIES</div>
@@ -149,8 +166,8 @@
 
         <div id="Chart">
             <canvas id="RoseChart"></canvas>
-            <p style="font-size: 0.9rem; font-weight: 500; position: absolute; margin-top: 180px; margin-left: 245px; color: #bfcdcd;">COMPARE</p>
-            <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="roseInfo" class="info-icon">
+            <p id="roseInfo" style="font-size: 0.9rem; font-weight: 500; position: absolute; margin-top: 180px; margin-left: 245px; color: #bfcdcd;">COMPARE<img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info"  class="info-icon"></p>
+            
         </div>
         
 

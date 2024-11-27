@@ -8,14 +8,13 @@ To-Do List:
 - Borough diagram comparisons.
 - Use Scrollama to add presentation as a single story.
 - Put a qr code on the poster.
-- Bug: popup close function.
 - use maplibre instead of leaflet.
 How can you motivate the problem?
 What anecdotes do you have?
 
 Alpha 0.2.1 (2024-11-24)
 - Added guide screen diagram.
-- Added rose chart popup space.
+- Added rose chart popup space with page-switching function.
 - Added example rose charts.
 - Added a function where the rose chart will lock its data when you click on the map.
 - Added dynamic scrollable text height for Explorer
@@ -23,6 +22,7 @@ Alpha 0.2.1 (2024-11-24)
 - Adjusted the guide screen close function.
 - Adusted the popup display & animation.
 - Changed font family to Roboto Condensed for better browsing experience across all platforms.
+- Fixed the popup close function for the rose chart.
 
 Alpha 0.2.0 (2024-11-20)
 - Overall visual & text content update.

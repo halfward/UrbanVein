@@ -6,8 +6,8 @@
     <title>URBAN VEIN</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
@@ -17,7 +17,7 @@
     <!-- Tutorial -->
     <div id="GuideOverlay" class="overlay">
         <div id="OverlayContent" class="overlay-content">
-            <h2 style="margin: 10px 0 0 0;">welcome to URBAN VEIN</h2>
+            <h2 style="margin: 10px 0 0 0;">URBAN VEIN</h2>
             
             <img src="images/intro-image.png" alt="Intro" class="intro">
             <br>
@@ -72,7 +72,7 @@
                 <div class="popup-content" style="height: 255px; overflow: hidden;">
                     <div class="popup-slider">
                         <div class="popup-slide active">
-                            <p-popup><h3 style="margin: 0;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
+                            <p-popup><h3 style="margin: 0; font-size: 0.8rem;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
                             <canvas id="RoseChartRefA"></canvas>
                         </div>
                         <div class="popup-slide">
@@ -85,17 +85,18 @@
                         </div>
                     </div>
                     <button class="popupCloseButton" id="collapsePopup">&times;</button>
-                    <button id="prevSlide" class="popup-arrow">⯇</button>
-                    <button id="nextSlide" class="popup-arrow">⯈</button>
+                    <button id="prevSlide" class="popup-arrow">⦉</button>
+                    <button id="nextSlide" class="popup-arrow">⦊</button>
                 </div>
             </div>
 
         </div>        
+        
         <div class="nav-button" id="aboutButton">ABOUT</div>
         <div class="nav-button" id="storiesButton">STORIES</div>
         <div class="nav-button" id="explorerButton">EXPLORER</div>
+        <div class="options-icon" id="optionsIcon">🞳</div>
 
-        <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/options.svg" alt="Options" id="optionsIcon" class="options-icon">
         <div id="options-popup" class="options-popup-content">
             <button class="popup-button" id="fullscreenButton">
                 <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/fullscreen.svg" alt="Fullscreen Icon" class="popup-icon"">
@@ -115,25 +116,20 @@
     
         <!-- Content containers -->
         <div id="aboutContentText" class="content-text" style="display: none;">
-            <h2>a material map</h2>
+            <h2>▘brick by brick</h2>
             <p>
                 URBAN VEIN is a student project across three semesters developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>. the project was guided by faculty members (in semester & alphabetical orders) william martin, violet witney, laura kurgan, snoweria zhang, catherine griffith, and seth thompson.</p>
         </div>
     
         <div id="storiesContentText" class="content-text" style="display: none;">
-            <h2>materials of memory & vision</h2>
+            <h2>▘of memory & vision</h2>
             <p>URBAN VEIN uses building materials to analyze nyc's material lifecycle and investigate hidden historical trends, current environmental impacts, and future possibilities.</p>
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
-            <h2>
-                building material distribution
-                <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="materialInfo" class="info-icon">
-            </h2>
-            
+            <h2>▘building material distribution</h2>
             <p>this map combines <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a> with inferred building typologies and uses machine learning to create a material dataset.</p>
         </div>
-        <br>
 
         <!-- About -->
         <div id="navButtonAContainer" class="navButtonAContainer">
@@ -163,7 +159,7 @@
 
         <div id="Chart">
             <canvas id="RoseChart"></canvas>
-            <p id="roseInfo" style="font-size: 0.9rem; font-weight: 500; position: absolute; margin-top: 180px; margin-left: 245px; color: #bfcdcd;">COMPARE<img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info"  class="info-icon"></p>
+            <p id="roseInfo" style="font-size: 0.9rem; font-weight: 500; position: absolute; margin-top: 180px; margin-left: 238px; color: #bfcdcd;">compare<img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info"  class="info-icon"></p>
             
         </div>
         
@@ -177,79 +173,88 @@
         </div>
         
         <div id="scrollableTextData" class="scrollable-text-about" style="display: none;">
-            <p>
-                <h3>Building Material Estimate</h3>
-                NYC buliding material estimate data<br>
-                by Hao Lee
+                <h3>material estimate<img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="materialInfo" class="info-icon"></h3>
+                nyc buliding material estimate data<br>
+                by hao lee
                 
                 <h3>base map</h3>
-                <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC PLUTO Data</a><br>
-                by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
+                <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a><br>
+                by <a href="https://www.nyc.gov/site/planning/index.page">nyc department of city planning</a>
                 <br><br>
-                <a href="https://github.com/CityOfNewYork/nyc-geo-metadata/blob/main/Metadata/Metadata_BuildingFootprints.md">NYC Building Footprints</a><br>
-                by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
+                <a href="https://github.com/CityOfNewYork/nyc-geo-metadata/blob/main/Metadata/Metadata_BuildingFootprints.md">nyc building footprints</a><br>
+                by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
 
-                <h3>Base Map Background</h3>
-                <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">New York State Civil Boundaries</a><br>
-                by <a href="https://gis.ny.gov/">New York State GIS Resources</a>
+                <h3>base map background</h3>
+                <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">new york state civil boundaries</a><br>
+                by <a href="https://gis.ny.gov/">new york state gis resources</a>
                 <br><br>
-                <a href="https://gisdata-njdep.opendata.arcgis.com/datasets/3a79b8275ec64325999738b64be8fa14_8/explore?showTable=true">Coastline (2012) of New Jersey</a><br>
-                by <a href="https://gisdata-njdep.opendata.arcgis.com/">NJDEP Bureau of GIS</a>
+                <a href="https://gisdata-njdep.opendata.arcgis.com/datasets/3a79b8275ec64325999738b64be8fa14_8/explore?showTable=true">coastline (2012) of new jersey</a><br>
+                by <a href="https://gisdata-njdep.opendata.arcgis.com/">njdep bureau of gis</a>
 
-                <h3>Stories</h3>
-                <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">Construction Demolition Registrants</a><br>
-                by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
-            </p>
+                <h3>stories</h3>
+                <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">construction demolition registrants</a><br>
+                by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
         </div>
 
         <div id="scrollableTextMedia" class="scrollable-text-about" style="display: none;">
-            <h3 id="visualizationArchive" style="cursor: pointer"><a>Visualization Archive</a></h3>
+            <h3 id="visualizationArchive" style="cursor: pointer"><a>visualization archive</a></h3>
             <p>
-                This is the visualization exploration process, done in QGIS.
+                one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
             </p>
-            <h3 id="colloquiumPoster" style="cursor: pointer"><a>Collloquium II: Review Poster</a></h3>
+            <h3 id="colloquiumPoster" style="cursor: pointer"><a>collloquium ii: review poster</a></h3>
             <p>
-                This is the poster for colloquium II's end of semester review.
+                this is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece.
             </p>
-            <h3 id="guerillaUrbanism" style="cursor: pointer"><a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">Colloquium I: Guerilla Urbanism (Link)</a></h3>
+            <h3 id="guerillaUrbanism" style="cursor: pointer"><a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism (link)</a></h3>
             <p>
-                This is colloquium I's project website, which consists of two material-related speculative projects, Booleanify and Balloonify.
+                this is colloquium i's project website, which consists of two material-related speculative projects, booleanify and balloonify.
             </p>
         </div>
 
         <div id="scrollableTextRef" class="scrollable-text-about" style="display: none;">
-            <p>
-                <h3>Visualization</h3>
-                <a href="https://climate-conflict.org/www/data-pages/hazards">Climate-Conflict-Vulnerability Index</a>
-                <br>
-                by <a href="https://truth-and-beauty.net/">Moritz Stefaner</a>
+            
+                <h3>graphic/visuals</h3>
+                <p>
+                    <a href="https://climate-conflict.org/www/data-pages/hazards">climate-conflict-vulnerability index</a>
+                    <br>
+                    by <a href="https://truth-and-beauty.net/">moritz stefaner</a>
+                    <br><br>
+                    <a href="https://www.marathonthegame.com/y3vmGPNRxH3RNTqLkq5PFXZy">marathon</a>
+                    <br>
+                    by <a href="https://www.bungie.net/7">bungie</a>
+                </p>
 
-                <h3>Mapping Platform</h3>
-                <a href="https://mappinghny.com/?lng=-73.9760&lat=40.7220&zoom=12.50&maps=[{%22center%22:{%22lat%22:40.722,%22lng%22:-73.976},%22demographicOpacity%22:1,%22demographicsFilters%22:{},%22filters%22:{},%22layers%22:[{%22id%22:%22dwellings-dot-density-birthplace%22,%22dotDensityValues%22:[{%22label%22:%22England+and+Scotland%22,%22dotDensityColor%22:%22%23FBD44A%22,%22fieldName%22:%22bpl_4_41000%22},{%22label%22:%22Ireland%22,%22dotDensityColor%22:%22%23EC8457%22,%22fieldName%22:%22bpl_4_41400%22},{%22label%22:%22Russia%22,%22dotDensityColor%22:%22%23F17CBA%22,%22fieldName%22:%22bpl_3_46999%22},{%22label%22:%22Germany%22,%22dotDensityColor%22:%22%235AC2CD%22,%22fieldName%22:%22bpl_4_45300%22},{%22label%22:%22Caribbean+%26+West+Indies%22,%22dotDensityColor%22:%22%2367D78D%22,%22fieldName%22:%22bpl_2_14%22},{%22label%22:%22Italy%22,%22dotDensityColor%22:%22%23DE92F1%22,%22fieldName%22:%22bpl_4_43400%22}]}],%22rasterOpacity%22:1,%22year%22:%221880%22,%22zoom%22:12.5}]&rasterOpacity0=1">Mapping Historical New York</a>
-                <br>
-                by <a href="https://c4sr.columbia.edu/">Center for Spatial Research</a>
-                <br><br>
-                <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">NYC Construction Dashboard 2022</a>
-                <br>
-                by DOB Analytics
+                <h3>mapping platform</h3>
+                <p>
+                    <a href="https://mappinghny.com/?lng=-73.9760&lat=40.7220&zoom=12.50&maps=[{%22center%22:{%22lat%22:40.722,%22lng%22:-73.976},%22demographicOpacity%22:1,%22demographicsFilters%22:{},%22filters%22:{},%22layers%22:[{%22id%22:%22dwellings-dot-density-birthplace%22,%22dotDensityValues%22:[{%22label%22:%22England+and+Scotland%22,%22dotDensityColor%22:%22%23FBD44A%22,%22fieldName%22:%22bpl_4_41000%22},{%22label%22:%22Ireland%22,%22dotDensityColor%22:%22%23EC8457%22,%22fieldName%22:%22bpl_4_41400%22},{%22label%22:%22Russia%22,%22dotDensityColor%22:%22%23F17CBA%22,%22fieldName%22:%22bpl_3_46999%22},{%22label%22:%22Germany%22,%22dotDensityColor%22:%22%235AC2CD%22,%22fieldName%22:%22bpl_4_45300%22},{%22label%22:%22Caribbean+%26+West+Indies%22,%22dotDensityColor%22:%22%2367D78D%22,%22fieldName%22:%22bpl_2_14%22},{%22label%22:%22Italy%22,%22dotDensityColor%22:%22%23DE92F1%22,%22fieldName%22:%22bpl_4_43400%22}]}],%22rasterOpacity%22:1,%22year%22:%221880%22,%22zoom%22:12.5}]&rasterOpacity0=1">mapping historical new york</a>
+                    <br>
+                    by <a href="https://c4sr.columbia.edu/">center for spatial research</a>
+                    <br><br>
+                    <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">nyc construction dashboard 2022</a>
+                    <br>
+                    by dob analytics
+                </p>
 
-                <h3>Material Estimation & Circular Economy</h3>
-                <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/BAMB_MaterialsPassports_BestPractice.pdf#page=54">Materials Passports - Best Practices</a>
-                <br>
-                by Matthias Heinrich and Werner Lang
-                <br><br>
-                <a href="https://www.circularise.com/industry/construction">Circularise</a>
-                <br>
-                by <a href="https://www.circularise.com">Circularise</a>
-                <br><br>
-                <a href="https://www.zillow.com/z/zestimate/">Zestimate</a>
-                <br>
-                by <a href="https://www.zillow.com">Zillow</a>
+                <h3>material estimation & circular economy</h3>
+                <p>
+                    <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/bamb_materialspassports_bestpractice.pdf#page=54">materials passports - best practices</a>
+                    <br>
+                    by matthias heinrich and werner lang
+                    <br><br>
+                    <a href="https://www.circularise.com/industry/construction">circularise</a>
+                    <br>
+                    by <a href="https://www.circularise.com">circularise</a>
+                    <br><br>
+                    <a href="https://www.zillow.com/z/zestimate/">zestimate</a>
+                    <br>
+                    by <a href="https://www.zillow.com">zillow</a>
+                </p>
 
-                <h3>Speculation</h3>
-                <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">Roadmap 2050</a><br>
-                by <a href="https://www.oma.com/">OMA</a>
-            </p>
+                <h3>speculation</h3>
+                <p>
+                    <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">roadmap 2050</a><br>
+                    by <a href="https://www.oma.com/">oma</a>
+                </p>
         </div> 
 
         <!-- Stories---------------------------------------------- -->
@@ -296,24 +301,24 @@
         </div>
 
         <div id="scrollableTextC" class="scrollable-text-c" style="display: none;">
-            <p>
+
                 <h3>quantitative classification</h3>
                 this map uses individual quantile classifications for each material instead of a universal one. this decision is based on several key considerations:
                 <br><br>
-                <h3>- data precision and integrity</h3>
+                <h3>data precision and integrity</h3>
                 uncertainty of the data: the dataset we are working with is based on approximations and educated estimates rather than precise measurements. as such, it is essential to avoid creating over-confident visual representations that could imply a level of accuracy that the data does not possess.
                 avoiding over-interpretation: by using separate bins for each material, we ensure that the inherent fuzziness and uncertainty of the data are accurately represented. this prevents the data from being interpreted as more definitive or certain than it actually is.
                 <br><br>
-                <h3>- material weight differences</h3>
+                <h3>material weight differences</h3>
                 inherent disparities in material properties: different materials, such as steel, concrete, or brick, have vastly different weights and properties. these differences make it inaccurate to compare the values of one material to another using a universal bin. a direct comparison between materials could distort the understanding of their distribution, as the weight and volume of each material influence its presence in the dataset.
                 material-specific comparisons: instead, by using separate bins for each material, we ensure that each material’s distribution is evaluated within its own context. this method allows for an accurate comparison of a single material against its own distribution, ensuring that variations in material properties do not skew the analysis.
                 <br><br>
-                <h3>- enabling meaningful comparison</h3>
+                <h3>enabling meaningful comparison</h3>
                 local vs. citywide comparison: the use of individual bins allows for a more granular comparison of material distributions. for instance, when comparing a specific region's material composition to that of the entire city of new york, this approach ensures that the data reflects the unique characteristics of each material while still situating it in the context of the broader urban landscape.
                 contextual analysis: by separating the bins for each material, users can directly compare the relative prevalence of materials in a given area with citywide averages, offering deeper insights into regional material characteristics and urban trends.
                 <br><br>
-                <h3>- enhanced analytical flexibility</h3>
-                customizable binning: using distinct bins for each material allows for flexibility in data analysis. the ability to adjust the number of bins or reclassify values within each material’s category enables more nuanced visualizations and tailored interpretations, ensuring that the presentation of the data is both relevant and insightful.</p>
+                <h3>enhanced analytical flexibility</h3>
+                customizable binning: using distinct bins for each material allows for flexibility in data analysis. the ability to adjust the number of bins or reclassify values within each material’s category enables more nuanced visualizations and tailored interpretations, ensuring that the presentation of the data is both relevant and insightful.
         </div>
 
         <div class="sidebar-bottom-buttons">

@@ -65,7 +65,7 @@ const materialColors = {
     brick: '#ff3100',    // Orange for brick 
     concrete: '#d7ff00', // Yellow for concrete 
     glass: '#00ff93',    // Green for glass 
-    stone: '#005cff'     // Blue for stone 
+    stone: '#007bff'     // Blue for stone 
 };
 const materialOffsets = {
     brick: { lat: 0.0003, lng: -0.0004 },     // Upper left
@@ -204,16 +204,23 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.
         // Set the fillColor based on the dark mode class
         const fillColor = isDarkMode ? 'grey' : 'white';
 
-        // Add the GeoJSON layer with style options to make it a background layer
+        // Create a custom pane for the GeoJSON layer
+        const blurPane = mainMap.createPane('blurPane');
+        blurPane.style.zIndex = 10; // Adjust z-index to place behind interactive layers
+        blurPane.style.pointerEvents = 'none'; // Allow interactions to pass through
+
+        // Add the GeoJSON layer to the custom pane
         const coastlineLayer = L.geoJSON(data, {
             style: {
                 weight: 0,                // No border
                 fillColor: fillColor,     // Dynamically set fillColor
-                fillOpacity: .5           // Semi-transparent fill
-            }
+                fillOpacity: 0.5          // Semi-transparent fill
+            },
+            pane: 'blurPane'             // Attach to the custom pane
         }).addTo(mainMap);
 
-        coastlineLayer.bringToBack(); 
+        // Bring the GeoJSON layer to the back
+        coastlineLayer.bringToBack();
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
 
@@ -225,6 +232,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.
 
 
 
+// Geojson Hex Data
     let lockedData = null; // Variable to store the fixed values when clicked
     let isHovering = false; // Flag to check if currently hovering over a GeoJSON feature
     
@@ -401,7 +409,7 @@ const data = {
         data: [0, 0, 0, 0, 0],  // Initialize with zero
         backgroundColor: [
             '#ec49fd',  // Steel
-            '#49b1fd',  // Stone
+            '#60bdff',  // Stone
             '#49fcd7',  // Glass
             '#ddfa47',  // Concrete
             '#ff785a'   // Brick
@@ -449,13 +457,13 @@ const config = {
             tooltip: {
                 backgroundColor: 'rgba(255, 255, 255, 0.9)', // Tooltip background color
                 titleFont: {
-                    family: 'Roboto Condensed, sans-serif',
+                    family: 'Poppins, sans-serif',
                     size: 14,
                     weight: 'normal'
                 },
                 titleColor: 'black',
                 bodyFont: {
-                    family: 'Roboto Condensed, sans-serif',
+                    family: 'Poppins, sans-serif',
                     size: 12,
                     weight: 'normal'
                 },
@@ -479,7 +487,7 @@ const originalColors = {
     Brick: '#ff785a',
     Concrete: '#ddfa47',
     Glass: '#49fcd7',
-    Stone: '#49b1fd',
+    Stone: '#60bdff',
     Steel: '#ec49fd'
 };
 
@@ -542,7 +550,7 @@ function createDataObject(dataValues) {
             data: dataValues,
             backgroundColor: [
                 '#ec49fd',  // Steel
-                '#49b1fd',  // Stone
+                '#60bdff',  // Stone
                 '#49fcd7',  // Glass
                 '#ddfa47',  // Concrete
                 '#ff785a'   // Brick
@@ -598,13 +606,13 @@ function createPolarAreaConfig(data) {
                 tooltip: {
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     titleFont: {
-                        family: 'Roboto Condensed, sans-serif',
+                        family: 'Poppins, sans-serif',
                         size: 14,
                         weight: 'normal'
                     },
                     titleColor: 'black',
                     bodyFont: {
-                        family: 'Roboto Condensed, sans-serif',
+                        family: 'Poppins, sans-serif',
                         size: 12,
                         weight: 'normal'
                     },
@@ -1325,7 +1333,7 @@ document.addEventListener("DOMContentLoaded", () => {
             (document.querySelector('#navButtonCContainer')?.offsetHeight || 0) +
             (document.querySelector('#layerControls')?.offsetHeight || 0) +
             (document.querySelector('.sidebar-bottom-buttons')?.offsetHeight || 0) +
-            308;
+            305.5;
     
         const scrollableTextElement = document.querySelector('.scrollable-text-c'); // Target element
         if (scrollableTextElement) {

@@ -8,6 +8,7 @@ to-do list:
 - borough diagram comparisons.
 - use scrollama to add presentation as a single story.
 - put a qr code on the poster.
+- use popup for visualization archive.
 - use maplibre instead of leaflet.
 how can you motivate the problem?
 what anecdotes do you have?
@@ -22,7 +23,7 @@ alpha 0.2.1 (2024-11-24)
 - adjusted the guide screen close function.
 - adusted the popup display & animation.
 - adjusted the overall visual & text color scheme.
-- changed font family to roboto condensed for better browsing experience across all platforms.
+- changed font family to poppins for better browsing experience across all platforms.
 - fixed the popup close function for the rose chart.
 
 alpha 0.2.0 (2024-11-20)

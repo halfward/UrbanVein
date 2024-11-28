@@ -7,7 +7,8 @@ body, html {
 }
 
 body {
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1rem;
 }
 
 /* Change the background and text color when text is selected */
@@ -58,8 +59,12 @@ body {
 
 /* Link Style ---------------------------------------------- */
 a {
-    color: #8f9a9a;
-    text-decoration: underline; 
+    color: #585f5f !important;
+    background-color: #dee1e4;
+    text-decoration: none; 
+}
+a:hover {
+    color: black !important;
 }
 a:visited {
     color: #8f9a9a;
@@ -82,7 +87,7 @@ a:active {
     top: 0;
     width: 360px;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(15px); 
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
     z-index: 1000;
@@ -215,7 +220,7 @@ a:active {
 }
 
 p-popup {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     position: absolute;
     color: #8f9a9a;
 }
@@ -231,13 +236,13 @@ p-popup {
 /* Navigation--------------------------------------------------- */
 .nav-button {
     display: inline-block; 
-    padding: 3px 14px; 
+    padding: 3px 10px; 
     margin: 3px; 
     color: #8f9a9a; 
     cursor: pointer; 
     text-align: center; 
     transition: color 0.3s ease; 
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.9rem;
     position: relative; 
     background-color: transparent; 
@@ -250,7 +255,7 @@ p-popup {
     position: relative;
 }
 
-.nav-button:hover {
+.nav-button:hover, #optionsIcon:hover {
     color: black;
 }
 
@@ -290,17 +295,18 @@ p-popup {
 }
 
 
-.options-icon {
-    width: 12px; 
-    height: 12px; 
-    margin-left: 15px; 
+#optionsIcon {
+    display: inline-block;
+    vertical-align: middle; 
+    margin-left: 14px;
     cursor: pointer; 
     transition: fill 0.3s ease; 
-    filter: brightness(80%);
+    color: #8f9a9a;
+    font-size: 1.1rem;
+    transition: color 0.3s ease; 
+    transform: translateY(-1px); 
 }
-.options-icon:hover {
-    filter: brightness(0) saturate(100%) invert(0%);
-}
+
 
 
 .navButtonAContainer,
@@ -362,7 +368,7 @@ p-popup {
     position: absolute;
     width: 35px;
     border: none;
-    height: 1px;
+    height: 1.5px;
     background-color: #bfcdcd;
     transform: translateY(-9.5px);
     text-align:left;
@@ -372,7 +378,7 @@ p-popup {
     position: absolute;
     width: 35px;
     border: none;
-    height: 1px;
+    height: 1.5px;
     background-color: #bfcdcd;
     transform: translateY(-9.5px) translateX(325px);
     text-align:left;
@@ -388,24 +394,37 @@ p-popup {
     transition: opacity 0.5s ease; 
     width: 290px; 
     margin-left: 35px; 
-    margin-top: 25px;
+    margin-top: 30px;
 }
 .content-text h2{
-    color: #8f9a9a;
+    color: #585f5f;
     font-weight: regular;
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 .content-text p {
     color: #8f9a9a;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 400;
 }
 h3 {
     font-size: 0.9rem;
-    color: #8f9a9a;
+    color: #585f5f;
     font-weight: 500;
+    margin-bottom: 0.5rem;
 }
+p {
+    margin-top: 0;
+    margin-bottom: 2rem;
+    font-size: 0.8rem;
+}
+.scrollable-text-about p, .scrollable-text-about a, .scrollable-text-stories p, .scrollable-text-stories a, .scrollable-text-timeline p, .scrollable-text-timeline a {
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+
+
 
 /* Info icon----------------------------------------- */
 .info-icon {
@@ -415,6 +434,7 @@ h3 {
     margin-left: 3px;
     transition: fill 0.3s ease; 
     filter: invert(0);
+    transform: translateY(-2px);
 }
 
 #materialInfo {
@@ -425,6 +445,7 @@ h3 {
     margin-top: 180px;
     transition: 0.2s ease;
     cursor: pointer; 
+
 }
 #roseInfo:hover {
     filter: brightness(0) saturate(100%) invert(0%);
@@ -469,7 +490,7 @@ canvas {
 #collapsePopup {
     position: absolute;
     cursor: pointer;
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 1.5rem;
     font-weight: 500;
     color: #bfcdcd;
@@ -492,13 +513,13 @@ canvas {
 
 .popup-arrow {
     position: absolute;
-    top: 58%;
-    font-size: 1.2rem;
+    top: 54%;
+    font-size: 1.8rem;
     color: #bfcdcd;
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 16px;
+    padding: 20px;
     z-index: 10;
 }
 
@@ -526,25 +547,30 @@ canvas {
 #toggleGlass,
 #toggleConcrete,
 #toggleStone {
-    color: black; 
-    padding: 0 10px; 
-    padding-top: 2px;
+    flex-grow: 1;
+    color: #585f5f; 
+    padding-top: 1px;
     padding-bottom: 1px;
     border: 0px; 
-    border-radius: 5px;
-    font-weight: 500;
-    font-size: 0.7rem;
+    border-radius: 0px;
+    font-weight: 600;
+    font-size: 0.75rem;
     cursor: pointer;
-    background-color: #ec49fd;
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Poppins', sans-serif;
     transform: translateX(40px);
     box-sizing: border-box; 
     line-height: 1.5; 
     transition: padding-top 0.3s ease, padding-bottom 0.3s ease,margin 0.3s ease; 
 }
-
+#toggleSteel {
+    background-color: #ec49fd;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
 #toggleBrick {
     background-color: #ff785a;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 #toggleGlass {
     background-color: #49fcd7;
@@ -553,12 +579,12 @@ canvas {
     background-color: #ddfa47;
 }
 #toggleStone {
-    background-color: #49b1fd;
+    background-color: #60bdff;
 }
 #layerControls button:hover {
     padding-top: 4px;
     padding-bottom: 3px;
-    margin-top: -4px;
+    margin-top: -5px;
 }
 #layerControls button.off {
     background-color: transparent;
@@ -566,69 +592,39 @@ canvas {
 
 
 /* Scroll Text------------------------------------------- */
-.scrollable-text-about {
-    width: 275px;
-    margin-top: 15px;
-    margin-left: 40px;
-    max-height: calc(100vh - 487px);
-    overflow-y: auto;
-    color: #8f9a9a;
-    font-size: 0.9rem;
-    border-bottom: 1.5px solid #e1e7e7;
-    padding-right: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #bfcdcd transparent;
-}
-.scrollable-text-stories {
-    width: 275px;
-    margin-top: 15px;
-    margin-left: 40px;
-    max-height: calc(100vh - 453px);
-    overflow-y: auto;
-    color: #8f9a9a;
-    font-size: 0.9rem;
-    padding-right: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #bfcdcd transparent;
-}
-.scrollable-text-timeline {
-    width: 275px;
-    margin-top: 15px;
-    margin-left: 40px;
-    max-height: calc(100vh - 371px);
-    overflow-y: auto;
-    color: #8f9a9a;
-    font-size: 0.9rem;
-    padding-right: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #bfcdcd transparent;
-}
+.scrollable-text-about,
+.scrollable-text-stories,
+.scrollable-text-timeline,
 .scrollable-text-c {
     width: 275px;
-    margin-top: 260px;
+    margin-top: 15px;
     margin-left: 40px;
     overflow-y: auto;
     color: #8f9a9a;
-    font-size: 0.9rem;
-    border-top: 1.5px solid #e1e7e7;
-    border-bottom: 1.5px solid #e1e7e7;
+    font-size: 0.8rem;
     padding-right: 10px;
     scrollbar-width: thin;
     scrollbar-color: #bfcdcd transparent;
 }
 
-.scrollable-text-c::-webkit-scrollbar-thumb {
-    background-color: #8f9a9a; /* Thumb color */
-    border-radius: 1px; /* Round corners */
-    border: 1px solid transparent; /* Padding around the thumb */
-    box-sizing: border-box; /* Ensures the border is included in the dimensions */
+.scrollable-text-about {
+    max-height: calc(100vh - 487px);
+    border-bottom: 1.5px solid #e1e7e7;
 }
 
-.scrollable-text-c::-webkit-scrollbar-track {
-    background: transparent; /* Transparent track */
-    border-radius: 10px; /* Match the thumb's corners */
+.scrollable-text-stories {
+    max-height: calc(100vh - 453px);
 }
 
+.scrollable-text-timeline {
+    max-height: calc(100vh - 371px);
+}
+
+.scrollable-text-c {
+    margin-top: 260px;
+    border-top: 1.5px solid #e1e7e7;
+    border-bottom: 1.5px solid #e1e7e7;
+}
 
 
 
@@ -728,7 +724,7 @@ canvas {
     border-left: none;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease; /* Added color transition */
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 0.8rem;
     font-weight: 600;
     box-sizing: border-box;
@@ -760,7 +756,10 @@ canvas {
 #mainMap {
     width: 100%;
     height: 100vh;
-    background-color: #ebeeef;
+    background-color: #e1e4e4;
+}
+.leaflet-pane.leaflet-blur-pane {
+    filter: blur(5px); 
 }
 
 
@@ -779,7 +778,7 @@ canvas {
 .leaflet-popup {
     max-width: 300px; 
     padding: 10px;
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Poppins', sans-serif;
     line-height: 1.5; 
 }
 
@@ -826,7 +825,7 @@ canvas {
     box-shadow: none; 
     outline: none;
     color: black;
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-weight: lighter;
 }
 
@@ -858,7 +857,7 @@ canvas {
 }
 
 .popup-button {
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Poppins', sans-serif;
     display: flex;
     align-items: center;
     background: none;

@@ -13,17 +13,24 @@ to-do list:
 how can you motivate the problem?
 what anecdotes do you have?
 
+alpha 0.2.2 (2024-11-29)
+- modified ticker info.
+
 alpha 0.2.1 (2024-11-24)
+- visual overhaul, incl. font, color, symbologies, and layout.
+- added sortable.js in the layers tab (previously maps.)
+- added hide/show svgs for the layers tab.
 - added guide screen diagram.
 - added rose chart popup space with page-switching function.
 - added example rose charts.
 - added a function where the rose chart will lock its data when you click on the map.
-- added dynamic scrollable text height for explorer
+- added dynamic scrollable text height for all scrollable content.
 - removed guide screen close button.
+- removed unused svgs from the images folder.
 - adjusted the guide screen close function.
-- adusted the popup display & animation.
-- adjusted the overall visual & text color scheme.
-- changed font family to poppins for better browsing experience across all platforms.
+- adjusted the popup display & animation.
+- replaced the bottom buttons with an infinite ticker.
+- changed font to poppins for better browsing experience across all platforms.
 - fixed the popup close function for the rose chart.
 
 alpha 0.2.0 (2024-11-20)

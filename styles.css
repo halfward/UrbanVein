@@ -87,7 +87,7 @@ a:active {
     top: 0;
     width: 360px;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(15px); 
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
     z-index: 1000;
@@ -95,7 +95,6 @@ a:active {
     transition: transform 0.3s ease;
     border-right: 1.5px solid #bfcdcd; 
 }
-/* Collapsed state */
 #sidebar.collapsed {
     transform: translateX(-100%);
 }
@@ -104,7 +103,6 @@ a:active {
     border-right: 1.5px solid #303030; 
 }
 
-/* Button to toggle sidebar */
 #toggleButton {
     position: absolute;
     left: 360px;
@@ -112,9 +110,8 @@ a:active {
     padding: 8px 0px;
     cursor: pointer;
     z-index: 1001; 
-    background-color: rgba(222, 229, 229, 0.5);
+    background-color: #bfcdcd;
     backdrop-filter: blur(10px); 
-    color: #bfcdcd; 
     border: 1.5px solid #bfcdcd; 
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -122,16 +119,15 @@ a:active {
     border-bottom-right-radius: 5px;
     transition: left 0.3s ease; 
 }
-
 #toggleIcon {
     fill: transparent; 
     transition: transform 0.3s ease;
-    stroke-width: 2px; 
-    stroke-linecap: "round"; 
+    color: #585f5f;
+    stroke-width: 3px; 
+    stroke-linecap: "flat"; 
     stroke-linejoin: "round";
 }
 
-/* Logo styles */
 #logo {
     display: block;
     width: 50%; 
@@ -300,11 +296,14 @@ p-popup {
     vertical-align: middle; 
     margin-left: 14px;
     cursor: pointer; 
-    transition: fill 0.3s ease; 
     color: #8f9a9a;
     font-size: 1.1rem;
-    transition: color 0.3s ease; 
     transform: translateY(-1px); 
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+#optionsIcon:hover {
+    transform: translateY(-1px) rotate(144deg);
 }
 
 
@@ -335,7 +334,7 @@ p-popup {
     font-weight: 600;
     font-size: 0.8rem;
     position: relative;
-    background-color: rgba(222, 229, 229, 0.5); 
+    background-color: rgba(186, 197, 197, 0.3); 
     border: 1.5px solid #bfcdcd; 
 }
 #legendButton, #dataButton, #pastButton {
@@ -418,10 +417,61 @@ p {
     margin-bottom: 2rem;
     font-size: 0.8rem;
 }
-.scrollable-text-about p, .scrollable-text-about a, .scrollable-text-stories p, .scrollable-text-stories a, .scrollable-text-timeline p, .scrollable-text-timeline a {
+.scrollable-text-about p, 
+.scrollable-text-about a, 
+.scrollable-text-stories p, 
+.scrollable-text-stories a, 
+.scrollable-text-timeline p, 
+.scrollable-text-timeline a {
     margin-top: 0;
     margin-bottom: 2rem;
 }
+
+
+
+#sortable-list {
+    list-style-type: none; 
+    padding-left: 0;        
+}
+.layer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensures items are spaced across the row */
+    cursor: pointer;
+    background-color: rgba(186, 197, 197, 0.2);
+    border: #bfcdcd solid 1.5px;
+    border-radius: 5px;
+    padding: 10px 10px;
+    margin: 4px 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    cursor: all-scroll;
+}
+.layer-drag {
+    display: inline-block;
+    color: #bfcdcd;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.show-toggle {
+    height: 24px;
+    margin-left: auto;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+.show-toggle img {
+    width: 24px;
+    height: 24px;
+    transition: opacity 0.3s ease;
+}
+.show-toggle.active img {
+    opacity: 1;
+}
+
+
+
 
 
 
@@ -483,7 +533,7 @@ canvas {
 .popupCloseButton {
     position: absolute;
     z-index: 9999;
-    right: 15px;
+    right: 13px;
     top: 18px;
     transform: translateX(-50%);
 }
@@ -491,7 +541,7 @@ canvas {
     position: absolute;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
     color: #bfcdcd;
     background-color: transparent;
@@ -513,8 +563,8 @@ canvas {
 
 .popup-arrow {
     position: absolute;
-    top: 54%;
-    font-size: 1.8rem;
+    top: 53%;
+    font-size: 1.5rem;
     color: #bfcdcd;
     background: transparent;
     border: none;
@@ -585,6 +635,7 @@ canvas {
     padding-top: 4px;
     padding-bottom: 3px;
     margin-top: -5px;
+    color: black;
 }
 #layerControls button.off {
     background-color: transparent;
@@ -596,43 +647,23 @@ canvas {
 .scrollable-text-stories,
 .scrollable-text-timeline,
 .scrollable-text-c {
-    width: 275px;
+    width: 287px;
     margin-top: 15px;
     margin-left: 40px;
     overflow-y: auto;
     color: #8f9a9a;
     font-size: 0.8rem;
-    padding-right: 10px;
     scrollbar-width: thin;
     scrollbar-color: #bfcdcd transparent;
-}
-
-.scrollable-text-about {
-    max-height: calc(100vh - 487px);
     border-bottom: 1.5px solid #e1e7e7;
+    box-sizing: border-box; 
 }
-
-.scrollable-text-stories {
-    max-height: calc(100vh - 453px);
-}
-
-.scrollable-text-timeline {
-    max-height: calc(100vh - 371px);
-}
-
 .scrollable-text-c {
     margin-top: 260px;
     border-top: 1.5px solid #e1e7e7;
-    border-bottom: 1.5px solid #e1e7e7;
 }
 
 
-
-
-.sidebar {
-    position: relative; /* Ensure it acts as a positioning reference for absolute children */
-    padding-bottom: 60px; /* Add space at the bottom so content above doesn't overlap with buttons */
-}
 
 
 
@@ -701,58 +732,65 @@ canvas {
 
 
 
-
-/* Bottom buttons ------------------------------------------*/
-.sidebar-bottom-buttons {
-    position: absolute;
+/* Ticker ------------------------------------------*/
+.ticker-wrap {
+    width: 100%;
+    height: 1.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    position: fixed;
     bottom: 0;
+    background-color: #bfcdcd;
+    display: flex;
+    align-items: center;
+}
+.ticker-wrap:hover .ticker {
+    animation-play-state: paused; 
+}
+.ticker {
+    display: inline-block;
+    animation: marquee 60s linear infinite;
+}
+.item-collection-1 {
+    position: relative;
     left: 0;
-    display: flex;
+    animation: swap 60s linear infinite;
 }
-.button-with-icon {
-    display: flex;
-    align-items: center; /* Use center instead of middle */
-    position: relative; /* Ensure icons can be positioned correctly */
-}
-.sidebar-button {
-    width: 180.75px;
-    padding: 10px 0;
-    color: #8f9a9a;
-    background-color: transparent;
-    border: 1.5px solid #bfcdcd; 
-    border-bottom: none; 
-    border-left: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Added color transition */
-    font-family: 'Poppins', sans-serif;
+.item {
+    display: inline-block;
+    padding: 0;
     font-size: 0.8rem;
+    color: #585f5f;
     font-weight: 600;
-    box-sizing: border-box;
-    text-indent: 15px; 
 }
-.darkmode .sidebar-button {
-    border-color: #303030;
+.item a{
+    background-color: transparent !important;
+    color: #585f5f !important;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+@keyframes swap {
+    0%, 50% {
+        left: 0%;
+    }
+    50.01%, 100% {
+        left: 100%;
+    }
 }
 
 
-.button-with-icon:hover .sidebar-button {
-    color: black;
-}
-.icon {
-    position: absolute;
-    margin-top: -1px; 
-    margin-left: 42px; 
-    width: 16px; 
-    height: auto;
-    transition: filter 0.3s ease; 
-}
-.button-with-icon:hover .icon {
-    filter: brightness(0%);
-}
 
 
 
-/* Main Map Container */
+
+/* Main Map Container --------------------------------------------*/
 #mainMap {
     width: 100%;
     height: 100vh;
@@ -761,8 +799,6 @@ canvas {
 .leaflet-pane.leaflet-blur-pane {
     filter: blur(5px); 
 }
-
-
 
 .leaflet-circle-steel,
 .leaflet-circle-brick,
@@ -773,23 +809,17 @@ canvas {
 }
 
 
-
-/* Style for the entire popup */
 .leaflet-popup {
     max-width: 300px; 
     padding: 10px;
     font-family: 'Poppins', sans-serif;
     line-height: 1.5; 
 }
-
-/* Style for the title or heading part of the popup */
 .leaflet-popup-content {
     font-weight: semibold;
     font-size: 0.8rem; 
     color: #8f9a9a; 
 }
-
-
 .leaflet-popup-close-button {
     color: #ff0000;
     font-size: 16px; 
@@ -802,7 +832,6 @@ canvas {
     background-color: #ffebeb;
     cursor: pointer;
 }
-
 
 
 
@@ -820,6 +849,7 @@ canvas {
     box-shadow: none;
     background: transparent;
     border: none !important;
+    font-weight: 800;
 }
 .leaflet-control-zoom a {
     box-shadow: none; 
@@ -828,6 +858,9 @@ canvas {
     font-family: 'Poppins', sans-serif;
     font-weight: lighter;
 }
+
+
+
 
 
 

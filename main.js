@@ -43,6 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Initialize the map
+let steelLayer = L.layerGroup();
+let brickLayer = L.layerGroup();
+let glassLayer = L.layerGroup();
+let concreteLayer = L.layerGroup();
+let stoneLayer = L.layerGroup();
+
+
+
 const nycBounds = L.latLngBounds(
     [40.4774, -74.2591], // SW corner
     [40.9176, -73.7004]  // NE corner
@@ -75,7 +83,7 @@ const materialOffsets = {
 };
 
 // Create layer groups
-let steelLayer, brickLayer, glassLayer, concreteLayer, stoneLayer;
+
 
 // Add markers for each material with individual blending modes
 const addMaterialMarkers = (geojsonData, material, color) => {
@@ -85,7 +93,15 @@ const addMaterialMarkers = (geojsonData, material, color) => {
         .domain(binnedDataValues)
         .range([0, 0.4, 0.8, 1.2, 1.6, 2, 2.4]);
 
-    const materialLayerGroup = L.layerGroup();  // Create layer groups
+    const layerGroup = (() => {
+        switch (material) {
+            case 'steel': return steelLayer;
+            case 'brick': return brickLayer;
+            case 'glass': return glassLayer;
+            case 'concrete': return concreteLayer;
+            case 'stone': return stoneLayer;
+        }
+    })();
 
     filteredFeatures.forEach(feature => {
         const coordinates = feature.geometry.coordinates;
@@ -112,33 +128,13 @@ const addMaterialMarkers = (geojsonData, material, color) => {
                 className: `leaflet-circle-${material}`,
             });
 
-
-
-            circle.addTo(materialLayerGroup);  // Add the circle to layer groups
+            circle.addTo(layerGroup);
         }
     });
 
-    // Store the layer group in the respective variable
-    switch (material) {
-        case 'steel':
-            steelLayer = materialLayerGroup;
-            break;
-        case 'brick':
-            brickLayer = materialLayerGroup;
-            break;
-        case 'glass':
-            glassLayer = materialLayerGroup;
-            break;
-        case 'concrete':
-            concreteLayer = materialLayerGroup;
-            break;
-        case 'stone':
-            stoneLayer = materialLayerGroup;
-            break;
-    }
-
-    materialLayerGroup.addTo(mainMap);  // Add the layer group to the map
+    layerGroup.addTo(mainMap);
 };
+
 
 // Load GeoJSON data and add markers for each material to the map
 d3.json('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/centroid_all.geojson').then(geojsonData => {
@@ -154,7 +150,7 @@ d3.json('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/centroid
 // Layer toggle function
 const toggleLayerVisibility = (layer, buttonId) => {
     const button = document.getElementById(buttonId);
-    
+
     if (mainMap.hasLayer(layer)) {
         mainMap.removeLayer(layer);
         button.classList.remove('on');  // Remove 'on' class to set the button to "off"
@@ -165,6 +161,7 @@ const toggleLayerVisibility = (layer, buttonId) => {
         button.classList.add('on');      // Add 'on' class to reflect the "on" state
     }
 };
+
 
 // Button event listeners
 document.getElementById('toggleSteel').addEventListener('click', () => {
@@ -186,6 +183,7 @@ document.getElementById('toggleConcrete').addEventListener('click', () => {
 document.getElementById('toggleStone').addEventListener('click', () => {
     toggleLayerVisibility(stoneLayer, 'toggleStone');
 });
+
 
 
 
@@ -500,7 +498,10 @@ document.getElementById('toggleSteel').addEventListener('click', () => toggleLay
 
 
 
-// Color toggle function----------------------------------------
+
+
+
+// Rose chart color toggle function----------------------------------------
 function toggleLayer(layer) {
     const layerIndex = data.labels.indexOf(layer);
     
@@ -541,7 +542,7 @@ function getQuantileBin(value, quantiles) {
 
 
 
-// Rose Chart References
+// Rose Chart References----------------------------------------
 function createDataObject(dataValues) {
     return {
         labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
@@ -662,12 +663,12 @@ document.addEventListener("DOMContentLoaded", function() {
             // Collapse the sidebar
             sidebar.style.transform = "translateX(-100%)"; // Move sidebar offscreen
             toggleButton.style.left = "0"; // Move the button to the left side
-            toggleIcon.innerHTML = '<path d="M8 20l7-7-7-7" fill="transparent" stroke="#bfcdcd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'; // Change icon to ">"
+            toggleIcon.innerHTML = '<path d="M8 20l7-7-7-7" fill="transparent" stroke="#585f5f" stroke-width="3" stroke-linecap="flat" stroke-linejoin="round"/>'; 
         } else {
             // Expand the sidebar
             sidebar.style.transform = "translateX(0)"; // Move sidebar back onscreen
             toggleButton.style.left = "360px"; // Position the button at the sidebar's expanded edge
-            toggleIcon.innerHTML = '<path d="M14 7l-7 7 7 7" fill="transparent" stroke="#bfcdcd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'; // Change icon to "<"
+            toggleIcon.innerHTML = '<path d="M14 7l-7 7 7 7" fill="transparent" stroke="#585f5f" stroke-width="3" stroke-linecap="flat" stroke-linejoin="round"/>'; 
         }
 
         // Toggle the state
@@ -868,14 +869,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Content text
 document.addEventListener("DOMContentLoaded", function() {
-    // Select content elements
     const aboutContent = document.getElementById('aboutContentText');
     const storiesContent = document.getElementById('storiesContentText');
     const exploreContent = document.getElementById('exploreContentText');
     const navButtonAContainer = document.getElementById('navButtonAContainer');
     const navButtonBContainer = document.getElementById('navButtonBContainer');
     const navButtonCContainer = document.getElementById('navButtonCContainer');
-
 
     // Function to update content based on button clicked
     function updatecontentMain(buttonId) {
@@ -928,7 +927,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Initialize by showing the Explorer content or any default section
     updatecontentMain('explorerButton');
-    
+
+    // Function to observe display changes using MutationObserver
+    function observeDisplayChanges() {
+        // Select all the target elements
+        const elements = [aboutContent, storiesContent, exploreContent, 
+                          navButtonAContainer, navButtonBContainer, navButtonCContainer];
+
+        // Create a MutationObserver to listen for style changes
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    // If the display property changes, adjust height
+                    adjustHeight(); 
+                }
+            });
+        });
+
+        // Set observer options to watch for changes to the 'style' attribute
+        elements.forEach(element => {
+            observer.observe(element, { attributes: true });  // Watch for changes to attributes
+        });
+    }
+
+    // Initialize the MutationObserver
+    observeDisplayChanges();
 });
 
 
@@ -949,11 +972,9 @@ const navButtons = document.querySelectorAll('.nav-button-2');
 const scrollableTextData = document.getElementById('scrollableTextData');
 const scrollableTextMedia = document.getElementById('scrollableTextMedia');
 const scrollableTextRef = document.getElementById('scrollableTextRef');
-
 const scrollableTextPast = document.getElementById('scrollableTextPast');
 const scrollableTextPresent = document.getElementById('scrollableTextPresent');
 const scrollableTextFuture = document.getElementById('scrollableTextFuture');
-
 const scrollableTextC = document.getElementById('scrollableTextC');
 const roseChart = document.getElementById('Chart');
 const layerControls = document.getElementById('layerControls');
@@ -964,15 +985,12 @@ const scrollableTextMaps = document.getElementById('scrollableTextMaps');
 let isExploreActive = false;
 let isAboutActive = false;
 let isStoriesActive = false;
-
 let isDataActive = false;
 let isMediaActive = false;
 let isRefActive = false;
-
 let isPastActive = false;
 let isPresentActive = false;
 let isFutureActive = false;
-
 let isLegendActive = false;
 let isTimelineActive = false;
 let isMapsActive = false;
@@ -1005,7 +1023,6 @@ function updateAboutAndMediaDisplay() {
 function updateAboutAndRefDisplay() {
     updateDisplay(scrollableTextRef, isAboutActive && isRefActive);
 }
-
 function updateStoriesAndPastDisplay() {
     updateDisplay(scrollableTextPast, isStoriesActive && isPastActive);
 }
@@ -1015,7 +1032,6 @@ function updateStoriesAndPresentDisplay() {
 function updateStoriesAndFutureDisplay() {
     updateDisplay(scrollableTextFuture, isStoriesActive && isFutureActive);
 }
-
 function updateExploreAndLegendDisplay() {
     const shouldDisplay = isExploreActive && isLegendActive;
 
@@ -1074,7 +1090,6 @@ function resetSecondLayerStates() {
     isTimelineActive = false;
     isMapsActive = false;
 }
-
 
 // Event listeners for main navigation buttons
 exploreButton.addEventListener('click', () => {
@@ -1139,8 +1154,45 @@ function updateContent(buttonId) {
 // Set default states on page load
 isExploreActive = true;
 isLegendActive = true;
-setActiveButton('legendButton'); 
+setActiveButton('legendButton');
 updateDisplays(); // Update displays based on default state
+
+// MutationObserver to detect display changes
+function observeDisplayChanges() {
+    const elementsToObserve = [
+        scrollableTextData, scrollableTextMedia, scrollableTextRef,
+        scrollableTextPast, scrollableTextPresent, scrollableTextFuture,
+        scrollableTextC, roseChart, layerControls,
+        scrollableTextTimeline, scrollableTextMaps
+    ];
+
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                if (mutation.target.style.display === 'none') {
+                    adjustHeight();
+                }
+            }
+        });
+    });
+
+    // Observer options
+    const config = { attributes: true, attributeFilter: ['style'] };
+    
+    elementsToObserve.forEach(element => {
+        observer.observe(element, config);
+    });
+}
+
+// Initialize the MutationObserver
+observeDisplayChanges();
+
+// Function to adjust height when display is set to 'none'
+function adjustHeight() {
+    console.log("Adjusting height...");
+    // You can implement your height adjustment logic here
+}
+
 
 
 
@@ -1324,28 +1376,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-// Dynamic Scrollable Text Height - Explorer
-    function updateMaxHeightExplorer() {
-        const totalHeight =
-            (document.querySelector('#logo')?.offsetHeight || 0) +
-            (document.querySelector('#aboutButton')?.offsetHeight || 0) +
-            (document.querySelector('#exploreContentText')?.offsetHeight || 0) +
-            (document.querySelector('#navButtonCContainer')?.offsetHeight || 0) +
-            (document.querySelector('#layerControls')?.offsetHeight || 0) +
-            (document.querySelector('.sidebar-bottom-buttons')?.offsetHeight || 0) +
-            305.5;
-    
-        const scrollableTextElement = document.querySelector('.scrollable-text-c'); // Target element
-        if (scrollableTextElement) {
-            scrollableTextElement.style.maxHeight = `calc(100vh - ${totalHeight}px)`;
-        }
-    }
-    
-    // Run on page load
-    updateMaxHeightExplorer();
-    
-    // Add event listener to handle dynamic resizing
-    window.addEventListener('resize', updateMaxHeightExplorer);
+
+
+
+// Dynamic Scrollable Text Height----------------------------------
+// Also requires mutation observers in the tab logics--------------
+function adjustHeight() {
+    const elements = document.querySelectorAll('.scrollable-text-about, .scrollable-text-stories, .scrollable-text-timeline, .scrollable-text-c');
+    const tenVH = window.innerHeight * 0.06; // 6% of the viewport height
+
+    elements.forEach(element => {
+        // Calculate the distance from the top of the element to the bottom of the viewport
+        const rect = element.getBoundingClientRect();
+        const distanceToBottom = window.innerHeight - rect.top;
+
+        // Set the height of the element to that distance minus 10vh
+        element.style.height = `${Math.max(distanceToBottom - tenVH, 0)}px`; // Ensure no negative heights
+
+        // Optionally, set a max-height to prevent overflowing
+        element.style.maxHeight = `${distanceToBottom - tenVH}px`;
+
+        // Force a reflow to ensure the browser updates the layout
+        element.offsetHeight; // Accessing this forces a reflow
+    });
+}
+
+// Adjust on load, resize, and scroll
+window.addEventListener('load', adjustHeight);
+window.addEventListener('resize', adjustHeight);
+window.addEventListener('scroll', adjustHeight);
+
+
 
 
 
@@ -1376,3 +1437,58 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize the first slide as active
     updateSlides();
     
+
+
+
+
+// Map layer control-------------------------------------------------
+    new Sortable(document.getElementById('sortable-list'), {
+        animation: 150, // for smooth dragging
+    });
+
+// Set the toggle-material button as active by default
+const toggleMaterialButton = document.getElementById('toggle-material');
+if (toggleMaterialButton) {
+    toggleMaterialButton.classList.add('active');
+    const img = toggleMaterialButton.querySelector('img');
+    if (img) {
+        img.src = 'images/show.svg'; // Set the "active" icon
+    }
+}
+
+// Toggle buttons
+document.querySelectorAll('.show-toggle').forEach(button => {
+    button.addEventListener('click', function () {
+        const img = this.querySelector('img');
+        
+        if (this.classList.contains('active')) {
+            this.classList.remove('active');
+            img.src = 'images/hide.svg'; // Switch back to "hide" icon
+        } else {
+            this.classList.add('active');
+            img.src = 'images/show.svg'; // Switch to "show" icon
+        }
+    });
+});
+
+console.log(layerGroup);
+
+
+// Layer toggle
+const toggleButton = document.getElementById('toggle-material');
+let isMaterialLayerActive = true; // Assume layer is active by default
+
+toggleButton.addEventListener('click', function () {
+    if (isMaterialLayerActive) {
+        // Remove the layer from the map
+        map.removeLayer(layerGroup);
+        toggleButton.classList.remove('active'); // Update button style
+        isMaterialLayerActive = false;
+    } else {
+        // Add the layer back to the map
+        map.addLayer(layerGroup);
+        toggleButton.classList.add('active'); // Update button style
+        isMaterialLayerActive = true;
+    }
+});
+

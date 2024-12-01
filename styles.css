@@ -41,20 +41,10 @@ body {
     align-items: center;
     z-index: 9999;
 }
-.overlay-content {
-    background: white;
-    padding: 20px;
-    max-width: 600px;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+#OverlayContent {
+    background-color: white;
 }
-.intro {
-    width: 500px;
-    height: auto;
-    margin: 0 auto;
-    mix-blend-mode: multiply;
-}
+
 
 
 /* Link Style ---------------------------------------------- */
@@ -98,10 +88,6 @@ a:active {
 #sidebar.collapsed {
     transform: translateX(-100%);
 }
-.darkmode #sidebar {
-    background-color: rgba(51, 51, 51, 0.5);
-    border-right: 1.5px solid #303030; 
-}
 
 #toggleButton {
     position: absolute;
@@ -138,7 +124,6 @@ a:active {
     box-sizing: border-box;
 }
 
-
 /* Version History---------------------------------------- */
 .clickable-text {
     cursor: pointer;
@@ -150,7 +135,10 @@ a:active {
     text-decoration: underline;
     color: #a1b3b3; 
 }
-/* Popup Styles */
+
+
+
+/* Popup modals----------------------------------------------------- */
 .popup {
     position: fixed;
     left: 0;
@@ -165,13 +153,9 @@ a:active {
     overflow: hidden;
     animation: slideDown 0.5s ease forwards; 
 }
-
-/* Initially hidden state */
 .popup.hidden {
     animation: slideUp 0.5s ease forwards; 
 }
-
-/* Popup content */
 .popup-content {
     width: 100%; 
     max-height: 100%;
@@ -188,10 +172,61 @@ a:active {
     transform: translateY(-150%); 
     animation: slideDownContent 0.5s ease forwards; 
 }
+#guidePopup {
+    height: 100%;
+    z-index: 8888;
+}
+#guidePopup-content {
+    height: 100%;
+}
+.intro {
+    margin-top: 10vh;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    mix-blend-mode: multiply;
+}
+
+.options-popup-content {
+    position: absolute;
+    top: 50px; /* Adjust based on where you want it to appear */
+    left: 400px;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 150px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: none; /* Hidden by default */
+    z-index: 1010;
+}
+
+.popup-button {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    font-weight: 500;
+}
+
+.popup-button:hover {
+    background-color: #f0f0f0;
+}
+
+.popup-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
 
 
 
-/* Slide-down animation for popup content */
+
+/* Slide-down animation for popup content----------------------- */
 @keyframes slideDownContent {
     from {
         transform: translateY(-150%);
@@ -200,12 +235,10 @@ a:active {
         transform: translateY(0);
     }
 }
-
-/* Slide-up animation for popup content */
+/* Slide-up animation for popup content-------------------------- */
 .popup.hidden .popup-content {
     animation: slideUpContent 0.5s ease forwards;
 }
-
 @keyframes slideUpContent {
     from {
         transform: translateY(0);
@@ -214,12 +247,12 @@ a:active {
         transform: translateY(-150%);
     }
 }
-
 p-popup {
     font-size: 0.8rem;
     position: absolute;
     color: #8f9a9a;
 }
+
 
 
 
@@ -275,8 +308,6 @@ p-popup {
     opacity: 1;
     width: calc(100% - 10px); 
 }
-
-
 .active-line {
     height: 3px; 
     background-color: black; 
@@ -285,7 +316,6 @@ p-popup {
     bottom: -5px; 
     opacity: 1; 
 }
-
 .active-line.hidden {
     opacity: 0; 
 }
@@ -476,26 +506,19 @@ p {
 
 
 
-/* Info icon----------------------------------------- */
-.info-icon {
-    position: absolute;
-    width: 18px; 
-    height: 18px; 
-    margin-left: 3px;
-    transition: fill 0.3s ease; 
-    filter: invert(0);
-    transform: translateY(-2px);
-}
-
-#materialInfo {
-    margin-left: 10px;
+/* Info icons----------------------------------------- */
+.info-link {
+    cursor: pointer;
 }
 #roseInfo {
-    margin-left: 306px;
-    margin-top: 180px;
+    margin-left: 238px;
+    margin-top: 185px;
     transition: 0.2s ease;
     cursor: pointer; 
-
+    font-size: 0.9rem;
+    font-weight: 500;
+    position: absolute;
+    color: #8f9a9a;
 }
 #roseInfo:hover {
     filter: brightness(0) saturate(100%) invert(0%);
@@ -604,7 +627,7 @@ canvas {
     border: 0px; 
     border-radius: 0px;
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
     transform: translateX(40px);
@@ -667,66 +690,32 @@ canvas {
 
 
 
-/* Fullscreen popup----------------------------------------- */
-.popup-fullscreen {
-    display: none; /* Hidden by default */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(134, 134, 134, 0.4);
-    backdrop-filter: blur(5px);
-    z-index: 2000;
-}
+/* Image popup----------------------------------------- */
 
-.fullscreen-popup-content {
-    position: relative;
-    width: 90%;
-    height: 90%;
-    margin: auto;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.large-image-container {
-    width: 80%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#main-slider {
     margin-bottom: 20px;
 }
 
-.large-image-container img {
-    max-width: 100%;
-    max-height: 70vh;
-    object-fit: contain;
-    transition: transform 0.2s ease;
+#thumbnail-slider {
+    margin-top: 10px;
 }
 
-.image-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5px;
+.splide__slide img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
 }
-
-.image-gallery img {
-    max-height: 100px;
+.splide_track {
+    height: 100%;
+}
+#thumbnail-slider .splide__slide img {
     cursor: pointer;
-    border: none;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease-in-out;
 }
 
-.image-gallery img:hover {
+#thumbnail-slider .splide__slide img:hover {
     transform: scale(1.1);
 }
-
-
 
 
 
@@ -743,6 +732,7 @@ canvas {
     background-color: #bfcdcd;
     display: flex;
     align-items: center;
+    z-index: 9999;
 }
 .ticker-wrap:hover .ticker {
     animation-play-state: paused; 
@@ -808,7 +798,7 @@ canvas {
     mix-blend-mode: hard-light;
 }
 
-
+/* Leaflet popup */
 .leaflet-popup {
     max-width: 300px; 
     padding: 10px;
@@ -833,8 +823,7 @@ canvas {
     cursor: pointer;
 }
 
-
-
+/* Leaflet zoom controls */
 .leaflet-control {
     z-index: 1001;
 }
@@ -865,48 +854,7 @@ canvas {
 
 
 /* Dark mode-----------------------------------------------*/
-.darkmode .options-icon {
-    filter: invert(0.9); 
+.darkmode {
+    filter: invert(1); 
 }
 
-.darkmode #toggleButton {
-    filter: invert(0.9); 
-}
-.darkmode #mainMap {
-    background-color: black;
-}
-
-.options-popup-content {
-    position: absolute;
-    top: 50px; /* Adjust based on where you want it to appear */
-    left: 400px;
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 150px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    display: none; /* Hidden by default */
-    z-index: 1010;
-}
-
-.popup-button {
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    align-items: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    width: 100%;
-    text-align: left;
-}
-
-.popup-button:hover {
-    background-color: #f0f0f0;
-}
-
-.popup-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-}

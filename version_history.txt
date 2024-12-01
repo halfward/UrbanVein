@@ -3,18 +3,21 @@ to-do list:
 - chart.js tooltip should display material weight ranges.
 - different bin sizes for different zoom levels.
 - apply hexbinned geojson for tooltip info.
-- guide button doesn't work now.
+- guide button doesn't work now. also use the popup format for guide.
 - typical typology diagrams (use value + js to dynamically update?)
 - borough diagram comparisons.
 - use scrollama to add presentation as a single story.
 - put a qr code on the poster.
-- use popup for visualization archive.
 - use maplibre instead of leaflet.
+- some utf-8 characters aren't displaying on iphone (safari and chrome)
 how can you motivate the problem?
 what anecdotes do you have?
 
 alpha 0.2.2 (2024-11-29)
 - modified ticker info.
+- adjusted all popup logic (incl. using the 🞃 symbol for all popup access.)
+- implemented splide for the visualization archive.
+- changed intro diagram.
 
 alpha 0.2.1 (2024-11-24)
 - visual overhaul, incl. font, color, symbologies, and layout.

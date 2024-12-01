@@ -6,43 +6,19 @@
     <title>URBAN VEIN</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/css/splide.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/js/splide.min.js"></script>
+
 </head>
 <body>
-    <!-- Tutorial -->
-    <div id="GuideOverlay" class="overlay">
-        <div id="OverlayContent" class="overlay-content">
-            <h2 style="margin: 10px 0 0 0;">URBAN VEIN</h2>
-            
-            <img src="images/intro-image.png" alt="Intro" class="intro">
-            <br>
-            
-            <p style="line-height: 0.3;">each dot represents a type of building material.</p>
-            <p style="line-height: 0.3;">click on the map to see more info.</p>
-            <br>
-            <p style="line-height: 0.3; color: #8f9a9a;">click outside this window to close the guide.</p>
-            <label style="color: #8f9a9a;">
-            <input type="checkbox" id="dontShowAgain"> don't show this again
-            </label>
-        </div>
-    </div>
-
-    <!-- Fullscreen Popup -->
-    <div class="popup-fullscreen" id="popupFullscreen" style="display: none;">
-        <span class="close-popup" id="closePopup">&times;</span>
-        <div class="fullscreen-popup-content">
-            <div class="large-image-container">
-                <img id="largeImage" src="https://raw.githubusercontent.com/halfward/UrbanVein/main/media/VA-01.webp" alt="Large Image">
-            </div>
-            <div class="image-gallery">
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Sidebar Content -->
     <div id="sidebar">
@@ -50,23 +26,84 @@
             <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
 
             <span id="versionHistoryLink" class="clickable-text" style="margin-top: 19px; margin-left: 3px;color: #000000; font-size: 0.8rem; display: block;"></span>
+
+            <!-- Tutorial Popup Modal-->
+            <div id="guidePopup" class="popup hidden" style="display: none;">
+                <div id="guidePopup-content" class="popup-content">
+                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <h3 style="margin-top: 0;">▘welcome to urban vein!</h3>
+                    <br><br><br>
+                    <img src="images/guide-diagram.webp" alt="Intro" class="intro">
+                    <br><br><br>
+                    <p>click on the map to see more info.</p>
+                    <label style="color: #8f9a9a;">
+                        <p>
+                            <input type="checkbox" id="dontShowAgain">don't show this again
+                        </p>
+                    </label>
+                </div>
+            </div>
+    
             <!-- Version Popup Modal -->
-            <div id="popup" class="popup" style="display: none;">
+            <div id="versionPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
-                    <span class="popupCloseButton" id="closePopup">&times;</span>
+                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
                     <p-popup id="versionHistoryContent"></p-popup>
                 </div>
             </div>
-
             <!-- Material Popup Modal -->
             <div id="materialPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
-                    <button class="popupCloseButton" id="closePopup">&times;</button>
-                    <p-popup>material info</p-popup>
+                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <h3 style="margin-top: 0;">▘material estimation method</h3>
                     <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/data-diagram.webp" alt="DataDiagram" id="dataDiagram">
                 </div>
             </div>
-
+            <!-- Viz History Popup Modal -->
+            <div id="visualizationPopup" class="popup hidden" style="display: none;">
+                <div class="popup-content">
+                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <h3 style="margin-top: 0;">▘visualization archive</h3>
+                    <!-- Main Slider -->
+                    <div id="main-slider" class="splide">
+                        <div class="splide__track">
+                            <ul class="splide__list">
+                                <!-- Main slider images will be dynamically inserted -->
+                            </ul>
+                        </div>
+                    </div>
+            
+                    <!-- Thumbnail Slider -->
+                    <div id="thumbnail-slider" class="splide">
+                        <div class="splide__track">
+                            <ul class="splide__list">
+                                <!-- Thumbnails will be dynamically inserted -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Options Popup Modal -->
+            <div id="optionsPopup" class="popup hidden" style="display: none;">
+                <div class="popup-content">
+                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <h3 style="margin-top: 0;">▘options</h3>
+                    <button class="popup-button" id="fullscreenButton">
+                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/fullscreen.svg" alt="Fullscreen Icon" class="popup-icon"">
+                    <span>FULLSCREEN</span>
+                    </button>
+                    <button class="popup-button" id="darkModeButton">
+                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/dark-mode.svg" alt="Dark Mode Icon" class="popup-icon">
+                    <span>DARK MODE</span>
+                    </button>
+                    <button class="popup-button" id="guideButton">
+                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/guide.svg" alt="Guide Icon" class="popup-icon">
+                    <span>GUIDE</span>
+                    </button>
+                </div>
+                
+            </div>
+            
             <!-- Rose Popup Modal -->
             <div id="rosePopup" class="popup hidden" style="display: none;">
                 <div class="popup-content" style="height: 260px; overflow: hidden;">
@@ -96,21 +133,6 @@
         <div class="nav-button" id="storiesButton">STORIES</div>
         <div class="nav-button" id="explorerButton">EXPLORER</div>
         <div class="options-icon" id="optionsIcon">🞳</div>
-
-        <div id="options-popup" class="options-popup-content">
-            <button class="popup-button" id="fullscreenButton">
-                <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/fullscreen.svg" alt="Fullscreen Icon" class="popup-icon"">
-                <span>Fullscreen</span>
-            </button>
-            <button class="popup-button" id="darkModeButton">
-                <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/dark-mode.svg" alt="Dark Mode Icon" class="popup-icon">
-                <span>Dark Mode</span>
-            </button>
-            <button class="popup-button" id="guideButton">
-                <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/guide.svg" alt="Guide Icon" class="popup-icon">
-                <span>Guide</span>
-            </button>
-        </div>
         
         <hr class="sidebar-line">
     
@@ -118,17 +140,17 @@
         <div id="aboutContentText" class="content-text" style="display: none;">
             <h2>brick by brick</h2>
             <p>
-                URBAN VEIN is a student project across three semesters developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>. the project was guided by faculty members (in semester & alphabetical orders) william martin, violet witney, laura kurgan, snoweria zhang, catherine griffith, and seth thompson.</p>
+                urban vein is developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>. the project was guided by (in semester & alphabetical orders) william martin, violet witney, laura kurgan, snoweria zhang, catherine griffith, and seth thompson.</p>
         </div>
     
         <div id="storiesContentText" class="content-text" style="display: none;">
             <h2>of memory & vision</h2>
-            <p>URBAN VEIN uses building materials to analyze nyc's material lifecycle and investigate hidden historical trends, current environmental impacts, and future possibilities.</p>
+            <p>urban vein uses building materials to analyze nyc's material lifecycle and investigate hidden historical trends, current environmental impacts, and future possibilities.</p>
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
             <h2>building material distribution</h2>
-            <p>this map combines <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a> with inferred building typologies and uses machine learning to create a material dataset.</p>
+            <p>this map uses machine learning to analyze <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a> and inferred building typologies to create a material dataset.</p>
         </div>
 
         <!-- About -->
@@ -159,7 +181,7 @@
 
         <div id="Chart">
             <canvas id="RoseChart"></canvas>
-            <p id="roseInfo" style="font-size: 0.9rem; font-weight: 500; position: absolute; margin-top: 180px; margin-left: 238px; color: #bfcdcd;">compare<img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info"  class="info-icon"></p>
+            <p id="roseInfo" class="info-icon">compare 🞃</p>
             
         </div>
         
@@ -173,7 +195,7 @@
         </div>
         
         <div id="scrollableTextData" class="scrollable-text-about" style="display: none;">
-                <h3>▘material estimate<img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/info.svg" alt="Info" id="materialInfo" class="info-icon"></h3>
+                <h3>▘<a id="materialInfo" class="info-link">material estimate 🞃</a> </h3>
                 <p>
                     nyc buliding material estimate data<br>
                     by hao lee
@@ -208,11 +230,11 @@
         </div>
 
         <div id="scrollableTextMedia" class="scrollable-text-about" style="display: none;">
-            <h3 id="visualizationArchive" style="cursor: pointer">▘<a>visualization archive</a></h3>
+            <h3 id="visualizationArchive" style="cursor: pointer">▘<a>visualization archive 🞃</a></h3>
             <p>
                 one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
             </p>
-            <h3 id="colloquiumPoster" style="cursor: pointer">▘<a>collloquium ii: review poster</a></h3>
+            <h3 id="colloquiumPoster" style="cursor: pointer">▘<a>collloquium ii: review poster 🞃</a></h3>
             <p>
                 this is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece.
             </p>
@@ -245,9 +267,12 @@
                     <br>
                     by dare brawley and mario giampieri
                     <br><br>
-                    <a href="https://mappinghny.com/?lng=-73.9760&lat=40.7220&zoom=12.50&maps=[{%22center%22:{%22lat%22:40.722,%22lng%22:-73.976},%22demographicOpacity%22:1,%22demographicsFilters%22:{},%22filters%22:{},%22layers%22:[{%22id%22:%22dwellings-dot-density-birthplace%22,%22dotDensityValues%22:[{%22label%22:%22England+and+Scotland%22,%22dotDensityColor%22:%22%23FBD44A%22,%22fieldName%22:%22bpl_4_41000%22},{%22label%22:%22Ireland%22,%22dotDensityColor%22:%22%23EC8457%22,%22fieldName%22:%22bpl_4_41400%22},{%22label%22:%22Russia%22,%22dotDensityColor%22:%22%23F17CBA%22,%22fieldName%22:%22bpl_3_46999%22},{%22label%22:%22Germany%22,%22dotDensityColor%22:%22%235AC2CD%22,%22fieldName%22:%22bpl_4_45300%22},{%22label%22:%22Caribbean+%26+West+Indies%22,%22dotDensityColor%22:%22%2367D78D%22,%22fieldName%22:%22bpl_2_14%22},{%22label%22:%22Italy%22,%22dotDensityColor%22:%22%23DE92F1%22,%22fieldName%22:%22bpl_4_43400%22}]}],%22rasterOpacity%22:1,%22year%22:%221880%22,%22zoom%22:12.5}]&rasterOpacity0=1">mapping historical new york</a>
+                    <a href="https://mappinghny.com/">mapping historical new york</a>
                     <br>
                     by <a href="https://c4sr.columbia.edu/">center for spatial research</a>
+                    <br><br>
+                    <a href="https://centerforspatialresearch.github.io/asianAmericans/">asian american dot density map</a><br>
+                    by jia zhang
                     <br><br>
                     <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">nyc construction dashboard 2022</a>
                     <br>
@@ -299,6 +324,8 @@
                     <a href="https://sortablejs.github.io/Sortable/">sortable</a><br>
                     by <a href="https://github.com/RubaXa">lebedev konstantin</a> and <a href="https://github.com/SortableJS/Sortable/graphs/contributors">github contributors</a>
                     <br><br>
+                    <a href="https://splidejs.com/">splide</a><br>
+                    by <a href="https://github.com/NaotoshiFujita">naotoshi fujita</a>
                 </p>
 
                 <h3>▘columbia gsapp m.s.cdp</h3>
@@ -322,7 +349,7 @@
                 ▘intro to URBAN VEIN
             </h3>
             <img src="images/placeholder-5.webp" style="width: 100%; height: 90px;">
-            <p>what is URBAN VEIN? why is it important?</p>
+            <p>what is urban vein? why is it important?</p>
             <h3>▘underground nyc</h3>
             <img src="images/placeholder-2.webp" style="width: 100%; height: 90px;">
             <p>concrete foundations.</p>

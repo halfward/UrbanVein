@@ -1,4 +1,4 @@
-// Link controls
+// Link controls - open new tab
 document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('a');
     links.forEach(link => {
@@ -9,47 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Guide
-document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('GuideOverlay');
-    const overlayContent = document.getElementById('OverlayContent'); 
-    const dontShowAgain = document.getElementById('dontShowAgain');
-
-    // Check localStorage to see if the overlay should be hidden
-    if (!localStorage.getItem('hideGuide')) {
-        overlay.style.display = 'flex'; // Show the overlay if 'hideGuide' is not set
-    }
-
-    // Function to close the Guide overlay
-    window.closeGuide = function() {
-        overlay.style.display = 'none';
-        if (dontShowAgain.checked) {
-            localStorage.setItem('hideGuide', 'true'); 
-        }
-    };
-
-    // Close the overlay when clicking outside of it
-    document.addEventListener('click', (event) => {
-        // Check if the clicked element is outside the overlayContent and overlay is visible
-        if (overlay.style.display === 'flex' && !overlayContent.contains(event.target)) {
-            closeGuide();
-        }
-    });
-});
-
-
-
-
-
-
-// Initialize the map
+// Initialize the map-------------------------------------------------
 let steelLayer = L.layerGroup();
 let brickLayer = L.layerGroup();
 let glassLayer = L.layerGroup();
 let concreteLayer = L.layerGroup();
 let stoneLayer = L.layerGroup();
-
-
 
 const nycBounds = L.latLngBounds(
     [40.4774, -74.2591], // SW corner
@@ -65,8 +30,6 @@ const mainMap = L.map('mainMap', {
     maxBounds: nycBounds,
     maxBoundsViscosity: 1.0
 });
-
-
 
 const materialColors = {
     steel: '#d100ff',    // Purple for steel 
@@ -427,24 +390,28 @@ const config = {
                 min: 0,
                 max: 5,
                 grid: {
-                    color: '#bfcdcd', // Grid lines color
-                    lineWidth: 1, // Grid line width
+                    color: '#bfcdcd', 
+                    lineWidth: 1,
                     z: 1,
-                    circular: true, // Ensures circular grid
+                    circular: true, 
                 },
                 angleLines: {
-                    color: 'rgba(0, 0, 0, 0.2)', // Angle line color
+                    color: 'rgba(0, 0, 0, 0.2)', 
                     lineWidth: 1,
                     z: 1,
                 },
                 ticks: {
                     callback: function (value) {
                         const romanNumerals = ['NULL', 'I', 'II', 'III', 'IV', 'V'];
-                        return romanNumerals[value]; // Converts numeric values to Roman numerals
+                        return romanNumerals[value]; 
                     },
                     z: 2,
-                    color: '#8f9a9a', 
+                    color: '#bfcdcd', 
                     padding: 0,
+                    font: {
+                        family: 'Poppins',
+                        weight: '500'
+                    }
                 }
             }
         },
@@ -453,7 +420,7 @@ const config = {
                 display: false
             },
             tooltip: {
-                backgroundColor: 'rgba(255, 255, 255, 0.9)', // Tooltip background color
+                backgroundColor: 'rgba(255, 255, 255, 0.9)', 
                 titleFont: {
                     family: 'Poppins, sans-serif',
                     size: 14,
@@ -726,66 +693,49 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-// Version History------------------------------------------------------
-document.addEventListener("DOMContentLoaded", function() {
+
+
+// Popup modals--------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    // Common elements
+    const materialPopup = document.getElementById('materialPopup');
+    const rosePopup = document.getElementById('rosePopup');
+    const vizPopup = document.getElementById('visualizationPopup');
+    const optionsPopup = document.getElementById('optionsPopup');
+    const versionPopup = document.getElementById('versionPopup'); 
+    const guidePopup = document.getElementById('guidePopup');
+    const closePopupButtons = document.querySelectorAll('.popupCloseButton'); 
+
+    // Info icons
+    const infoIcon = document.getElementById('materialInfo');
+    const roseInfoIcon = document.getElementById('roseInfo');
+    const vizInfoIcon = document.getElementById('visualizationArchive');
+    const optionsIcon = document.getElementById('optionsIcon')
     const versionHistoryLink = document.getElementById('versionHistoryLink');
-    const popup = document.getElementById('popup');
-    const closePopup = document.getElementById('closePopup');
+    const guideButton = document.getElementById('guideButton'); 
+
+    // Version history element
     const versionHistoryContent = document.getElementById('versionHistoryContent');
 
     // Fetch version history to update link text
-    updateVersionHistory();
-
-    // Add click event to the version history link
-versionHistoryLink.addEventListener('click', function() {
-    fetch('version_history.txt')
+    function updateVersionHistory() {
+        fetch('version_history.txt')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log('Fetched response:', response); // Log the raw response
-            return response.text();
-        })
-        .then(data => {
-            console.log('Fetched data:', data); // Log the fetched text
-            versionHistoryContent.innerHTML = data.replace(/\n/g, '<br>');
-            popup.style.display = 'flex';
-        })
-        .catch(error => {
-            console.error('Fetch operation error:', error);
-        });
-});
-
-
-    // Close the popup
-    closePopup.addEventListener('click', function() {
-        popup.style.display = 'none';
-    });
-
-    // Close popup when clicking outside
-    window.addEventListener('click', function(event) {
-        if (event.target === popup) {
-            popup.style.display = 'none';
-        }
-    });
-});
-
-// Version history text update----------------------------
-function updateVersionHistory() {
-    fetch('version_history.txt')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error loading version history file');
+                throw new Error(`Error loading version history file: ${response.statusText}`);
             }
             return response.text();
         })
         .then(data => {
+            console.log('Fetched version history content:', data); 
             const lines = data.split('\n');
             let firstVersion = '';
+
             for (let i = 0; i < lines.length; i++) { 
                 if (lines[i].startsWith('alpha')) {
                     // Extract the version text and remove the date if present
                     firstVersion = lines[i].split('(')[0].trim();
+                    console.log('First alpha version found:', firstVersion); // Debug log
                     break; 
                 }
             }
@@ -793,73 +743,175 @@ function updateVersionHistory() {
             const versionHistoryLink = document.getElementById('versionHistoryLink');
             if (versionHistoryLink && firstVersion) {
                 versionHistoryLink.textContent = firstVersion;
+                console.log('Updated version history link text:', firstVersion); // Debug log
+            } else {
+                console.warn('Version history link element not found or no version found');
             }
         })
         .catch(error => {
             console.error('Error fetching version history:', error);
         });
-}
+    }
 
+    updateVersionHistory();
 
-
-
-
-
-// Material popup
-document.addEventListener('DOMContentLoaded', () => {
-    const infoIcon = document.getElementById('materialInfo');
-    const roseInfoIcon = document.getElementById('roseInfo');
-    const materialPopup = document.getElementById('materialPopup');
-    const rosePopup = document.getElementById('rosePopup');
-    const closePopup = document.getElementById('collapsePopup'); 
-
-    // Check if the closePopup button exists
-    if (closePopup) {
-        // This listener is for closing the popup when clicking the close button
+    // Add listeners to all close buttons
+    closePopupButtons.forEach(closePopup => {
         closePopup.addEventListener('click', (event) => {
-            console.log("Close button clicked"); 
+            console.log("Close button clicked");
             event.stopPropagation(); // Prevent the click event from bubbling up
-            materialPopup.classList.add('hidden'); // Trigger slide-up animation
-            setTimeout(() => {
-                materialPopup.style.display = 'none'; // Hide
-            }, 500);
-            rosePopup.classList.add('hidden'); // Trigger slide-up animation
-            setTimeout(() => {
-                rosePopup.style.display = 'none'; // Hide
-            }, 500);
+
+            // Close all popups
+            [materialPopup, rosePopup, vizPopup, versionPopup, guidePopup, optionsPopup].forEach(popupElement => {
+                if (popupElement) {
+                    popupElement.classList.add('hidden'); // Trigger slide-up animation
+                    setTimeout(() => {
+                        popupElement.style.display = 'none'; // Hide
+                    }, 500);
+                }
+            });
         });
-    } 
+    });
 
-    // Show the popup with animation when the info icon is clicked
+    // Show the material popup
     infoIcon.addEventListener('click', () => {
-        console.log("Material popup clicked"); 
+        console.log("Material popup clicked");
         materialPopup.classList.remove('hidden');
-        materialPopup.style.display = 'flex'; // Ensure the popup is visible
+        materialPopup.style.display = 'flex'; 
     });
 
+    // Show the rose popup
     roseInfoIcon.addEventListener('click', () => {
-        console.log("Rose popup clicked"); 
+        console.log("Rose popup clicked");
         rosePopup.classList.remove('hidden');
-        rosePopup.style.display = 'flex'; // Ensure the popup is visible
+        rosePopup.style.display = 'flex'; 
     });
 
-    // Optional: Close the popup when clicking outside the content area
-    materialPopup.addEventListener('click', (event) => {
-        if (event.target === materialPopup) {
-            closePopup.click();
-        }
+    // Show the visualization popup
+    vizInfoIcon.addEventListener('click', () => {
+        console.log("Rose popup clicked");
+        vizPopup.classList.remove('hidden');
+        vizPopup.style.display = 'flex'; 
     });
 
-    rosePopup.addEventListener('click', (event) => {
-        if (event.target === rosePopup) {
-            closePopup.click();
-        }
+    // Show the options popup
+    optionsIcon.addEventListener('click', () => {
+        console.log("Options popup clicked");
+        optionsPopup.classList.remove('hidden');
+        optionsPopup.style.display = 'flex'; 
+    });
+
+    // Fetch and display version history when the link is clicked
+    versionHistoryLink.addEventListener('click', () => {
+        fetch('version_history.txt')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Fetched response:', response); // Log the raw response
+                return response.text();
+            })
+            .then(data => {
+                console.log('Fetched data:', data); // Log the fetched text
+                versionHistoryContent.innerHTML = data.replace(/\n/g, '<br>');
+                versionPopup.classList.remove('hidden');
+                versionPopup.style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Fetch operation error:', error);
+            });
+    });
+
+    // Show guide popup on page load
+    guidePopup.classList.remove('hidden');
+    guidePopup.style.display = 'flex';
+
+    // Open guide popup when the guide button is clicked
+    guideButton.addEventListener('click', () => {
+        guidePopup.classList.remove('hidden');
+        guidePopup.style.display = 'flex';
     });
 });
 
 
 
 
+
+// Splide slider---------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const visualizationPopup = document.getElementById('visualizationPopup');
+    const collapsePopup = document.getElementById('collapsePopup');
+    const mainSliderList = document.querySelector('#main-slider .splide__list');
+    const thumbnailSliderList = document.querySelector('#thumbnail-slider .splide__list');
+
+    const images = [
+        "VA-01.webp", "VA-02.webp", "VA-03.webp", "VA-04.webp",
+        "VA-05.webp", "VA-06.webp", "VA-07.webp", "VA-08.webp",
+        "VA-09.webp", "VA-10.webp", "VA-11.webp", "VA-12.webp"
+    ];
+
+    // Generate slides for main and thumbnail sliders
+    images.forEach(image => {
+        const mainLi = document.createElement('li');
+        mainLi.classList.add('splide__slide');
+        const mainImg = document.createElement('img');
+        mainImg.src = `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`;
+        mainImg.alt = `Slide ${image}`;
+        mainLi.appendChild(mainImg);
+        mainSliderList.appendChild(mainLi);
+
+        const thumbLi = document.createElement('li');
+        thumbLi.classList.add('splide__slide');
+        const thumbImg = document.createElement('img');
+        thumbImg.src = `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`;
+        thumbImg.alt = `Thumbnail ${image}`;
+        thumbLi.appendChild(thumbImg);
+        thumbnailSliderList.appendChild(thumbLi);
+    });
+
+    // Initialize Splide sliders
+    const mainSlider = new Splide('#main-slider', {
+        type       : 'fade',
+        heightRatio: 1.5,
+        pagination : false,
+        arrows     : false,
+        cover      : true,
+    });
+
+    const thumbnailSlider = new Splide('#thumbnail-slider', {
+        rewind       : true,
+        fixedWidth   : 50,
+        fixedHeight  : 75,
+        isNavigation : true,
+        gap          : 10,
+        focus        : 'center',
+        pagination   : false,
+        cover        : true,
+        breakpoints  : {
+            640: {
+                fixedWidth  : 66,
+                fixedHeight : 38,
+            },
+        },
+    });
+
+    // Sync main slider with thumbnails
+    mainSlider.sync(thumbnailSlider);
+    mainSlider.mount();
+    thumbnailSlider.mount();
+
+    // Open popup and refresh sliders
+    document.getElementById('visualizationArchive').addEventListener('click', () => {
+        visualizationPopup.style.display = 'flex';
+        mainSlider.refresh(); // Refresh main slider
+        thumbnailSlider.refresh(); // Refresh thumbnails
+    });
+
+    // Close popup
+    collapsePopup.addEventListener('click', () => {
+        visualizationPopup.style.display = 'none';
+    });
+});
 
 
 
@@ -1194,109 +1246,6 @@ function adjustHeight() {
 }
 
 
-
-
-
-
-
-
-// Fullscreen-popup--------------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
-    const popup = document.getElementById('popupFullscreen');
-    const closePopup = document.getElementById('closePopup');
-    const largeImage = document.getElementById('largeImage');
-    const visualizationArchive = document.getElementById('visualizationArchive'); // The trigger
-    const imageGallery = document.querySelector('.image-gallery'); // For dynamically adding thumbnails
-
-    let thumbnailsGenerated = false;
-    let currentIndex = 0; // Keep track of the current image index
-    let imageArray = []; // Store image sources for navigation
-
-    // Function to open the popup with the selected large image
-    function openPopup(imageSrc) {
-        largeImage.src = imageSrc;
-        popup.style.display = 'flex';
-    }
-
-    // Function to initialize and add event listeners to thumbnails
-    function setupThumbnails() {
-        const thumbnails = document.querySelectorAll('.image-gallery img'); // Get thumbnails (dynamically updated)
-        thumbnails.forEach((thumbnail, index) => {
-            thumbnail.addEventListener('click', () => {
-                const largeSrc = thumbnail.getAttribute('data-large-src');
-                openPopup(largeSrc);
-                currentIndex = index; // Set current image index when clicked
-            });
-        });
-
-        // Create an array of image sources for navigation
-        imageArray = Array.from(thumbnails).map((thumbnail) => thumbnail.getAttribute('data-large-src'));
-    }
-
-    // Function to generate image gallery (thumbnails)
-    function generateThumbnails() {
-        if (thumbnailsGenerated) return; // Don't generate thumbnails again if already done
-
-        const images = [
-            "VA-01.webp", "VA-02.webp", "VA-03.webp", "VA-04.webp",
-            "VA-05.webp", "VA-06.webp", "VA-07.webp", "VA-08.webp",
-            "VA-09.webp", "VA-10.webp", "VA-11.webp", "VA-12.webp"
-        ];
-
-        images.forEach((image) => {
-            const thumbnail = document.createElement('img');
-            thumbnail.src = `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`;
-            thumbnail.alt = `Thumbnail ${image}`;
-            thumbnail.setAttribute('data-large-src', `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`);
-            imageGallery.appendChild(thumbnail);
-        });
-
-        setupThumbnails(); // Setup event listeners for the dynamically created thumbnails
-        thumbnailsGenerated = true; // Set flag to true after thumbnails are generated
-    }
-
-    // Open the popup when clicking on the "Visualization Archive" text
-    if (visualizationArchive) {
-        visualizationArchive.addEventListener('click', () => {
-            generateThumbnails(); // Generate and display thumbnails only once
-            const firstThumbnail = imageGallery.querySelector('img');
-            if (firstThumbnail) {
-                openPopup(firstThumbnail.getAttribute('data-large-src')); // Default large image (first thumbnail)
-                currentIndex = 0; // Set current image index to 0 for the first image
-            }
-        });
-    }
-
-    // Handle navigation using the arrow keys
-    function handleKeyNavigation(event) {
-        if (popup.style.display !== 'flex') return; // Only handle navigation if the popup is open
-
-        if (event.key === 'ArrowLeft') {
-            // Go to the previous image
-            currentIndex = (currentIndex === 0) ? imageArray.length - 1 : currentIndex - 1;
-        } else if (event.key === 'ArrowRight') {
-            // Go to the next image
-            currentIndex = (currentIndex === imageArray.length - 1) ? 0 : currentIndex + 1;
-        }
-
-        openPopup(imageArray[currentIndex]); // Update the large image based on the new index
-    }
-
-    // Add keydown event listener to handle arrow key navigation
-    document.addEventListener('keydown', handleKeyNavigation);
-
-    // Close the popup when the close button is clicked
-    closePopup.addEventListener('click', () => {
-        popup.style.display = 'none';
-    });
-
-    // Close the popup when clicking outside the content area
-    popup.addEventListener('click', (e) => {
-        if (e.target === popup) {
-            popup.style.display = 'none';
-        }
-    });
-});
 
 
 

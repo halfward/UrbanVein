@@ -24,13 +24,14 @@ const mainMap = L.map('mainMap', {
     center: [40.7128, -74.0060],
     zoom: 13,
     minZoom: 11,
-    maxZoom: 15,
-    renderer: L.svg(),
+    maxZoom: 14,
+    renderer: L.canvas(),
     preferCanvas: true,
     maxBounds: nycBounds,
     maxBoundsViscosity: 1.0
 });
 
+// Material colors and offsets
 const materialColors = {
     steel: '#d100ff',    // Purple for steel 
     brick: '#ff3100',    // Orange for brick 
@@ -45,16 +46,23 @@ const materialOffsets = {
     glass: { lat: -0.0003, lng: 0.0004 }      // Lower right
 };
 
-// Create layer groups
-
+// Mapping materials to column names
+const materialColumns = {
+    steel: 'steel_binned_new_None',
+    brick: 'brick_binned_new_None',
+    concrete: 'concrete_binned_new_None',
+    glass: 'glass_binned_new_None',
+    stone: 'stone_binned_new_None'
+};
 
 // Add markers for each material with individual blending modes
 const addMaterialMarkers = (geojsonData, material, color) => {
-    const filteredFeatures = geojsonData.features.filter(feature => feature.properties[material] > 0);
-    const binnedDataValues = filteredFeatures.map(feature => feature.properties[material]);
+    const columnName = materialColumns[material];
+    const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
+    const binnedDataValues = filteredFeatures.map(feature => feature.properties[columnName]);
     const quantiles = d3.scaleQuantile()
         .domain(binnedDataValues)
-        .range([0, 0.4, 0.8, 1.2, 1.6, 2, 2.4]);
+        .range([0, 0.4, 0.8, 1.2, 1.6, 2]);
 
     const layerGroup = (() => {
         switch (material) {
@@ -68,7 +76,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
 
     filteredFeatures.forEach(feature => {
         const coordinates = feature.geometry.coordinates;
-        const sizeMultiplier = quantiles(feature.properties[material]);
+        const sizeMultiplier = quantiles(feature.properties[columnName]);
 
         let lat = coordinates[1];
         let lng = coordinates[0];
@@ -85,7 +93,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
                 color: color,
                 fillColor: color,
                 weight: 0,
-                fillOpacity: 0.7,
+                fillOpacity: 0.65,
                 opacity: 1,
                 fillRule: 'evenodd',
                 className: `leaflet-circle-${material}`,
@@ -98,9 +106,8 @@ const addMaterialMarkers = (geojsonData, material, color) => {
     layerGroup.addTo(mainMap);
 };
 
-
 // Load GeoJSON data and add markers for each material to the map
-d3.json('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/centroid_all.geojson').then(geojsonData => {
+d3.json('data/nycBinnedCentroidsMaterialWgs84.geojson').then(geojsonData => {
     addMaterialMarkers(geojsonData, 'steel', materialColors.steel);
     addMaterialMarkers(geojsonData, 'brick', materialColors.brick);
     addMaterialMarkers(geojsonData, 'glass', materialColors.glass);
@@ -124,7 +131,6 @@ const toggleLayerVisibility = (layer, buttonId) => {
         button.classList.add('on');      // Add 'on' class to reflect the "on" state
     }
 };
-
 
 // Button event listeners
 document.getElementById('toggleSteel').addEventListener('click', () => {

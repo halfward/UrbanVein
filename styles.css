@@ -790,13 +790,13 @@ canvas {
     filter: blur(5px); 
 }
 
-.leaflet-circle-steel,
+/* .leaflet-circle-steel,
 .leaflet-circle-brick,
 .leaflet-circle-glass,
 .leaflet-circle-concrete,
 .leaflet-circle-stone {
     mix-blend-mode: hard-light;
-}
+} */
 
 /* Leaflet popup */
 .leaflet-popup {

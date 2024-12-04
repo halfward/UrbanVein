@@ -18,7 +18,8 @@
 
 </head>
 <body>
-    
+
+    <div id="customCursor"></div>
 
     <!-- Sidebar Content -->
     <div id="sidebar">
@@ -30,14 +31,18 @@
             <!-- Tutorial Popup Modal-->
             <div id="guidePopup" class="popup hidden" style="display: none;">
                 <div id="guidePopup-content" class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
                     <h3 style="margin-top: 0;">▘welcome to urban vein!</h3>
-                    <br><br><br>
+                    <br>
+                    <h2 style="line-height: 1; font-size: 0.9rem; color: #585f5f; font-weight: 500;">
+                        urban vein visualizes nyc's building material composition and distribution.<br><br>
+                        click on the map to continue.
+                    </h2>
+                    <br>
                     <img src="images/guide-diagram.webp" alt="Intro" class="intro">
-                    <br><br><br>
-                    <p>click on the map to see more info.</p>
+                    <br><br>
+                    
                     <label style="color: #8f9a9a;">
-                        <p>
+                        <p style="font-size: 1rem;">
                             <input type="checkbox" id="dontShowAgain">don't show this again
                         </p>
                     </label>
@@ -47,14 +52,15 @@
             <!-- Version Popup Modal -->
             <div id="versionPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <button class="popupCloseButton" id="collapsePopup">🞁</button>
                     <p-popup id="versionHistoryContent"></p-popup>
                 </div>
             </div>
             <!-- Material Popup Modal -->
             <div id="materialPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <button class="popupCloseButton" id="collapsePopup"
+                    style="margin-top: 268px">🞁</button>
                     <h3 style="margin-top: 0;">▘material estimation method</h3>
                     <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/data-diagram.webp" alt="DataDiagram" id="dataDiagram">
                 </div>
@@ -62,7 +68,7 @@
             <!-- Viz History Popup Modal -->
             <div id="visualizationPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <button class="popupCloseButton" id="collapsePopup" style="margin-top: 268px;">🞁</button>
                     <h3 style="margin-top: 0;">▘visualization archive</h3>
                     <!-- Main Slider -->
                     <div id="main-slider" class="splide">
@@ -86,7 +92,7 @@
             <!-- Options Popup Modal -->
             <div id="optionsPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
+                    <button class="popupCloseButton" id="collapsePopup">🞁</button>
                     <h3 style="margin-top: 0;">▘options</h3>
                     <br>
                     <button class="layer" id="fullscreenButton">
@@ -108,24 +114,24 @@
             
             <!-- Rose Popup Modal -->
             <div id="rosePopup" class="popup hidden" style="display: none;">
-                <div class="popup-content" style="height: 260px; overflow: hidden;">
+                <div class="popup-content" style="height: 289.5px; overflow: hidden;">
                     <div class="popup-slider">
                         <div class="popup-slide active">
                             <p-popup><h3 style="margin: 0; font-size: 0.8rem;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
                             <canvas id="RoseChartRefA"></canvas>
                         </div>
                         <div class="popup-slide">
-                            <p-popup><h3 style="margin: 0;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
+                            <p-popup><h3 style="margin: 0; font-size: 0.8rem;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
                             <canvas id="RoseChartRefB"></canvas>
                         </div>
                         <div class="popup-slide">
-                            <p-popup><h3 style="margin: 0;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
+                            <p-popup><h3 style="margin: 0; font-size: 0.8rem;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
                             <canvas id="RoseChartRefC"></canvas>
                         </div>
                     </div>
-                    <button class="popupCloseButton" id="collapsePopup">🞭</button>
-                    <button id="prevSlide" class="popup-arrow">⯇</button>
-                    <button id="nextSlide" class="popup-arrow">⯈</button>
+                    <button class="popupCloseButton" id="collapsePopup">🞁</button>
+                    <button id="prevSlide" class="popup-arrow">🡰</button>
+                    <button id="nextSlide" class="popup-arrow">🡲</button>
                 </div>
             </div>
 
@@ -147,12 +153,12 @@
     
         <div id="storiesContentText" class="content-text" style="display: none;">
             <h2>of memory & vision</h2>
-            <p>urban vein explores new york city through its building materials—their composition, distribution, and transformation. it examines what exists, what is being lost, and what should be built, offering a lens into the city's evolving urban identity.</p>
+            <p>urban vein explores new york city through its building materials—their composition, distribution, and transformation. it examines what exists, what is being lost, and what should be built. urban vein is a lens into the city's evolving urban identity.</p>
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
             <h2>building material distribution</h2>
-            <p>this map uses machine learning to analyze <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a> and inferred building typologies to create a material dataset.</p>
+            <p>this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.</p>
         </div>
 
         <!-- About -->
@@ -240,7 +246,7 @@
             <p>
                 this is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece.
             </p>
-            <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism</a></h3>
+            <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism 🞂🞂</a></h3>
             <p>
                 this is colloquium i's project website, which consists of two material-related speculative projects, booleanify and balloonify.
             </p>
@@ -283,6 +289,9 @@
 
                 <h3>▘material estimation & circular economy</h3>
                 <p>
+                    <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/jiec.13456">city-scale assessment of the material and environmental footprint of buildings using an advanced building information model: a case study from canberra, australia</a><br>
+                    by natthanij soonsawad, raymundo marcos-martinez, and heinz schandl
+                    <br><br>
                     <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/bamb_materialspassports_bestpractice.pdf#page=54">materials passports - best practices</a>
                     <br>
                     by matthias heinrich and werner lang
@@ -377,42 +386,42 @@
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          buliding material
+                          buliding material  <sup> geojson </sup>
                         <button class="show-toggle" id="toggle-material"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          satellite imagery
+                          satellite imagery  <sup> tile </sup>
+                        <button class="show-toggle" id="toggle-satellite"><img src="images/hide.svg" alt="Hide"></button>
+                    </h3>
+                </li>
+                <li>
+                    <h3 class="layer">
+                        <div class="layer-drag">☰</div>
+                          openstreetmap  <sup> tile </sup>
+                        <button class="show-toggle" id="toggle-osm"><img src="images/hide.svg" alt="Hide"></button>
+                    </h3>
+                </li>
+                <li>
+                    <h3 class="layer">
+                        <div class="layer-drag">☰</div>
+                          bedrock elevation  <sup> geojson </sup>
                         <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          openstreetmap
+                          demolition map  <sup> geojson </sup>
                         <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          bedrock elevation
-                        <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li>
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                          demolition heatmap
-                        <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li>
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                          material carbon footprints
+                          carbon footprints  <sup> geojson </sup>
                         <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
@@ -425,19 +434,14 @@
                 this map uses individual quantile classifications for each material instead of a universal one. this decision is based on several key considerations:
                 <br><br>
                 <h3>▘data precision and integrity</h3>
-                uncertainty of the data: the dataset we are working with is based on approximations and educated estimates rather than precise measurements. as such, it is essential to avoid creating over-confident visual representations that could imply a level of accuracy that the data does not possess.
-                avoiding over-interpretation: by using separate bins for each material, we ensure that the inherent fuzziness and uncertainty of the data are accurately represented. this prevents the data from being interpreted as more definitive or certain than it actually is.
+                the dataset is based on approximations and educated estimates rather than precise measurements. as such, it is essential to avoid creating over-confident visual representations that could imply a level of accuracy that the data does not possess.
                 <br><br>
                 <h3>▘material weight differences</h3>
-                inherent disparities in material properties: different materials, such as steel, concrete, or brick, have vastly different weights and properties. these differences make it inaccurate to compare the values of one material to another using a universal bin. a direct comparison between materials could distort the understanding of their distribution, as the weight and volume of each material influence its presence in the dataset.
-                material-specific comparisons: instead, by using separate bins for each material, we ensure that each material’s distribution is evaluated within its own context. this method allows for an accurate comparison of a single material against its own distribution, ensuring that variations in material properties do not skew the analysis.
+                different materials, such as steel, concrete, or brick, have vastly different densities. these differences make it inaccurate to compare the values of one material to another using a universal bin. a direct comparison between materials could distort the understanding of their distribution, as the weight and volume of each material influence its presence in the dataset.<br>
+                instead, by using separate bins for each material, each material’s distribution is evaluated within its own context. this method allows for a comparison of a single material against its own distribution (color,) ensuring that variations in material properties do not skew the analysis.
                 <br><br>
                 <h3>▘enabling meaningful comparison</h3>
-                local vs. citywide comparison: the use of individual bins allows for a more granular comparison of material distributions. for instance, when comparing a specific region's material composition to that of the entire city of new york, this approach ensures that the data reflects the unique characteristics of each material while still situating it in the context of the broader urban landscape.
-                contextual analysis: by separating the bins for each material, users can directly compare the relative prevalence of materials in a given area with citywide averages, offering deeper insights into regional material characteristics and urban trends.
-                <br><br>
-                <h3>▘enhanced analytical flexibility</h3>
-                customizable binning: using distinct bins for each material allows for flexibility in data analysis. the ability to adjust the number of bins or reclassify values within each material’s category enables more nuanced visualizations and tailored interpretations, ensuring that the presentation of the data is both relevant and insightful.
+                the use of individual bins allows for a more granular comparison of material distributions. for instance, when comparing a specific region's material composition to that of the entire city of new york, the data reflects the characteristics of each material while still situating it in the context of the broader landscape.
         </div>
 
 

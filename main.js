@@ -1,3 +1,15 @@
+
+    document.addEventListener('mousemove', function(event) {
+        const customCursor = document.getElementById('customCursor');
+        
+        // Set the position of the custom cursor
+        customCursor.style.left = `${event.clientX}px`;
+        customCursor.style.top = `${event.clientY}px`;
+    });
+
+
+
+
 // Link controls - open new tab
 document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('a');
@@ -16,12 +28,18 @@ let glassLayer = L.layerGroup();
 let concreteLayer = L.layerGroup();
 let stoneLayer = L.layerGroup();
 
+let steelLayer200 = L.layerGroup();
+let brickLayer200 = L.layerGroup();
+let glassLayer200 = L.layerGroup();
+let concreteLayer200 = L.layerGroup();
+let stoneLayer200 = L.layerGroup();
+
 const nycBounds = L.latLngBounds(
     [40.4774, -74.2591], // SW corner
     [40.9176, -73.7004]  // NE corner
 );
 const mainMap = L.map('mainMap', {
-    center: [40.7128, -74.0060],
+    center: [40.7128, -73.9460],
     zoom: 13,
     minZoom: 11,
     maxZoom: 14,
@@ -30,6 +48,8 @@ const mainMap = L.map('mainMap', {
     maxBounds: nycBounds,
     maxBoundsViscosity: 1.0
 });
+
+
 
 // Material colors and offsets
 const materialColors = {
@@ -45,6 +65,12 @@ const materialOffsets = {
     concrete: { lat: -0.0003, lng: -0.0004 }, // Lower left
     glass: { lat: -0.0003, lng: 0.0004 }      // Lower right
 };
+const materialOffsets200 = {
+    brick: { lat: 0.0006, lng: -0.0008 },     // Upper left
+    stone: { lat: 0.0006, lng: 0.0008 },      // Upper right
+    concrete: { lat: -0.0006, lng: -0.0008 }, // Lower left
+    glass: { lat: -0.0006, lng: 0.0008 }      // Lower right
+};
 
 // Mapping materials to column names
 const materialColumns = {
@@ -54,25 +80,30 @@ const materialColumns = {
     glass: 'glass_binned_new_None',
     stone: 'stone_binned_new_None'
 };
+const materialColumns200 = {
+    steel: 'steel_binned_200_None',
+    brick: 'brick_binned_200_None',
+    concrete: 'concrete_binned_200_None',
+    glass: 'glass_binned_200_None',
+    stone: 'stone_binned_200_None'
+};
 
-// Add markers for each material with individual blending modes
-const addMaterialMarkers = (geojsonData, material, color) => {
-    const columnName = materialColumns[material];
+// Layer state to persist visibility
+const layerState = {
+    steel: true,
+    brick: true,
+    concrete: true,
+    glass: true,
+    stone: true
+};
+
+// Function to add material markers to a given layer group
+const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup, offset = null) => {
     const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
     const binnedDataValues = filteredFeatures.map(feature => feature.properties[columnName]);
     const quantiles = d3.scaleQuantile()
         .domain(binnedDataValues)
-        .range([0, 0.4, 0.8, 1.2, 1.6, 2]);
-
-    const layerGroup = (() => {
-        switch (material) {
-            case 'steel': return steelLayer;
-            case 'brick': return brickLayer;
-            case 'glass': return glassLayer;
-            case 'concrete': return concreteLayer;
-            case 'stone': return stoneLayer;
-        }
-    })();
+        .range([0, 0.4, 0.8, 1.2, 1.6, 2, 2.4]);
 
     filteredFeatures.forEach(feature => {
         const coordinates = feature.geometry.coordinates;
@@ -80,9 +111,9 @@ const addMaterialMarkers = (geojsonData, material, color) => {
 
         let lat = coordinates[1];
         let lng = coordinates[0];
-        if (materialOffsets[material]) {
-            lat += materialOffsets[material].lat;
-            lng += materialOffsets[material].lng;
+        if (offset) {
+            lat += offset.lat;
+            lng += offset.lng;
         }
 
         if (sizeMultiplier > 0) {
@@ -96,7 +127,7 @@ const addMaterialMarkers = (geojsonData, material, color) => {
                 fillOpacity: 0.65,
                 opacity: 1,
                 fillRule: 'evenodd',
-                className: `leaflet-circle-${material}`,
+                className: `leaflet-circle-${material}`
             });
 
             circle.addTo(layerGroup);
@@ -106,52 +137,313 @@ const addMaterialMarkers = (geojsonData, material, color) => {
     layerGroup.addTo(mainMap);
 };
 
-// Load GeoJSON data and add markers for each material to the map
+// Function to add material markers to a given layer group
+const addMaterialMarkers200 = (geojsonData, material, color, columnName, layerGroup, offset = null) => {
+    const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
+    const binnedDataValues = filteredFeatures.map(feature => feature.properties[columnName]);
+    const quantiles = d3.scaleQuantile()
+        .domain(binnedDataValues)
+        .range([0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4]);
+
+    filteredFeatures.forEach(feature => {
+        const coordinates = feature.geometry.coordinates;
+        const sizeMultiplier = quantiles(feature.properties[columnName]);
+
+        let lat = coordinates[1];
+        let lng = coordinates[0];
+        if (offset) {
+            lat += offset.lat;
+            lng += offset.lng;
+        }
+
+        if (sizeMultiplier > 0) {
+            const baseRadius = 25;
+            const minRadius = 10;
+            const circle = L.circle([lat, lng], {
+                radius: Math.max(baseRadius * sizeMultiplier, minRadius),
+                color: color,
+                fillColor: color,
+                weight: 0,
+                fillOpacity: 0.65,
+                opacity: 1,
+                fillRule: 'evenodd',
+                className: `leaflet-circle-${material}`
+            });
+
+            circle.addTo(layerGroup);
+        }
+    });
+
+    layerGroup.addTo(mainMap);
+};
+
+
+// Load GeoJSON data for base layers---------------------------------
 d3.json('data/nycBinnedCentroidsMaterialWgs84.geojson').then(geojsonData => {
-    addMaterialMarkers(geojsonData, 'steel', materialColors.steel);
-    addMaterialMarkers(geojsonData, 'brick', materialColors.brick);
-    addMaterialMarkers(geojsonData, 'glass', materialColors.glass);
-    addMaterialMarkers(geojsonData, 'concrete', materialColors.concrete);
-    addMaterialMarkers(geojsonData, 'stone', materialColors.stone);
+    Object.keys(materialColumns).forEach(material => {
+        addMaterialMarkers(
+            geojsonData, 
+            material, 
+            materialColors[material], 
+            materialColumns[material], 
+            (() => {
+                switch (material) {
+                    case 'steel': return steelLayer;
+                    case 'brick': return brickLayer;
+                    case 'glass': return glassLayer;
+                    case 'concrete': return concreteLayer;
+                    case 'stone': return stoneLayer;
+                }
+            })(), 
+            materialOffsets[material]
+        );
+    });
+
+    // Update layer visibility after data is loaded
+    updateLayerVisibility();
 }).catch(error => {
     console.error('Error loading centroid GeoJSON:', error);
 });
 
-// Layer toggle function
-const toggleLayerVisibility = (layer, buttonId) => {
+// Load GeoJSON data for 200 layers---------------------------------
+d3.json('data/nycBinnedCentroidsMaterial_200Wgs84.geojson').then(geojsonData => {
+    Object.keys(materialColumns200).forEach(material => {
+        addMaterialMarkers200(
+            geojsonData, 
+            material, 
+            materialColors[material], 
+            materialColumns200[material], 
+            (() => {
+                switch (material) {
+                    case 'steel': return steelLayer200;
+                    case 'brick': return brickLayer200;
+                    case 'glass': return glassLayer200;
+                    case 'concrete': return concreteLayer200;
+                    case 'stone': return stoneLayer200;
+                }
+            })(), 
+            materialOffsets200[material]
+        );
+    });
+
+    // Update layer visibility after data is loaded
+    updateLayerVisibility();
+}).catch(error => {
+    console.error('Error loading 200-layer GeoJSON:', error);
+});
+
+
+
+
+
+
+// Map layer control-------------------------------------------------
+new Sortable(document.getElementById('sortable-list'), {
+    animation: 150, // for smooth dragging
+});
+
+// Set the toggle-material button as active by default
+const toggleMaterialButton = document.getElementById('toggle-material');
+if (toggleMaterialButton) {
+    toggleMaterialButton.classList.add('active'); // Mark button as active initially
+    const img = toggleMaterialButton.querySelector('img');
+    if (img) {
+        img.src = 'images/show.svg'; // Set the "active" icon
+    }
+}
+
+// Toggle buttons
+document.querySelectorAll('.show-toggle').forEach(button => {
+    button.addEventListener('click', function () {
+        const img = this.querySelector('img');
+        
+        // Toggle the active class and update the icon accordingly
+        if (this.classList.contains('active')) {
+            this.classList.remove('active');
+            img.src = 'images/hide.svg'; // Switch back to "hide" icon
+        } else {
+            this.classList.add('active');
+            img.src = 'images/show.svg'; // Switch to "show" icon
+        }
+        
+        // Ensure to update the layer visibility
+        updateLayerVisibility();
+    });
+});
+
+// Function to handle layer visibility based on zoom
+const updateLayerVisibility = () => {
+    const isButtonInactive = !document.getElementById('toggle-material').classList.contains('active');
+    if (isButtonInactive) {
+        // If inactive, remove all layers for that material
+        Object.entries({
+            steel: [steelLayer, steelLayer200],
+            brick: [brickLayer, brickLayer200],
+            glass: [glassLayer, glassLayer200],
+            concrete: [concreteLayer, concreteLayer200],
+            stone: [stoneLayer, stoneLayer200]
+        }).forEach(([material, [layer, layer200]]) => {
+            if (mainMap.hasLayer(layer)) mainMap.removeLayer(layer);
+            if (mainMap.hasLayer(layer200)) mainMap.removeLayer(layer200);
+        });
+        return; // Exit early if the button is inactive
+    }
+
+    const zoom = mainMap.getZoom();
+
+    Object.entries({
+        steel: [steelLayer, steelLayer200],
+        brick: [brickLayer, brickLayer200],
+        glass: [glassLayer, glassLayer200],
+        concrete: [concreteLayer, concreteLayer200],
+        stone: [stoneLayer, stoneLayer200]
+    }).forEach(([material, [layer, layer200]]) => {
+        // Only consider the layers that are toggled on
+        if (layerState[material]) {
+            if (zoom === 13 || zoom === 14) {
+                // Show primary layers and remove secondary layers
+                if (!mainMap.hasLayer(layer)) {
+                    layer.addTo(mainMap);
+                }
+                if (mainMap.hasLayer(layer200)) {
+                    mainMap.removeLayer(layer200);
+                }
+            } else if (zoom === 11 || zoom === 12) {
+                // Show secondary layers and remove primary layers
+                if (!mainMap.hasLayer(layer200)) {
+                    layer200.addTo(mainMap);
+                }
+                if (mainMap.hasLayer(layer)) {
+                    mainMap.removeLayer(layer);
+                }
+            } else {
+                // Remove both layers outside valid zoom levels
+                if (mainMap.hasLayer(layer)) {
+                    mainMap.removeLayer(layer);
+                }
+                if (mainMap.hasLayer(layer200)) {
+                    mainMap.removeLayer(layer200);
+                }
+            }
+        } else {
+            // If the material is toggled off, ensure both layers are removed
+            if (mainMap.hasLayer(layer)) {
+                mainMap.removeLayer(layer);
+            }
+            if (mainMap.hasLayer(layer200)) {
+                mainMap.removeLayer(layer200);
+            }
+        }
+    });
+};
+
+// Toggle function to control layer visibility
+const toggleLayerVisibility = (layer, layer200, buttonId, material) => {
     const button = document.getElementById(buttonId);
 
-    if (mainMap.hasLayer(layer)) {
+    // Toggle visibility based on the current state
+    if (mainMap.hasLayer(layer) || mainMap.hasLayer(layer200)) {
+        // Remove both layers
         mainMap.removeLayer(layer);
-        button.classList.remove('on');  // Remove 'on' class to set the button to "off"
-        button.classList.add('off');    // Add 'off' class to reflect the "off" state
+        mainMap.removeLayer(layer200);
+        layerState[material] = false; // Mark as turned off
+        button.classList.remove('active');
+        button.classList.add('inactive');
     } else {
-        mainMap.addLayer(layer);
-        button.classList.remove('off');  // Remove 'off' class to set the button to "on"
-        button.classList.add('on');      // Add 'on' class to reflect the "on" state
+        // Add the appropriate layer based on the current zoom level
+        layerState[material] = true; // Mark as turned on
+        updateLayerVisibility(); // Update based on the current zoom level
+        button.classList.remove('inactive');
+        button.classList.add('active');
     }
 };
 
-// Button event listeners
+// Define grayscale OSM tile layer
+const grayscaleOSMLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+});
+// Define satellite imagery tile layer (Esri)
+const satelliteLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
+    {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    }
+);
+
+
+// Function to toggle grayscale OSM layer visibility
+const toggleOSMLayer = () => {
+    const button = document.getElementById('toggle-osm');
+
+    if (mainMap.hasLayer(grayscaleOSMLayer)) {
+        // Remove the grayscale OSM layer
+        mainMap.removeLayer(grayscaleOSMLayer);
+        button.classList.remove('active');
+        button.classList.add('inactive');
+    } else {
+        // Add the grayscale OSM layer
+        mainMap.addLayer(grayscaleOSMLayer);
+        button.classList.remove('inactive');
+        button.classList.add('active');
+    }
+};
+// Function to toggle satellite imagery layer visibility
+const toggleSatelliteLayer = () => {
+    const button = document.getElementById('toggle-satellite');
+
+    if (mainMap.hasLayer(satelliteLayer)) {
+        // Remove the satellite imagery layer
+        mainMap.removeLayer(satelliteLayer);
+        button.classList.remove('active');
+        button.classList.add('inactive');
+    } else {
+        // Add the satellite imagery layer
+        mainMap.addLayer(satelliteLayer);
+        button.classList.remove('inactive');
+        button.classList.add('active');
+    }
+};
+
+
+// Event listeners for toggling layers
 document.getElementById('toggleSteel').addEventListener('click', () => {
-    toggleLayerVisibility(steelLayer, 'toggleSteel');
+    toggleLayerVisibility(steelLayer, steelLayer200, 'toggleSteel', 'steel');
 });
-
 document.getElementById('toggleBrick').addEventListener('click', () => {
-    toggleLayerVisibility(brickLayer, 'toggleBrick');
+    toggleLayerVisibility(brickLayer, brickLayer200, 'toggleBrick', 'brick');
 });
-
 document.getElementById('toggleGlass').addEventListener('click', () => {
-    toggleLayerVisibility(glassLayer, 'toggleGlass');
+    toggleLayerVisibility(glassLayer, glassLayer200, 'toggleGlass', 'glass');
 });
-
 document.getElementById('toggleConcrete').addEventListener('click', () => {
-    toggleLayerVisibility(concreteLayer, 'toggleConcrete');
+    toggleLayerVisibility(concreteLayer, concreteLayer200, 'toggleConcrete', 'concrete');
+});
+document.getElementById('toggleStone').addEventListener('click', () => {
+    toggleLayerVisibility(stoneLayer, stoneLayer200, 'toggleStone', 'stone');
 });
 
-document.getElementById('toggleStone').addEventListener('click', () => {
-    toggleLayerVisibility(stoneLayer, 'toggleStone');
+// Event listener for toggling OSM layer
+document.getElementById('toggle-osm').addEventListener('click', toggleOSMLayer);
+// Ensure the OSM layer is inactive by default
+if (mainMap.hasLayer(grayscaleOSMLayer)) {
+    mainMap.removeLayer(grayscaleOSMLayer);
+}
+
+// Event listener for toggling satellite imagery layer
+document.getElementById('toggle-satellite').addEventListener('click', toggleSatelliteLayer);
+// Ensure the satellite imagery layer is inactive by default
+if (mainMap.hasLayer(satelliteLayer)) {
+    mainMap.removeLayer(satelliteLayer);
+}
+
+
+// Restore visibility on zoomend (with the correct layer visibility)
+mainMap.on('zoomend', () => {
+    updateLayerVisibility();
 });
+
+
 
 
 
@@ -162,7 +454,7 @@ document.getElementById('toggleStone').addEventListener('click', () => {
 
 // Geojson background----------------------------------------------
 // Fetch and load the GeoJSON file
-fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.geojson')
+fetch('data/coastline.geojson')
     .then(response => response.json())
     .then(data => {
         // Check if the #mainMap element has the 'darkmode' class
@@ -203,7 +495,7 @@ fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/coastline.
     let lockedData = null; // Variable to store the fixed values when clicked
     let isHovering = false; // Flag to check if currently hovering over a GeoJSON feature
     
-    fetch('https://raw.githubusercontent.com/halfward/UrbanVein/main/data/hex_all.geojson')
+    fetch('data/hex_all.geojson')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Error loading GeoJSON file');
@@ -413,12 +705,12 @@ const config = {
                     },
                     z: 2,
                     color: '#bfcdcd', 
-                    padding: 0,
                     font: {
                         family: 'Poppins',
                         weight: '500'
-                    }
-                }
+                    },
+                    backdropColor: 'rgba(0, 0, 0, 0)', 
+                },
             }
         },
         plugins: {
@@ -733,7 +1025,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.text();
         })
         .then(data => {
-            console.log('Fetched version history content:', data); 
             const lines = data.split('\n');
             let firstVersion = '';
 
@@ -833,9 +1124,19 @@ document.addEventListener('DOMContentLoaded', () => {
     guidePopup.style.display = 'flex';
 
     // Open guide popup when the guide button is clicked
-    guideButton.addEventListener('click', () => {
+    guideButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the document click event from firing
         guidePopup.classList.remove('hidden');
         guidePopup.style.display = 'flex';
+    });
+    // Close guide popup on clicking outside
+    document.addEventListener('click', (event) => {
+        if (guidePopup && !guidePopup.contains(event.target)) {
+            guidePopup.classList.add('hidden'); // Add the hidden class
+            setTimeout(() => {
+                guidePopup.style.display = 'none'; // Completely hide after animation
+            }, 500);
+        }
     });
 });
 
@@ -1396,37 +1697,6 @@ window.addEventListener('scroll', adjustHeight);
 
 
 
-// Map layer control-------------------------------------------------
-    new Sortable(document.getElementById('sortable-list'), {
-        animation: 150, // for smooth dragging
-    });
-
-// Set the toggle-material button as active by default
-const toggleMaterialButton = document.getElementById('toggle-material');
-if (toggleMaterialButton) {
-    toggleMaterialButton.classList.add('active');
-    const img = toggleMaterialButton.querySelector('img');
-    if (img) {
-        img.src = 'images/show.svg'; // Set the "active" icon
-    }
-}
-
-// Toggle buttons
-document.querySelectorAll('.show-toggle').forEach(button => {
-    button.addEventListener('click', function () {
-        const img = this.querySelector('img');
-        
-        if (this.classList.contains('active')) {
-            this.classList.remove('active');
-            img.src = 'images/hide.svg'; // Switch back to "hide" icon
-        } else {
-            this.classList.add('active');
-            img.src = 'images/show.svg'; // Switch to "show" icon
-        }
-    });
-});
-
-console.log(layerGroup);
 
 
 // Layer toggle

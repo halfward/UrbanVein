@@ -4,13 +4,26 @@ body, html {
     height: 100%;
     overflow: hidden; 
     background-color: rgb(255, 255, 255);
+    cursor: none
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
     line-height: 1rem;
 }
 
+
+/* Cursor */
+#customCursor {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    border-radius: 50%;
+    pointer-events: none; 
+    transform: translate(-50%, -50%); 
+    z-index: 9999; 
+}
 /* Change the background and text color when text is selected */
 ::selection {
     background-color: #dfdfdf; 
@@ -52,9 +65,11 @@ a {
     color: #585f5f !important;
     background-color: #dee1e4;
     text-decoration: none; 
+    transition: background-color ease 0.3s;
 }
 a:hover {
     color: black !important;
+    background-color: white;
 }
 a:visited {
     color: #8f9a9a;
@@ -77,7 +92,7 @@ a:active {
     top: 0;
     width: 360px;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(15px); 
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
     z-index: 1000;
@@ -159,7 +174,7 @@ a:active {
 .popup-content {
     width: 100%; 
     max-height: 100%;
-    padding: 25px 40px 10px 40px;
+    padding: 25px 40px 0px 40px;
     background-color: white;
     border-bottom: 1.5px solid #bfcdcd;
     overflow-wrap: break-word;
@@ -171,6 +186,10 @@ a:active {
     scrollbar-color: #bfcdcd transparent;
     transform: translateY(-150%); 
     animation: slideDownContent 0.5s ease forwards; 
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: flex-start; 
 }
 #guidePopup {
     height: 100%;
@@ -357,7 +376,7 @@ p-popup {
     padding-bottom: 3px;
     margin: 0;
     margin-right: -1.5px;
-    color: #b0bdbd;
+    color: #8f9a9a;
     cursor: pointer; 
     text-align: center;
     transition: background-color 0.3s ease; 
@@ -456,7 +475,17 @@ p {
     margin-top: 0;
     margin-bottom: 2rem;
 }
-
+sup {
+    font-size: 0.8em;
+    vertical-align: super; 
+    background-color: #cfd7d7;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 1px 4px;
+    margin-left: auto;
+    display: inline-block;
+    text-align: right;
+}
 
 
 #sortable-list {
@@ -466,7 +495,7 @@ p {
 .layer {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Ensures items are spaced across the row */
+    justify-content: flex-end;
     cursor: pointer;
     background-color: rgba(186, 197, 197, 0.2);
     border: #bfcdcd solid 1.5px;
@@ -486,7 +515,7 @@ p {
 }
 .show-toggle {
     height: 24px;
-    margin-left: auto;
+    margin-left: 4px;
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -562,15 +591,21 @@ canvas {
 }
 #collapsePopup {
     position: absolute;
+    display: inline-block;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.2rem;
+    font-size: 2.8rem;
     font-weight: 500;
     color: #bfcdcd;
     background-color: transparent;
     border: none;
-    transition: color 0.3s ease, letter-spacing 0.3s ease;
+    transition: color 0.3s ease;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 20px;
+    margin-top: auto;
 }
+
 #collapsePopup:hover {
     color: black;
 }
@@ -578,6 +613,7 @@ canvas {
     flex: 0 0 100%; 
     display: none; 
     flex-direction: column;
+    position: relative;
     transition: opacity 0.5s ease;
 }
 .popup-slide.active {

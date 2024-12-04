@@ -1,24 +1,27 @@
 to-do list:
 - chart.js tooltip should display material weight ranges.
-- different bin sizes for different zoom levels.
 - apply hexbinned geojson for tooltip info.
-- guide button doesn't work now. also use the popup format for guide.
-- typical typology diagrams (use value + js to dynamically update?)
+- **typical typology diagrams & weights
 - use scrollama to add presentation as a single story.
-- put a qr code on the poster.
+- add layer transparancy & order functions.
 
 - some utf-8 characters aren't displaying on iphone (safari and chrome)
 - use maplibre instead of leaflet.
 - motivate the problem / anecdotes
 
-alpha 0.2.2 (2024-11-29)
+alpha 0.2.2 (2024-12-01)
 - map change: added the other four boroughs.
+- map change: added different bin sizes for different zoom levels.
 - map change: changed the renderer to canvas and disabled the hardlight modes for better performance.
-- map change: adjusted the quantile (overall smaller)
-- modified ticker info.
+- added greyscale osm, arcgis satellite imagery, and their layer toggles.
+- added layer toggle types.
+- adjusted ticker info.
+- adjusted the layer toggle logic so that the d3 graphic can be toggled on/off.
 - adjusted all popup logic (incl. using the 🞃 symbol for all popup access.)
 - implemented splide for the visualization archive.
 - changed intro diagram.
+- refined the guide diagram.
+- fixed the guide button.
 
 alpha 0.2.1 (2024-11-24)
 - visual overhaul, incl. font, color, symbologies, and layout.

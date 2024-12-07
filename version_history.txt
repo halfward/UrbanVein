@@ -1,5 +1,4 @@
 to-do list:
-- **large geojson to github.
 - **apply hexbinned geojson for tooltip info.
 - **typical typology diagrams & weights
 - chart.js tooltip should display material weight ranges.

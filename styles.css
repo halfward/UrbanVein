@@ -4,7 +4,6 @@ body, html {
     height: 100%;
     overflow: hidden; 
     background-color: rgb(255, 255, 255);
-    cursor: none
 }
 
 body {
@@ -13,17 +12,7 @@ body {
 }
 
 
-/* Cursor */
-#customCursor {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: black;
-    border-radius: 50%;
-    pointer-events: none; 
-    transform: translate(-50%, -50%); 
-    z-index: 9999; 
-}
+
 /* Change the background and text color when text is selected */
 ::selection {
     background-color: #dfdfdf; 
@@ -673,10 +662,12 @@ canvas {
     color: #585f5f; 
     padding-top: 1px;
     padding-bottom: 1px;
+    padding-left: 0;
+    padding-right: 0;
     border: 0px; 
     border-radius: 0px;
     font-weight: 600;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
     transform: translateX(40px);
@@ -834,7 +825,6 @@ canvas {
     width: 100%;
     height: 100vh;
     background-color: #e1e4e4;
-    cursor: none;
 }
 .leaflet-pane.leaflet-blur-pane {
     filter: blur(5px); 

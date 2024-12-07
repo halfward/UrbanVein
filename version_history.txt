@@ -1,20 +1,30 @@
 to-do list:
-- chart.js tooltip should display material weight ranges.
-- apply hexbinned geojson for tooltip info.
+- **large geojson to github.
+- **apply hexbinned geojson for tooltip info.
 - **typical typology diagrams & weights
+- chart.js tooltip should display material weight ranges.
 - use scrollama to add presentation as a single story.
-- add layer transparancy & order functions.
+- add/refine layer transparancy & order functions.
 
 - some utf-8 characters aren't displaying on iphone (safari and chrome)
 - use maplibre instead of leaflet.
 - motivate the problem / anecdotes
 
+alpha 0.2.4 (2024-12-07)
+- added colloquium poster.
+
+alpha 0.2.3 (2024-12-04)
+- added greyscale osm, arcgis satellite imagery, nyc zoning, and their layer toggles.
+- added layer order function for tile layers.
+- added layer toggle types.
+- removed rose chart ticks.
+- fixed a bug to make the real-time rose chart update work again (by disabling the d3 layers' circle interactions.)
+
 alpha 0.2.2 (2024-12-01)
 - map change: added the other four boroughs.
 - map change: added different bin sizes for different zoom levels.
 - map change: changed the renderer to canvas and disabled the hardlight modes for better performance.
-- added greyscale osm, arcgis satellite imagery, and their layer toggles.
-- added layer toggle types.
+- added signature (hao-lee.png) in the lower left corner.
 - adjusted ticker info.
 - adjusted the layer toggle logic so that the d3 graphic can be toggled on/off.
 - adjusted all popup logic (incl. using the 🞃 symbol for all popup access.)

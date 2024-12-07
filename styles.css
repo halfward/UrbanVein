@@ -40,6 +40,18 @@ body {
     color: #000000;
 }
 
+/* Signature */
+#hao-lee {
+    position: absolute;
+    width: 5vh;
+    margin: 25px;
+    bottom: 0;
+    z-index: 1000;
+    opacity: 0.3;
+    mix-blend-mode: multiply;
+}
+
+
 
 /* Tutorial */
 .overlay {
@@ -111,7 +123,7 @@ a:active {
     padding: 8px 0px;
     cursor: pointer;
     z-index: 1001; 
-    background-color: #bfcdcd;
+    background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(10px); 
     border: 1.5px solid #bfcdcd; 
     border-top-left-radius: 0;
@@ -504,6 +516,7 @@ sup {
     margin: 4px 0;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
+    font-size: 0.85rem;
     transition: background-color 0.3s ease;
     cursor: all-scroll;
 }
@@ -696,7 +709,7 @@ canvas {
     margin-top: -5px;
     color: black;
 }
-#layerControls button.off {
+#layerControls button.inactive {
     background-color: transparent;
 }
 
@@ -821,6 +834,7 @@ canvas {
     width: 100%;
     height: 100vh;
     background-color: #e1e4e4;
+    cursor: none;
 }
 .leaflet-pane.leaflet-blur-pane {
     filter: blur(5px); 

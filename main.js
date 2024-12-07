@@ -127,7 +127,8 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
                 fillOpacity: 0.65,
                 opacity: 1,
                 fillRule: 'evenodd',
-                className: `leaflet-circle-${material}`
+                className: `leaflet-circle-${material}`,
+                interactive: false
             });
 
             circle.addTo(layerGroup);
@@ -167,7 +168,8 @@ const addMaterialMarkers200 = (geojsonData, material, color, columnName, layerGr
                 fillOpacity: 0.65,
                 opacity: 1,
                 fillRule: 'evenodd',
-                className: `leaflet-circle-${material}`
+                className: `leaflet-circle-${material}`,
+                interactive: false
             });
 
             circle.addTo(layerGroup);
@@ -235,12 +237,134 @@ d3.json('data/nycBinnedCentroidsMaterial_200Wgs84.geojson').then(geojsonData => 
 
 
 
+// Additional layers--------------------------------------------------
+
+// Define satellite imagery tile layer (Esri)
+const satelliteLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
+    {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    }
+);
+
+// Create custom pane for the satellite layer with z-index
+const satellitePane = mainMap.createPane('satellitePane');
+satellitePane.style.zIndex = 100; // Set the z-index for satellite layer
+satellitePane.style.pointerEvents = 'none'; // Disable interaction for the satellite layer (optional)
+
+// Define grayscale OSM tile layer
+const grayscaleOSMLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+    subdomains: 'abcd',
+});
+
+// Create custom pane for the grayscale OSM layer with z-index
+const grayscaleOSMPane = mainMap.createPane('grayscaleOSMPane');
+grayscaleOSMPane.style.zIndex = 75; // Set the z-index for grayscale OSM layer
+grayscaleOSMPane.style.pointerEvents = 'none'; // Disable interaction for the OSM layer (optional)
+
+// Define zoning geojson layer
+let zoningLayer; // Declare globally for toggle functionality
+
+fetch('data/nyzd.geojson')
+    .then(response => response.json())
+    .then(data => {
+        // Create a custom pane for the GeoJSON layer
+        const zoningPane = mainMap.createPane('zoningPane');
+        zoningPane.style.zIndex = 50; 
+        zoningPane.style.pointerEvents = 'auto'; // Enable interactions if needed
+
+        // Function to determine fill color based on ZONEDIST property
+        const getFillColor = (zonedist) => {
+            if (zonedist.startsWith('R')) return 'lightgrey';
+            if (zonedist.startsWith('C')) return 'darkgrey';
+            if (zonedist.startsWith('M')) return 'grey';
+            if (zonedist.startsWith('P')) return 'transparent';
+            return 'transparent';
+        };
+
+        // Initialize the GeoJSON layer
+        zoningLayer = L.geoJSON(data, {
+            style: (feature) => {
+                const fillColor = getFillColor(feature.properties.ZONEDIST);
+                return {
+                    weight: 1,                  // Border weight
+                    color: fillColor,           // Border color
+                    fillColor: fillColor,       // Fill color
+                    fillOpacity: 1              // Fill opacity
+                };
+            },
+            pane: 'zoningPane'
+        });
+
+        // Now that zoningLayer is initialized, add it to the layers object
+        layers.zoningLayer = zoningLayer; // Add zoningLayer dynamically to layers
+    })
+    .catch(error => console.error('Error loading GeoJSON:', error));
+
+
+
+
+
 
 
 // Map layer control-------------------------------------------------
+const layers = {
+    grayscaleOSMLayer,
+    satelliteLayer,
+    // zoningLayer dynamically added here.
+    // Add other layers here as needed
+};
+
+// Function to update the z-index based on the layer order
+function updateLayerZIndexes() {
+    // Get the current order of the layers from the sortable list
+    const layerOrder = Array.from(document.getElementById('sortable-list').children);
+
+    layerOrder.forEach((item, index) => {
+        const layerName = item.getAttribute('data-layer'); // Assuming each item has a data-layer attribute
+        const layer = layers[layerName];
+
+        if (layer) {
+            // Set the z-index based on the index in the sorted list
+            // Higher z-index for layers that come first in the list (top-most layers)
+            layer.getPane().style.zIndex = 100 - index; // Adjust 100 as needed for default spacing
+        }
+    });
+}
+
+// Initialize Sortable functionality for the list
 new Sortable(document.getElementById('sortable-list'), {
-    animation: 150, // for smooth dragging
+    animation: 150,
+    onEnd: () => {
+        updateLayerZIndexes(); // Ensure the z-index is updated after sorting
+    },
 });
+
+
+
+function updateLayerZIndexes() {
+    const sortableItems = document.getElementById('sortable-list').children;
+    
+    // Loop through the sorted items
+    Array.from(sortableItems).forEach((item, index) => {
+        const layerName = item.dataset.layer;
+        const layer = layers[layerName]; // Get the layer object from your layers collection
+        
+        if (layer) {
+            // Set the new z-index and log for debugging
+            layer.setZIndex(100 - index);
+            console.log(`${layerName} updated to z-index: ${100 - index}`);
+        } else {
+            console.log(`Layer ${layerName} not found.`);
+        }
+    });
+}
+
+
+
+
+
 
 // Set the toggle-material button as active by default
 const toggleMaterialButton = document.getElementById('toggle-material');
@@ -358,19 +482,15 @@ const toggleLayerVisibility = (layer, layer200, buttonId, material) => {
     }
 };
 
-// Define grayscale OSM tile layer
-const grayscaleOSMLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: 'abcd',
-});
-// Define satellite imagery tile layer (Esri)
-const satelliteLayer = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
-    {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-    }
-);
 
+
+
+
+
+// Define z-index for each layer
+const Z_INDEX_SATELLITE = 115;
+const Z_INDEX_OSM = 110;
+const Z_INDEX_ZONING = 105; 
 
 // Function to toggle grayscale OSM layer visibility
 const toggleOSMLayer = () => {
@@ -384,10 +504,12 @@ const toggleOSMLayer = () => {
     } else {
         // Add the grayscale OSM layer
         mainMap.addLayer(grayscaleOSMLayer);
+        grayscaleOSMLayer.getPane().style.zIndex = Z_INDEX_OSM; // Ensure z-index is correct
         button.classList.remove('inactive');
         button.classList.add('active');
     }
 };
+
 // Function to toggle satellite imagery layer visibility
 const toggleSatelliteLayer = () => {
     const button = document.getElementById('toggle-satellite');
@@ -400,10 +522,35 @@ const toggleSatelliteLayer = () => {
     } else {
         // Add the satellite imagery layer
         mainMap.addLayer(satelliteLayer);
+        satelliteLayer.getPane().style.zIndex = Z_INDEX_SATELLITE; // Ensure z-index is correct
         button.classList.remove('inactive');
         button.classList.add('active');
     }
 };
+
+// Function to toggle zoning layer visibility
+const toggleZoningLayer = () => {
+    const button = document.getElementById('toggle-zoning');
+
+    if (zoningLayer) { // Ensure the layer is defined before toggling
+        if (mainMap.hasLayer(zoningLayer)) {
+            // Remove the zoning layer
+            mainMap.removeLayer(zoningLayer);
+            button.classList.remove('active');
+            button.classList.add('inactive');
+        } else {
+            // Add the zoning layer
+            mainMap.addLayer(zoningLayer);
+            zoningLayer.getPane().style.zIndex = Z_INDEX_ZONING; // Ensure z-index is correct
+            button.classList.remove('inactive');
+            button.classList.add('active');
+        }
+    } else {
+        console.error('Zoning layer is not yet loaded.');
+    }
+};
+
+
 
 
 // Event listeners for toggling layers
@@ -437,11 +584,21 @@ if (mainMap.hasLayer(satelliteLayer)) {
     mainMap.removeLayer(satelliteLayer);
 }
 
+// Event listener for toggling zoning layer
+document.getElementById('toggle-zoning').addEventListener('click', toggleZoningLayer);
+
 
 // Restore visibility on zoomend (with the correct layer visibility)
 mainMap.on('zoomend', () => {
     updateLayerVisibility();
 });
+
+
+
+
+
+
+
 
 
 
@@ -647,7 +804,7 @@ fetch('data/coastline.geojson')
             });
     
             // Set the z-index to ensure it's above any other layers
-            geojsonLayer.setZIndex(10);
+            geojsonLayer.setZIndex(9999);
         })
         .catch(error => {
             console.error('Error loading GeoJSON data:', error);
@@ -704,7 +861,7 @@ const config = {
                         return romanNumerals[value]; 
                     },
                     z: 2,
-                    color: '#bfcdcd', 
+                    color: 'transparent', 
                     font: {
                         family: 'Poppins',
                         weight: '500'
@@ -860,8 +1017,9 @@ function createPolarAreaConfig(data) {
                             return romanNumerals[value];
                         },
                         z: 2,
-                        color: '#8f9a9a',
+                        color: 'transparent',
                         padding: 0,
+                        backdropColor: 'rgba(0, 0, 0, 0)', 
                     }
                 }
             },
@@ -1129,10 +1287,10 @@ document.addEventListener('DOMContentLoaded', () => {
         guidePopup.classList.remove('hidden');
         guidePopup.style.display = 'flex';
     });
-    // Close guide popup on clicking outside
+    // Close guide popup on clicking anywhere (inside or outside)
     document.addEventListener('click', (event) => {
-        if (guidePopup && !guidePopup.contains(event.target)) {
-            guidePopup.classList.add('hidden'); // Add the hidden class
+        if (guidePopup && !guidePopup.classList.contains('hidden')) {
+            guidePopup.classList.add('hidden'); // Add the hidden class to hide it
             setTimeout(() => {
                 guidePopup.style.display = 'none'; // Completely hide after animation
             }, 500);
@@ -1554,35 +1712,6 @@ function adjustHeight() {
 
 
 
-
-
-
-
-
-
-
-// Options
-document.addEventListener("DOMContentLoaded", () => {
-    const optionsIcon = document.getElementById("optionsIcon");
-    const optionsPopup = document.getElementById("options-popup");
-  
-    optionsIcon.addEventListener("click", () => {
-      // Toggle the display of the pop-up
-      if (optionsPopup.style.display === "none" || optionsPopup.style.display === "") {
-        optionsPopup.style.display = "block";
-      } else {
-        optionsPopup.style.display = "none";
-      }
-    });
-  
-    // Optional: Hide the pop-up if clicking outside of it
-    document.addEventListener("click", (event) => {
-      if (!optionsPopup.contains(event.target) && !optionsIcon.contains(event.target)) {
-        optionsPopup.style.display = "none";
-      }
-    });
-  });
-  
 
 
 

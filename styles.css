@@ -43,7 +43,7 @@ body {
 /* Signature */
 #hao-lee {
     position: absolute;
-    width: 5vh;
+    width: 3.5vh;
     margin: 25px;
     bottom: 0;
     z-index: 1000;
@@ -676,7 +676,7 @@ canvas {
     border: 0px; 
     border-radius: 0px;
     font-weight: 600;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
     transform: translateX(40px);

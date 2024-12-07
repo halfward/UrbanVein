@@ -10,6 +10,8 @@ to-do list:
 - motivate the problem / anecdotes
 
 alpha 0.2.4 (2024-12-07)
+- map change: splited nycBinnedCentroidsMaterialWgs84.geojson into two parts.
+- added a python splitter for 100mb+ geojson files.
 - added colloquium poster.
 
 alpha 0.2.3 (2024-12-04)

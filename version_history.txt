@@ -7,7 +7,6 @@ to-do list:
 - add/refine layer transparancy & order functions.
 
 - some utf-8 characters aren't displaying on iphone (safari and chrome)
-- use maplibre instead of leaflet.
 - motivate the problem / anecdotes
 
 alpha 0.2.4 (2024-12-07)

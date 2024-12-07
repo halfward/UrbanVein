@@ -181,10 +181,20 @@ const addMaterialMarkers200 = (geojsonData, material, color, columnName, layerGr
 
 
 // Load GeoJSON data for base layers---------------------------------
-d3.json('data/nycBinnedCentroidsMaterialWgs84.geojson').then(geojsonData => {
+Promise.all([
+    d3.json('data/nycBinnedCentroidsMaterialWgs84_A.geojson'),
+    d3.json('data/nycBinnedCentroidsMaterialWgs84_B.geojson')
+]).then(([geojsonDataA, geojsonDataB]) => {
+    // Combine the two GeoJSON datasets
+    const combinedGeojsonData = {
+        type: 'FeatureCollection',
+        features: [...geojsonDataA.features, ...geojsonDataB.features]
+    };
+
+    // Loop through each material type and add markers
     Object.keys(materialColumns).forEach(material => {
         addMaterialMarkers(
-            geojsonData, 
+            combinedGeojsonData, 
             material, 
             materialColors[material], 
             materialColumns[material], 
@@ -206,6 +216,7 @@ d3.json('data/nycBinnedCentroidsMaterialWgs84.geojson').then(geojsonData => {
 }).catch(error => {
     console.error('Error loading centroid GeoJSON:', error);
 });
+
 
 // Load GeoJSON data for 200 layers---------------------------------
 d3.json('data/nycBinnedCentroidsMaterial_200Wgs84.geojson').then(geojsonData => {

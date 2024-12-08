@@ -314,6 +314,38 @@ fetch('data/nyzd.geojson')
     .catch(error => console.error('Error loading GeoJSON:', error));
 
 
+// Define subway geojson layer
+let subwayLayer; // Declare globally for toggle functionality
+
+fetch('data/subwayLines.geojson')
+    .then(response => response.json())
+    .then(data => {
+        // Create a custom pane for the GeoJSON layer
+        const subwayPane = mainMap.createPane('subwayPane');
+        subwayPane.style.zIndex = 60; 
+        subwayPane.style.pointerEvents = 'auto'; // Enable interactions if needed
+
+        // Initialize the GeoJSON layer
+        subwayLayer = L.geoJSON(data, {
+            style: () => {
+                return {
+                    weight: 4,                  // Thick border weight
+                    color: 'black',             // Border color
+                    fillColor: 'transparent',   // No fill color
+                    fillOpacity: 0,             // Fully transparent fill
+                    opacity: 0.5                // Half-transparent border
+                };
+            },
+            pane: 'subwayPane'
+        });
+
+        // Now that subwayLayer is initialized, add it to the layers object
+        layers.subwayLayer = subwayLayer; // Add subwayLayer dynamically to layers
+    })
+    .catch(error => console.error('Error loading GeoJSON:', error));
+
+
+
 
 
 
@@ -561,7 +593,27 @@ const toggleZoningLayer = () => {
     }
 };
 
+// Function to toggle subway layer visibility
+const toggleSubwayLayer = () => {
+    const button = document.getElementById('toggle-zoning');
 
+    if (subwayLayer) { // Ensure the layer is defined before toggling
+        if (mainMap.hasLayer(subwayLayer)) {
+            // Remove the zoning layer
+            mainMap.removeLayer(subwayLayer);
+            button.classList.remove('active');
+            button.classList.add('inactive');
+        } else {
+            // Add the zoning layer
+            mainMap.addLayer(subwayLayer);
+            subwayLayer.getPane().style.zIndex = Z_INDEX_ZONING; // Ensure z-index is correct
+            button.classList.remove('inactive');
+            button.classList.add('active');
+        }
+    } else {
+        console.error('Subway layer is not yet loaded.');
+    }
+};
 
 
 // Event listeners for toggling layers
@@ -597,6 +649,9 @@ if (mainMap.hasLayer(satelliteLayer)) {
 
 // Event listener for toggling zoning layer
 document.getElementById('toggle-zoning').addEventListener('click', toggleZoningLayer);
+
+// Event listener for toggling subway layer
+document.getElementById('toggle-subway').addEventListener('click', toggleSubwayLayer);
 
 
 // Restore visibility on zoomend (with the correct layer visibility)
@@ -995,9 +1050,9 @@ function createDataObject(dataValues) {
 }
 
 // Creating the data objects
-const dataA = createDataObject([1, 2, 3, 4, 5]);
-const dataB = createDataObject([5, 4, 3, 4, 5]);
-const dataC = createDataObject([1, 2, 2, 3, 2]);
+const dataA = createDataObject([3, 5, 1, 1, 2]);
+const dataB = createDataObject([4, 1, 5, 3, 0]);
+const dataC = createDataObject([5, 1, 2, 4, 3]);
 
 
 function createPolarAreaConfig(data) {

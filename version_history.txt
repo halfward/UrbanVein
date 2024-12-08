@@ -4,12 +4,14 @@ to-do list:
 - chart.js tooltip should display material weight ranges.
 - use scrollama to add presentation as a single story.
 - add/refine layer transparancy & order functions.
+- put presentation pdf on website.
 
 - some utf-8 characters aren't displaying on iphone (safari and chrome)
 - motivate the problem / anecdotes
 
 alpha 0.2.4 (2024-12-07)
-- map change: splited nycBinnedCentroidsMaterialWgs84.geojson into two parts.
+- map change: splitted nycBinnedCentroidsMaterialWgs84.geojson into two parts.
+- added subway lines layer.
 - added a python splitter for 100mb+ geojson files.
 - added colloquium poster.
 

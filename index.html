@@ -111,17 +111,21 @@
             <!-- Rose Popup Modal -->
             <div id="rosePopup" class="popup hidden" style="display: none;">
                 <div class="popup-content" style="height: 289.5px; overflow: hidden;">
+                    <h3 style="margin: 0;">
+                        ▘if a hexagon grid only has...
+                    </h3>
+                    <br>
                     <div class="popup-slider">
                         <div class="popup-slide active">
-                            <p-popup><h3 style="margin: 0; font-size: 0.8rem;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
+                            <p-popup>early 20th century commercial high-rises, <br>like the flatiron building, <br>it would look like this:</p-popup>
                             <canvas id="RoseChartRefA"></canvas>
                         </div>
                         <div class="popup-slide">
-                            <p-popup><h3 style="margin: 0; font-size: 0.8rem;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
+                            <p-popup>post-2000 luxury residential towers, <br>like one57, <br>it would look like this:</p-popup>
                             <canvas id="RoseChartRefB"></canvas>
                         </div>
                         <div class="popup-slide">
-                            <p-popup><h3 style="margin: 0; font-size: 0.8rem;">early 20th century commercial high-rises</h3>built Year: 1900-1920<br>floor count: 10-20<br>example: the flatiron building</p-popup>
+                            <p-popup>industrial warehouses and factories, <br>like the brooklyn navy yard, <br>it would look like this:</p-popup>
                             <canvas id="RoseChartRefC"></canvas>
                         </div>
                     </div>
@@ -227,6 +231,9 @@
                 <p>
                     <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-gis-zoning.page">nyc gis zoning features</a><br>
                     by <a href="https://www.nyc.gov/site/planning/index.page">the department of city planning (dcp)</a>
+                    <br><br>
+                    <a href="https://data.cityofnewyork.us/Transportation/Subway-Lines/3qz8-muuu">nyc subway lines</a><br>
+                    by <a href="https://new.mta.info/">the metropolitan transportation authority (mta)</a>
                     <br><br>
                     <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">construction demolition registrants</a><br>
                     by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
@@ -408,6 +415,13 @@
                         <div class="layer-drag">☰</div>
                           nyc zoning districts  <sup> geojson </sup>
                         <button class="show-toggle" id="toggle-zoning"><img src="images/hide.svg" alt="Hide"></button>
+                    </h3>
+                </li>
+                <li data-layer="subwayLayer"></li>
+                    <h3 class="layer">
+                        <div class="layer-drag">☰</div>
+                          nyc subway lines  <sup> geojson </sup>
+                        <button class="show-toggle" id="toggle-subway"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li>

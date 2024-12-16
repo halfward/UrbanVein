@@ -30,18 +30,33 @@
 
             <span id="versionHistoryLink" class="clickable-text" style="margin-top: 19px; margin-left: 3px;color: #000000; font-size: 0.8rem; display: block;"></span>
 
-            <!-- Tutorial Popup Modal-->
+            <!-- Overview Popup Modal-->
             <div id="guidePopup" class="popup hidden" style="display: none;">
                 <div id="guidePopup-content" class="popup-content">
-                    <h3 style="margin-top: 0;">▘welcome to urban vein!</h3>
-                    
-                    <h2 style="line-height: 1; font-size: 0.9rem; color: #585f5f; font-weight: 500;">
-                        urban vein visualizes nyc's building material composition and distribution.
+                    <h3 style="margin-top: 0;">▘welcome to urban vein! <b>click anywhere to continue</b>, or read more about this project below:</h3>
+                    <br>
+                    <h2 style="line-height: 1.2; font-size: 0.9rem; color: #585f5f; font-weight: 400;">
+                        by mapping the material composition of new york city’s buildings, we can uncover patterns of urban transformation that inform preservation, demolition, and future construction decisions.
+                    </h2>
+                    <br>
+                    <img src="images/guide-diagram.webp" alt="Intro" class="intro">
+                    <br><br>
+                    <h2 style="line-height: 1.2; font-size: 0.9rem; color: #585f5f; font-weight: 400;">
+                        what is urban vein?<br><br>
+                        urban vein is a dynamic web platform that reimagines new york city’s evolving identity through the lens of its building materials. this project bridges computation, design, and storytelling, offering spatial decision-makers the tools to identify trends and uncover patterns. it visualizes material archetypes across scales and explores temporal dimensions through historical and speculative narratives. at stake is the question of sustainability and urban memory. urban vein invites us to consider how material knowledge might guide responsible design practices in an ever-changing cityscape.
+                        <br><br><br>
+                        why is this important?<br><br>
+                        urban vein is an analytic and narrative tool that explores material histories, promotes sustainable urban practices, and challenges conventional demolition-preservation dynamics. it operates across scales—from the micro (individual buildings) to the macro (city-wide trends)—while fostering new practices in spatial storytelling.<br>
+                        through its focus on material life cycles and speculative timelines, urban vein invites users to engage with critical questions of sustainability and urban identity, presenting data in an interactive, participatory manner. the platform prioritizes user accessibility and narrative clarity, aiming to inspire informed decision-making for the built environment.
+                        <br><br><br>
+                        how does it work?<br><br>
+                        urban vein uses open data to estimate material compositions for the majority of its buildings. machine learning models analyze building age, size, and use to identify material archetypes, leveraging reference data where exact information is unavailable. these material archetypes inform a dynamic d3.js-based visualization that overlays five material layers.<br>
+                        this computational workflow affords granular insights into urban material trends. it enables seamless user interaction with layered data, offering toggles, hover functions, and future timeline animations. these methods transform abstract data into tangible actions to aid contextualizing material flows.
                     </h2>
                     <br><br>
-                    <h2 style="line-height: 1; font-size: 1rem; color: black; font-weight: 700;">click anywhere to continue.</h2>
+                    
                     <br><br>
-                    <img src="images/guide-diagram.webp" alt="Intro" class="intro">
+                    
                 </div>
             </div>
     
@@ -101,7 +116,7 @@
                     </button>
                     <button class="layer" id="guideButton">
                     <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/guide.svg" alt="Guide Icon" class="popup-icon">
-                    <span style="color: #585f5f;">guide</span>
+                    <span style="color: #585f5f;">overview</span>
                     </button>
                     <br>
                 </div>

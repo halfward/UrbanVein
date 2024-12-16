@@ -4,10 +4,15 @@ to-do list:
 - chart.js tooltip should display material weight ranges.
 - use scrollama to add presentation as a single story.
 - add/refine layer transparancy & order functions.
-- put presentation pdf on website.
+- add soil type.
 
 - some utf-8 characters aren't displaying on iphone (safari and chrome)
 - motivate the problem / anecdotes
+
+alpha 0.2.5 (2024-12-16)
+- changed the guide tab name to "overview" instead.
+- added some text for the overview tab.
+- fixed the issue where the version history tab wasn't displaying its full height.
 
 alpha 0.2.4 (2024-12-07)
 - map change: splitted nycBinnedCentroidsMaterialWgs84.geojson into two parts.

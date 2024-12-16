@@ -151,6 +151,9 @@ a:active {
     text-decoration: underline;
     color: #a1b3b3; 
 }
+#versionHistoryContent {
+    margin-right: 25px;
+}
 
 
 
@@ -174,6 +177,7 @@ a:active {
 }
 .popup-content {
     width: 100%; 
+    height: 100vh;
     max-height: 100%;
     padding: 25px 40px 0px 40px;
     background-color: white;

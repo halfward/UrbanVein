@@ -123,7 +123,7 @@
                 
             </div>
             
-            <!-- Rose Popup Modal -->
+            <!-- Rose Popup Modal
             <div id="rosePopup" class="popup hidden" style="display: none;">
                 <div class="popup-content" style="height: 289.5px; overflow: hidden;">
                     <h3 style="margin: 0;">
@@ -148,13 +148,13 @@
                     <button id="prevSlide" class="popup-arrow">🡰</button>
                     <button id="nextSlide" class="popup-arrow">🡲</button>
                 </div>
-            </div>
+            </div> -->
 
         </div>        
         
         <div class="nav-button" id="aboutButton">ABOUT</div>
         <div class="nav-button" id="storiesButton">STORIES</div>
-        <div class="nav-button" id="explorerButton">EXPLORER</div>
+        <div class="nav-button" id="explorerButton">LAYERS</div>
         <div class="options-icon" id="optionsIcon">🞳</div>
         
         <hr class="sidebar-line">
@@ -163,6 +163,8 @@
         <div id="aboutContentText" class="content-text" style="display: none;">
             <h2>brick by brick</h2>
             <p>
+                this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.
+                <br><br>
                 urban vein is developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>. the project was guided by (in semester & alphabetical orders) william martin, violet witney, laura kurgan, snoweria zhang, catherine griffith, and seth thompson.</p>
         </div>
     
@@ -172,8 +174,8 @@
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
-            <h2>building material distribution</h2>
-            <p>this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.</p>
+            <h2>guide guide guide</h2>
+            <p>guide guide guide</p>
         </div>
 
         <!-- About -->
@@ -201,21 +203,14 @@
         <hr class="sidebar-line-2a">
         <hr class="sidebar-line-2b">
 
-
-        <div id="Chart">
+        <!-- <div id="Chart">
             <canvas id="RoseChart"></canvas>
             <p id="roseInfo" class="info-icon">compare 🞃</p>
             
         </div>
-        
+         -->
 
-        <div id="layerControls">
-            <button id="toggleBrick">BRICK</button>
-            <button id="toggleConcrete">CONCRETE</button>
-            <button id="toggleGlass">GLASS</button>
-            <button id="toggleStone">STONE</button>
-            <button id="toggleSteel">STEEL</button>
-        </div>
+        <div id="layerControls"></div>
         
         <div id="scrollableTextData" class="scrollable-text-about" style="display: none;">
                 <h3>▘<a id="materialInfo" class="info-link">material estimate 🞃</a> </h3>
@@ -501,11 +496,153 @@
 
     </div>
     <button id="toggleButton">
-        <svg id="toggleIcon" width="24" height="24" viewBox="0 0 24 24">
-            <path d="M14 7l-7 7 7 7" stroke="currentColor" />
-        </svg>
+        <img src="images/collapse.svg" alt="toggle" id="toggleIcon">
     </button>
 
+    <div id="panelContainer">
+        <div id="panelBuilding">
+            <div class="panelTitle" id="panelTitleBuilding">
+                BUILDING TYPE BROWSER
+                <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleBuilding">
+            </div>
+            <div class="panelContent" id="panelContentBuilding">
+                <div class="popup-slider">
+                    <div class="popup-slide active">
+                        <p-popup>early 20th century commercial high-rises, <br>like the flatiron building</p-popup>
+                        <canvas id="RoseChartRefA"></canvas>
+                    </div>
+                    <div class="popup-slide">
+                        <p-popup>post-2000 luxury residential towers, <br>like one57</p-popup>
+                        <canvas id="RoseChartRefB"></canvas>
+                    </div>
+                    <div class="popup-slide">
+                        <p-popup>industrial warehouses and factories, <br>like the brooklyn navy yard</p-popup>
+                        <canvas id="RoseChartRefC"></canvas>
+                    </div>
+                </div>
+                
+                <div class="circle-container">
+                    <img src="images/collapse.svg" alt="previous" class="popup-arrow" id="prevSlide">
+                    <div class="circle">1</div>
+                    <div class="circle">2</div>
+                    <div class="circle">3</div>
+                    <div class="circle">4</div>
+                    <div class="circle">5</div>
+                    <div class="circle">6</div>
+                    <div class="circle">7</div>
+                    <div class="circle">8</div>
+                    <div class="circle">9</div>
+                    <div class="circle">10</div>
+                    <div class="circle">11</div>
+                    <div class="circle">12</div>
+                    <div class="circle">13</div>
+                    <img src="images/collapse.svg" alt="next" class="popup-arrow" id="nextSlide">
+                </div>
+            </div>
+        </div>
+        
+        <div id="panelMaterial">
+            <div class="panelTitle" id="panelTitleMaterial">
+                TILE MATERIAL COMPOSITION
+                <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleMaterial">
+            </div>
+            <div class="panelContent" id="panelContentMaterial">
+                <div id="chart">
+                    <canvas id="Rose"></canvas>
+                </div>
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle1" class="toggle-input" checked>
+                    <label for="toggle1" class="toggle-label toggle-color1"></label>
+                    <div id="toggleText1" class="toggle-text">brick</div>
+                    <div class="info-text line"></div>
+                    <div class="toggle-value right">xxxM tn</div>
+                </div>
+                
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle2" class="toggle-input" checked>
+                    <label for="toggle2" class="toggle-label toggle-color2"></label>
+                    <div id="toggleText2" class="toggle-text">concrete</div>
+                    <div class="info-text line"></div>
+                    <div class="toggle-value right">xxxM tn</div>
+                </div>
+                
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle3" class="toggle-input" checked>
+                    <label for="toggle3" class="toggle-label toggle-color3"></label>
+                    <div id="toggleText3" class="toggle-text">glass</div>
+                    <div class="info-text line"></div>
+                    <div class="toggle-value right">xxxK tn</div>
+                </div>
+                
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle4" class="toggle-input" checked>
+                    <label for="toggle4" class="toggle-label toggle-color4"></label>
+                    <div id="toggleText4" class="toggle-text">stone</div>
+                    <div class="info-text line"></div>
+                    <div class="toggle-value right">xxxM tn</div>
+                </div>
+                
+                <div class="toggle-container">
+                    <input type="checkbox" id="toggle5" class="toggle-input" checked>
+                    <label for="toggle5" class="toggle-label toggle-color5"></label>
+                    <div id="toggleText5" class="toggle-text">steel</div>
+                    <div class="info-text line"></div>
+                    <div class="toggle-value right">xxxM tn</div>
+                </div>
+                
+            </div>
+        </div>
+        <div id="panelTile">
+            <div class="panelTitle" id="panelTitleInfo">
+                TILE INFO
+                <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleInfo">
+            </div>
+            <div class="panelContent" id="panelContentInfo">
+                <div class="info-text-container">
+                    <div class="info-text left">borough</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">Manhattan</div>
+                </div>                
+                <br>
+                <div class="info-text-container">
+                    <div class="info-text left">zoning type(s)</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">R7, R10</div>
+                </div>  
+                <div class="info-text-container">
+                    <div class="info-text left">avg./med. FAR</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">8.5 / 7.2</div>
+                </div>  
+                <div class="info-text-container">
+                    <div class="info-text left">avg./med. age</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">70 / 66 yrs</div>
+                </div>  
+                <div class="info-text-container">
+                    <div class="info-text left">avg./med. EE</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">A / B</div>
+                </div>  
+                <br>
+                <div class="info-text-container">
+                    <div class="info-text left">elevation (AMSL)</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">30 ft / 9.1 m</div>
+                </div>  
+                <div class="info-text-container">
+                    <div class="info-text left">soil type</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">GLLD</div>
+                </div>  
+                <div class="info-text-container">
+                    <div class="info-text left">bedrock depth</div>
+                    <div class="info-text line"></div>
+                    <div class="info-text right">xxx m</div>
+                </div>  
+            </div>
+        </div>
+    </div>
 
 
     <div id="mainMap"></div>

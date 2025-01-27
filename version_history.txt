@@ -4,10 +4,14 @@ to-do list:
 - chart.js tooltip should display material weight ranges.
 - use scrollama to add presentation as a single story.
 - add/refine layer transparancy & order functions.
-- add soil type.
 
 - some utf-8 characters aren't displaying on iphone (safari and chrome)
 - motivate the problem / anecdotes
+
+alpha 0.3.0 (2025-01-07)
+- added three collapsible dashboard panels.
+- migrated the rose chart to the material panel.
+- changed the "explorer" tab to "layers."
 
 alpha 0.2.5 (2024-12-16)
 - changed the guide tab name to "overview" instead.

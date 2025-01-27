@@ -109,10 +109,12 @@ a:active {
     position: absolute;
     left: 360px;
     top: 28px;
-    padding: 8px 0px;
+    height: 40px;
+    width: 25px;
+    justify-items: center;
     cursor: pointer;
     z-index: 1001; 
-    background-color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(230, 237, 237, 0.75); 
     backdrop-filter: blur(10px); 
     border: 1.5px solid #bfcdcd; 
     border-top-left-radius: 0;
@@ -122,14 +124,13 @@ a:active {
     transition: left 0.3s ease; 
 }
 #toggleIcon {
-    fill: transparent; 
+    width: 16px;
+    transform: rotate(90deg) translateY(3px);
     transition: transform 0.3s ease;
-    color: #585f5f;
-    stroke-width: 3px; 
-    stroke-linecap: "flat"; 
-    stroke-linejoin: "round";
 }
-
+#toggleIcon.collapsed {
+    transform: rotate(-90deg) translateY(-3px);
+}
 #logo {
     display: block;
     width: 50%; 
@@ -138,6 +139,231 @@ a:active {
     padding-left: 30px;
     padding-bottom: 15px;
     box-sizing: border-box;
+}
+
+
+/* Panels---------------------------------- */
+#panelContainer {
+    position: absolute;
+    right: 45px;
+    bottom: 25px;
+    display: flex;
+    flex-direction: column; 
+    gap: 6px; 
+    align-items: right;
+    z-index: 1000;
+}
+#panelBuilding, #panelMaterial, #panelTile {
+    position: relative;
+    width: 320px;
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(15px); 
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+}
+
+.panelTitle {
+    margin: 0 !important;
+    padding: 5px;
+    padding-left: 15px;
+    font-size: 0.9rem;
+    color: #585f5f;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    border: 1.5px solid #bfcdcd; 
+    border-bottom: none;
+    background-color: rgba(186, 197, 197, 0.3); 
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+.panelTitle.collapsed {
+    border-radius: 6px;
+}
+.panelContent {
+    border: 1.5px solid #bfcdcd; 
+    border-top: none;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    position:relative;
+    padding: 15px;
+    padding-left: 30px;
+    padding-right: 30px;
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+}
+.panelContent.hidden {
+    max-height: 0; 
+    display: none; 
+}
+.panelToggle {
+    position: absolute;
+    height: 0.5rem;
+    right: 15px;
+    top: 10px;
+    cursor: pointer;
+    /* transition: transform 0.3s ease; */
+}
+.panelToggle.rotated {
+    transform: rotate(180deg);
+}
+
+/* Panels, building---------------------------------- */
+.popup-slider {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.popup-slide {
+    flex: 0 0 100%;
+    opacity: 0;
+    visibility: hidden;
+    flex-direction: column;
+    position: relative;
+    transition: opacity 0.5s ease, visibility 0s 0.5s; /* Delay visibility toggle */
+}
+
+.popup-slide.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0s 0s; /* Immediate visibility toggle */
+}
+
+
+.popup-arrow {
+    width: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+#RoseChartRefA, #RoseChartRefB, #RoseChartRefC {
+    width: 90px;
+    margin: 0 !important;
+    display: block;
+}
+#prevSlide {
+    transform: rotate(90deg);
+    opacity: 0.5;
+}
+#nextSlide {
+    transform: rotate(270deg);
+    opacity: 0.5;
+}
+.circle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.circle {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #8f9a9a; 
+}
+
+/* Panels, material---------------------------------- */
+canvas {
+    background-color: transparent !important;
+}
+#chart {
+    height: 180px;
+    margin-bottom: 5px;
+}
+
+#Rose {
+    width: 120px;
+    margin: 0 !important;
+    display: block;
+}
+
+
+.toggle-container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 20px;
+}
+.toggle-input {
+    display: none;
+}
+.toggle-label {
+    position: absolute;
+    cursor: pointer;
+    background-color: #bfcdcd;
+    border-radius: 25px;
+    width: 29px;
+    height: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-label::after {
+    content: "";
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    width: 11px;
+    height: 11px;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
+}
+
+.toggle-input:checked + .toggle-color1 {
+    background-color: #ff785a;
+}
+.toggle-input:checked + .toggle-color2 {
+    background-color: #ccef07;
+}
+.toggle-input:checked + .toggle-color3 {
+    background-color: #49fcd7;
+}
+.toggle-input:checked + .toggle-color4 {
+    background-color: #60bdff;
+}
+.toggle-input:checked + .toggle-color5 {
+    background-color: #ec49fd;
+}
+.toggle-input:checked + .toggle-label::after {
+    transform: translateX(14px);
+}
+.toggle-text {
+    font-size: 0.9rem;
+    color: #8f9a9a;
+    font-weight: 500;
+    margin-left: 40px;
+}
+.toggle-value {
+    font-size: 0.9rem;
+    color: #8f9a9a;
+    font-weight: 500;
+}
+
+/* Panels, info---------------------------------- */
+.info-text-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.info-text {
+    font-size: 0.8rem;
+    color: #8f9a9a;
+    font-weight: 500;
+    line-height: 1.5;
+}
+.left {
+    text-align: left;
+}
+.right {
+    text-align: right;
+}
+.line {
+    flex-grow: 1; 
+    border-bottom: 1.5px solid #ccc; 
+    margin: 0 6px; 
 }
 
 /* Version History---------------------------------------- */
@@ -348,7 +574,7 @@ p-popup {
 #optionsIcon {
     display: inline-block;
     vertical-align: middle; 
-    margin-left: 14px;
+    margin-left: 25px;
     cursor: pointer; 
     color: #8f9a9a;
     font-size: 1.1rem;
@@ -401,6 +627,7 @@ p-popup {
     background-color: transparent
 }
 .nav-button-2.active {
+    color: #585f5f;
     background-color: transparent;
     border-bottom: transparent;
     z-index: 1005;
@@ -559,35 +786,6 @@ sup {
     filter: brightness(0) saturate(100%) invert(0%);
 }
 
-
-/* Rose Charts------------------------------------------------ */
-#RoseChart {
-    width: 120px;
-    margin: 0 auto;
-    margin-top: 25px;
-    display: block;
-    position: absolute;
-}
-#RoseChartRefA, #RoseChartRefB, #RoseChartRefC {
-    width: 180px;
-    margin: 0 auto;
-    margin-top: 145px;
-    display: block;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-canvas {
-    background-color: transparent !important;
-}
-.popup-slider {
-    display: flex;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
 .popupCloseButton {
     position: absolute;
     z-index: 9999;
@@ -595,118 +793,10 @@ canvas {
     top: 18px;
     transform: translateX(-50%);
 }
-#collapsePopup {
-    position: absolute;
-    display: inline-block;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-size: 2.8rem;
-    font-weight: 500;
-    color: #bfcdcd;
-    background-color: transparent;
-    border: none;
-    transition: color 0.3s ease;
-    left: 50%;
-    transform: translateX(-50%);
-    height: 20px;
-    margin-top: auto;
-}
-
-#collapsePopup:hover {
-    color: black;
-}
-.popup-slide {
-    flex: 0 0 100%; 
-    display: none; 
-    flex-direction: column;
-    position: relative;
-    transition: opacity 0.5s ease;
-}
-.popup-slide.active {
-    display: flex; 
-}
-
-.popup-arrow {
-    position: absolute;
-    top: 53%;
-    font-size: 1.5rem;
-    color: #bfcdcd;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 20px;
-    z-index: 10;
-}
-
-#prevSlide {
-    left: 10px;
-}
-
-#nextSlide {
-    right: 10px;
-}
 
 
-/* Toggle Buttons------------------------------------------- */
-#layerControls {
-    position: absolute;
-    margin-top: 220px;
-    width: 285px;
-    display: flex; 
-    flex-wrap: wrap; 
-    justify-content: space-between; 
-}
 
-#toggleSteel,
-#toggleBrick,
-#toggleGlass,
-#toggleConcrete,
-#toggleStone {
-    flex-grow: 1;
-    color: #585f5f; 
-    padding-top: 1px;
-    padding-bottom: 1px;
-    padding-left: 0;
-    padding-right: 0;
-    border: 0px; 
-    border-radius: 0px;
-    font-weight: 600;
-    font-size: 0.7rem;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    transform: translateX(40px);
-    box-sizing: border-box; 
-    line-height: 1.5; 
-    transition: padding-top 0.3s ease, padding-bottom 0.3s ease,margin 0.3s ease; 
-}
-#toggleSteel {
-    background-color: #ec49fd;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-#toggleBrick {
-    background-color: #ff785a;
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-}
-#toggleGlass {
-    background-color: #49fcd7;
-}
-#toggleConcrete {
-    background-color: #ddfa47;
-}
-#toggleStone {
-    background-color: #60bdff;
-}
-#layerControls button:hover {
-    padding-top: 4px;
-    padding-bottom: 3px;
-    margin-top: -5px;
-    color: black;
-}
-#layerControls button.inactive {
-    background-color: transparent;
-}
+
 
 
 /* Scroll Text------------------------------------------- */

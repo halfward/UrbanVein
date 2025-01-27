@@ -20,6 +20,33 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// Panel collapse
+function togglePanel(panelToggleId, panelContentId, panelTitleId) {
+    document.getElementById(panelToggleId).addEventListener("click", function () {
+        // Toggle the visibility of the content
+        const panelContent = document.getElementById(panelContentId);
+        panelContent.classList.toggle("hidden");
+
+        // Rotate the toggle icon
+        this.classList.toggle("rotated");
+
+        // Add or remove the .collapsed class from the panel title
+        const panelTitle = document.getElementById(panelTitleId);
+        if (panelContent.classList.contains("hidden")) {
+            panelTitle.classList.add("collapsed");
+        } else {
+            panelTitle.classList.remove("collapsed");
+        }
+    });
+}
+
+// Apply the toggle logic for each panel
+togglePanel("panelToggleBuilding", "panelContentBuilding", ".panelTitleBuilding");
+togglePanel("panelToggleMaterial", "panelContentMaterial", ".panelTitleMaterial");
+togglePanel("panelToggleInfo", "panelContentInfo", ".panelTitleInfo");
+
+
+
 
 // Initialize the map-------------------------------------------------
 let steelLayer = L.layerGroup();
@@ -617,20 +644,20 @@ const toggleSubwayLayer = () => {
 
 
 // Event listeners for toggling layers
-document.getElementById('toggleSteel').addEventListener('click', () => {
-    toggleLayerVisibility(steelLayer, steelLayer200, 'toggleSteel', 'steel');
+document.getElementById('toggle5').addEventListener('click', () => {
+    toggleLayerVisibility(steelLayer, steelLayer200, 'toggle5', 'steel');
 });
-document.getElementById('toggleBrick').addEventListener('click', () => {
-    toggleLayerVisibility(brickLayer, brickLayer200, 'toggleBrick', 'brick');
+document.getElementById('toggle1').addEventListener('click', () => {
+    toggleLayerVisibility(brickLayer, brickLayer200, 'toggle1', 'brick');
 });
-document.getElementById('toggleGlass').addEventListener('click', () => {
-    toggleLayerVisibility(glassLayer, glassLayer200, 'toggleGlass', 'glass');
+document.getElementById('toggle3').addEventListener('click', () => {
+    toggleLayerVisibility(glassLayer, glassLayer200, 'toggle3', 'glass');
 });
-document.getElementById('toggleConcrete').addEventListener('click', () => {
-    toggleLayerVisibility(concreteLayer, concreteLayer200, 'toggleConcrete', 'concrete');
+document.getElementById('toggle2').addEventListener('click', () => {
+    toggleLayerVisibility(concreteLayer, concreteLayer200, 'toggle2', 'concrete');
 });
-document.getElementById('toggleStone').addEventListener('click', () => {
-    toggleLayerVisibility(stoneLayer, stoneLayer200, 'toggleStone', 'stone');
+document.getElementById('toggle4').addEventListener('click', () => {
+    toggleLayerVisibility(stoneLayer, stoneLayer200, 'toggle4', 'stone');
 });
 
 // Event listener for toggling OSM layer
@@ -854,7 +881,7 @@ fetch('data/coastline.geojson')
                         // Add a Leaflet popup
                         const popup = L.popup()
                             .setLatLng(layer.getBounds().getCenter()) // Center of the hexagon
-                            .setContent(`<strong>Average FAR</strong><br><strong>Average Building Age</strong><br><strong>Prominent Building Use</strong><br><strong>Material Values</strong><br>${materialValues}`)
+                            .setContent(`<strong>Street View Static API</strong><br><strong>Average Building Age</strong><br><strong>Prominent Building Use</strong><br><strong>Material Values</strong><br>${materialValues}`)
                             .openOn(mainMap);
                     });
                 }
@@ -966,7 +993,7 @@ const config = {
 
 
 // Create the chart instance
-const RoseChart = new Chart(document.getElementById('RoseChart'), config);
+const RoseChart = new Chart(document.getElementById('Rose'), config);
 
 // Original colors for each layer
 const originalColors = {
@@ -978,11 +1005,11 @@ const originalColors = {
 };
 
 // Add event listeners to the buttons to toggle the layers' visibility
-document.getElementById('toggleBrick').addEventListener('click', () => toggleLayer('Brick'));
-document.getElementById('toggleConcrete').addEventListener('click', () => toggleLayer('Concrete'));
-document.getElementById('toggleGlass').addEventListener('click', () => toggleLayer('Glass'));
-document.getElementById('toggleStone').addEventListener('click', () => toggleLayer('Stone'));
-document.getElementById('toggleSteel').addEventListener('click', () => toggleLayer('Steel'));
+document.getElementById('toggle1').addEventListener('click', () => toggleLayer('Brick'));
+document.getElementById('toggle2').addEventListener('click', () => toggleLayer('Concrete'));
+document.getElementById('toggle3').addEventListener('click', () => toggleLayer('Glass'));
+document.getElementById('toggle4').addEventListener('click', () => toggleLayer('Stone'));
+document.getElementById('toggle5').addEventListener('click', () => toggleLayer('Steel'));
 
 
 
@@ -1049,12 +1076,9 @@ function createDataObject(dataValues) {
     };
 }
 
-// Creating the data objects
 const dataA = createDataObject([3, 5, 1, 1, 2]);
 const dataB = createDataObject([4, 1, 5, 3, 0]);
 const dataC = createDataObject([5, 1, 2, 4, 3]);
-
-
 function createPolarAreaConfig(data) {
     return {
         type: 'polarArea',
@@ -1152,23 +1176,22 @@ document.addEventListener("DOMContentLoaded", function() {
             // Collapse the sidebar
             sidebar.style.transform = "translateX(-100%)"; // Move sidebar offscreen
             toggleButton.style.left = "0"; // Move the button to the left side
-            toggleIcon.innerHTML = '<path d="M8 20l7-7-7-7" fill="transparent" stroke="#585f5f" stroke-width="3" stroke-linecap="flat" stroke-linejoin="round"/>'; 
+            toggleIcon.classList.add("collapsed"); // Add the .collapsed class
         } else {
             // Expand the sidebar
             sidebar.style.transform = "translateX(0)"; // Move sidebar back onscreen
             toggleButton.style.left = "360px"; // Position the button at the sidebar's expanded edge
-            toggleIcon.innerHTML = '<path d="M14 7l-7 7 7 7" fill="transparent" stroke="#585f5f" stroke-width="3" stroke-linecap="flat" stroke-linejoin="round"/>'; 
+            toggleIcon.classList.remove("collapsed"); // Remove the .collapsed class
         }
 
         // Toggle the state
         isSidebarExpanded = !isSidebarExpanded;
-
-
     });
 
     // Initialize the sidebar in the expanded state on load
     sidebar.style.transform = "translateX(0)"; // Ensure the sidebar is expanded initially
 });
+
 
 
 
@@ -1221,7 +1244,6 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener('DOMContentLoaded', () => {
     // Common elements
     const materialPopup = document.getElementById('materialPopup');
-    const rosePopup = document.getElementById('rosePopup');
     const vizPopup = document.getElementById('visualizationPopup');
     const optionsPopup = document.getElementById('optionsPopup');
     const versionPopup = document.getElementById('versionPopup'); 
@@ -1283,7 +1305,7 @@ document.addEventListener('DOMContentLoaded', () => {
             event.stopPropagation(); // Prevent the click event from bubbling up
 
             // Close all popups
-            [materialPopup, rosePopup, vizPopup, versionPopup, guidePopup, optionsPopup].forEach(popupElement => {
+            [materialPopup, vizPopup, versionPopup, guidePopup, optionsPopup].forEach(popupElement => {
                 if (popupElement) {
                     popupElement.classList.add('hidden'); // Trigger slide-up animation
                     setTimeout(() => {
@@ -1299,13 +1321,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Material popup clicked");
         materialPopup.classList.remove('hidden');
         materialPopup.style.display = 'flex'; 
-    });
-
-    // Show the rose popup
-    roseInfoIcon.addEventListener('click', () => {
-        console.log("Rose popup clicked");
-        rosePopup.classList.remove('hidden');
-        rosePopup.style.display = 'flex'; 
     });
 
     // Show the visualization popup
@@ -1450,7 +1465,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// Content text
+// Content text-----------------------------------------------
 document.addEventListener("DOMContentLoaded", function() {
     const aboutContent = document.getElementById('aboutContentText');
     const storiesContent = document.getElementById('storiesContentText');
@@ -1559,7 +1574,7 @@ const scrollableTextPast = document.getElementById('scrollableTextPast');
 const scrollableTextPresent = document.getElementById('scrollableTextPresent');
 const scrollableTextFuture = document.getElementById('scrollableTextFuture');
 const scrollableTextC = document.getElementById('scrollableTextC');
-const roseChart = document.getElementById('Chart');
+// const roseChart = document.getElementById('Chart');
 const layerControls = document.getElementById('layerControls');
 const scrollableTextTimeline = document.getElementById('scrollableTextTimeline');
 const scrollableTextMaps = document.getElementById('scrollableTextMaps');
@@ -1588,7 +1603,7 @@ function resetSecondLayerContent() {
     const allSecondLayerContent = [
         scrollableTextData, scrollableTextMedia, scrollableTextRef,
         scrollableTextPast, scrollableTextPresent, scrollableTextFuture,
-        scrollableTextC, roseChart, layerControls,
+        scrollableTextC, layerControls,
         scrollableTextTimeline, scrollableTextMaps
     ];
     allSecondLayerContent.forEach(content => {
@@ -1628,7 +1643,7 @@ function updateExploreAndLegendDisplay() {
     }
 
     // Update other elements
-    updateDisplay(roseChart, shouldDisplay);
+    // updateDisplay(roseChart, shouldDisplay);
     updateDisplay(scrollableTextC, shouldDisplay);
 }
 function updateExploreAndTimelineDisplay() {
@@ -1745,7 +1760,7 @@ function observeDisplayChanges() {
     const elementsToObserve = [
         scrollableTextData, scrollableTextMedia, scrollableTextRef,
         scrollableTextPast, scrollableTextPresent, scrollableTextFuture,
-        scrollableTextC, roseChart, layerControls,
+        scrollableTextC, layerControls,
         scrollableTextTimeline, scrollableTextMaps
     ];
 
@@ -1864,30 +1879,33 @@ window.addEventListener('scroll', adjustHeight);
 
 
 // Rose Chart Refs
-    const slides = document.querySelectorAll('.popup-slide');
-    let currentIndex = 0;
-    
-    // Update slide visibility
-    function updateSlides() {
-        slides.forEach((slide, index) => {
-            slide.classList.toggle('active', index === currentIndex);
-        });
-    }
-    
-    // Navigation buttons
-    document.getElementById('prevSlide').addEventListener('click', () => {
-        currentIndex = (currentIndex === 0) ? slides.length - 1 : currentIndex - 1;
-        updateSlides();
+const slides = document.querySelectorAll('.popup-slide');
+let currentIndex = 0;
+
+// Update slide visibility
+function updateSlides() {
+    slides.forEach((slide, index) => {
+        if (index === currentIndex) {
+            slide.classList.add('active');
+        } else {
+            slide.classList.remove('active');
+        }
     });
-    
-    document.getElementById('nextSlide').addEventListener('click', () => {
-        currentIndex = (currentIndex === slides.length - 1) ? 0 : currentIndex + 1;
-        updateSlides();
-    });
-    
-    // Initialize the first slide as active
+}
+
+// Navigation buttons
+document.getElementById('prevSlide').addEventListener('click', () => {
+    currentIndex = (currentIndex === 0) ? slides.length - 1 : currentIndex - 1;
     updateSlides();
-    
+});
+
+document.getElementById('nextSlide').addEventListener('click', () => {
+    currentIndex = (currentIndex === slides.length - 1) ? 0 : currentIndex + 1;
+    updateSlides();
+});
+
+// Initialize the first slide as active
+updateSlides();
 
 
 

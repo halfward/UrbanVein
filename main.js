@@ -1,15 +1,3 @@
-
-    document.addEventListener('mousemove', function(event) {
-        const customCursor = document.getElementById('customCursor');
-        
-        // Set the position of the custom cursor
-        customCursor.style.left = `${event.clientX}px`;
-        customCursor.style.top = `${event.clientY}px`;
-    });
-
-
-
-
 // Link controls - open new tab
 document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('a');
@@ -22,28 +10,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Panel collapse
 function togglePanel(panelToggleId, panelContentId, panelTitleId) {
-    document.getElementById(panelToggleId).addEventListener("click", function () {
-        // Toggle the visibility of the content
+    document.getElementById(panelTitleId).addEventListener("click", function () {
         const panelContent = document.getElementById(panelContentId);
-        panelContent.classList.toggle("hidden");
-
-        // Rotate the toggle icon
-        this.classList.toggle("rotated");
-
-        // Add or remove the .collapsed class from the panel title
-        const panelTitle = document.getElementById(panelTitleId);
+        const panelToggle = document.getElementById(panelToggleId);
+        
         if (panelContent.classList.contains("hidden")) {
-            panelTitle.classList.add("collapsed");
+            panelContent.style.maxHeight = panelContent.scrollHeight + "px";
+            panelContent.classList.remove("hidden");
         } else {
-            panelTitle.classList.remove("collapsed");
+            panelContent.style.maxHeight = "0px";
+            setTimeout(() => panelContent.classList.add("hidden"), 300); // Delay hiding fully after transition
         }
+        
+        panelToggle.classList.toggle("rotated");
+        this.classList.toggle("collapsed");
     });
 }
 
+
 // Apply the toggle logic for each panel
-togglePanel("panelToggleBuilding", "panelContentBuilding", ".panelTitleBuilding");
-togglePanel("panelToggleMaterial", "panelContentMaterial", ".panelTitleMaterial");
-togglePanel("panelToggleInfo", "panelContentInfo", ".panelTitleInfo");
+togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding");
+togglePanel("panelToggleMaterial", "panelContentMaterial", "panelTitleMaterial");
+togglePanel("panelToggleInfo", "panelContentInfo", "panelTitleInfo");
+
 
 
 
@@ -62,20 +51,26 @@ let concreteLayer200 = L.layerGroup();
 let stoneLayer200 = L.layerGroup();
 
 const nycBounds = L.latLngBounds(
-    [40.4774, -74.2591], // SW corner
-    [40.9176, -73.7004]  // NE corner
+    [40.3774, -74.5591], // SW corner
+    [41.0176, -73.4004]  // NE corner
 );
 const mainMap = L.map('mainMap', {
     center: [40.7128, -73.9460],
     zoom: 13,
     minZoom: 11,
-    maxZoom: 14,
+    maxZoom: 15,
     renderer: L.canvas(),
     preferCanvas: true,
     maxBounds: nycBounds,
     maxBoundsViscosity: 1.0
 });
 
+L.control.scale({
+    position: 'topright',
+    metric: true,
+    imperial: true,
+    maxWidth: 150
+}).addTo(mainMap);
 
 
 // Material colors and offsets
@@ -124,7 +119,7 @@ const layerState = {
     stone: true
 };
 
-// Function to add material markers to a given layer group
+// Function to add material markers to a given layer group (100)
 const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup, offset = null) => {
     const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
     const binnedDataValues = filteredFeatures.map(feature => feature.properties[columnName]);
@@ -165,7 +160,7 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
     layerGroup.addTo(mainMap);
 };
 
-// Function to add material markers to a given layer group
+// Function to add material markers to a given layer group (200)
 const addMaterialMarkers200 = (geojsonData, material, color, columnName, layerGroup, offset = null) => {
     const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
     const binnedDataValues = filteredFeatures.map(feature => feature.properties[columnName]);
@@ -275,6 +270,28 @@ d3.json('data/nycBinnedCentroidsMaterial_200Wgs84.geojson').then(geojsonData => 
 
 
 
+// Tooltip streetview API-----------------------------------------------------
+var googleApiKey = "AIzaSyBUoZdH38mDXhXTKEpqo6e-tSEfaBqufOQ"; 
+mainMap.on('click', function(e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+
+    var streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=300x200&location=${lat},${lng}&fov=90&heading=235&pitch=10&key=${googleApiKey}`;
+
+    var popupContent = `<img src="${streetViewUrl}" alt="Street View"">`;
+
+    L.popup({
+        offset: [-150, 0] // Adjusts the popup position
+    })
+        .setLatLng([lat, lng])
+        .setContent(popupContent)
+        .openOn(mainMap);
+});
+
+
+
+
+
 // Additional layers--------------------------------------------------
 
 // Define satellite imagery tile layer (Esri)
@@ -370,6 +387,87 @@ fetch('data/subwayLines.geojson')
         layers.subwayLayer = subwayLayer; // Add subwayLayer dynamically to layers
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
+
+
+
+
+
+
+// X-ray mask div-----------------------------------------------------
+// Initialize the X-ray map inside the mask
+let xrayMap = L.map("xray-map", {
+    center: mainMap.getCenter(),
+    zoom: mainMap.getZoom(),
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    interactive: false,  // Ensures it doesn't interfere with user actions
+});
+
+// Define separate X-ray layers
+const xraySatelliteLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
+    {
+        attribution: 'Tiles &copy; Esri',
+    }
+);
+
+const xrayOSMLayer = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+    {
+        attribution: '&copy; OpenStreetMap contributors',
+    }
+);
+
+// X-ray mask element
+let xrayMask = document.getElementById("xray-mask");
+
+// **Track cursor movement AND adjust X-ray map position**
+document.addEventListener("mousemove", function (e) {
+    xrayMask.style.left = `${e.pageX - 100}px`;  // Center the mask
+    xrayMask.style.top = `${e.pageY - 100}px`;
+
+    // **Adjust the X-ray map center dynamically**
+    xrayMap.setView(mainMap.containerPointToLatLng(mainMap.mouseEventToContainerPoint(e)), mainMap.getZoom());
+});
+
+// **Sync X-ray map movement with main map movement**
+mainMap.on("move", function () {
+    xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
+});
+
+// Function to update X-ray mode
+function updateXray(mode) {
+    if (mode === "none") {
+        xrayMask.style.display = "none"; // Hide the mask
+        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Remove all layers
+    } else {
+        xrayMask.style.display = "block"; // Show the mask
+        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Clear layers first
+
+        if (mode === "satellite") {
+            xraySatelliteLayer.addTo(xrayMap);
+        } else if (mode === "osm") {
+            xrayOSMLayer.addTo(xrayMap);
+        }
+
+        // **Force Leaflet to redraw tiles to prevent gray areas**
+        setTimeout(() => {
+            xrayMap.invalidateSize();
+        }, 100);
+    }
+}
+
+// Attach event listeners to radio buttons
+document.getElementById("xray-none").addEventListener("change", () => updateXray("none"));
+document.getElementById("xray-satellite").addEventListener("change", () => updateXray("satellite"));
+document.getElementById("xray-osm").addEventListener("change", () => updateXray("osm"));
+
+    
 
 
 
@@ -494,7 +592,7 @@ const updateLayerVisibility = () => {
     }).forEach(([material, [layer, layer200]]) => {
         // Only consider the layers that are toggled on
         if (layerState[material]) {
-            if (zoom === 13 || zoom === 14) {
+            if (zoom === 13 || zoom === 14 || zoom === 15) {
                 // Show primary layers and remove secondary layers
                 if (!mainMap.hasLayer(layer)) {
                     layer.addTo(mainMap);
@@ -704,7 +802,7 @@ mainMap.on('zoomend', () => {
 
 // Geojson background----------------------------------------------
 // Fetch and load the GeoJSON file
-fetch('data/coastline.geojson')
+fetch('data/NY+NJ_Shoreline.geojson')
     .then(response => response.json())
     .then(data => {
         // Check if the #mainMap element has the 'darkmode' class
@@ -741,10 +839,11 @@ fetch('data/coastline.geojson')
 
 
 
-// Geojson Hex Data
+// Geojson Hex Data (including hover interactions)-----------------------
     let lockedData = null; // Variable to store the fixed values when clicked
     let isHovering = false; // Flag to check if currently hovering over a GeoJSON feature
-    
+    let geojsonLayer;
+
     fetch('data/hex_all.geojson')
         .then(response => {
             if (!response.ok) {
@@ -877,12 +976,6 @@ fetch('data/coastline.geojson')
                             const formattedValue = rawValue ? formatNumber(rawValue) : 'N/A';
                             return `${material.charAt(0).toUpperCase() + material.slice(1)}: ${formattedValue}`;
                         }).join('<br>');
-    
-                        // Add a Leaflet popup
-                        const popup = L.popup()
-                            .setLatLng(layer.getBounds().getCenter()) // Center of the hexagon
-                            .setContent(`<strong>Street View Static API</strong><br><strong>Average Building Age</strong><br><strong>Prominent Building Use</strong><br><strong>Material Values</strong><br>${materialValues}`)
-                            .openOn(mainMap);
                     });
                 }
             }).addTo(mainMap);
@@ -902,7 +995,7 @@ fetch('data/coastline.geojson')
         .catch(error => {
             console.error('Error loading GeoJSON data:', error);
         });
-    
+
 
 
 
@@ -912,7 +1005,7 @@ fetch('data/coastline.geojson')
 // Rose Chart------------------------------------------------------------
 // Initial chart data with original colors
 const data = {
-    labels: ['STEEL', 'STONE', 'GLASS', 'CONCRETE', 'BRICK'],
+    labels: ['steel', 'stone', 'glass', 'concrete', 'brick'],
     datasets: [{
         label: 'density level',
         data: [0, 0, 0, 0, 0],  // Initialize with zero
@@ -939,7 +1032,7 @@ const config = {
                 max: 5,
                 grid: {
                     color: '#bfcdcd', 
-                    lineWidth: 1,
+                    lineWidth: 0.5,
                     z: 1,
                     circular: true, 
                 },
@@ -949,14 +1042,10 @@ const config = {
                     z: 1,
                 },
                 ticks: {
-                    callback: function (value) {
-                        const romanNumerals = ['NULL', 'I', 'II', 'III', 'IV', 'V'];
-                        return romanNumerals[value]; 
-                    },
                     z: 2,
                     color: 'transparent', 
                     font: {
-                        family: 'Poppins',
+                        family: 'Inter',
                         weight: '500'
                     },
                     backdropColor: 'rgba(0, 0, 0, 0)', 
@@ -970,13 +1059,13 @@ const config = {
             tooltip: {
                 backgroundColor: 'rgba(255, 255, 255, 0.9)', 
                 titleFont: {
-                    family: 'Poppins, sans-serif',
+                    family: 'Inter, sans-serif',
                     size: 14,
                     weight: 'normal'
                 },
                 titleColor: 'black',
                 bodyFont: {
-                    family: 'Poppins, sans-serif',
+                    family: 'Inter, sans-serif',
                     size: 12,
                     weight: 'normal'
                 },
@@ -1060,7 +1149,7 @@ function getQuantileBin(value, quantiles) {
 // Rose Chart References----------------------------------------
 function createDataObject(dataValues) {
     return {
-        labels: ['Steel', 'Stone', 'Glass', 'Concrete', 'Brick'],
+        labels: ['steel', 'stone', 'glass', 'concrete', 'brick'],
         datasets: [{
             label: 'density level',
             data: dataValues,
@@ -1120,13 +1209,13 @@ function createPolarAreaConfig(data) {
                 tooltip: {
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     titleFont: {
-                        family: 'Poppins, sans-serif',
+                        family: 'Inter, sans-serif',
                         size: 14,
                         weight: 'normal'
                     },
                     titleColor: 'black',
                     bodyFont: {
-                        family: 'Poppins, sans-serif',
+                        family: 'Inter, sans-serif',
                         size: 12,
                         weight: 'normal'
                     },
@@ -1175,12 +1264,10 @@ document.addEventListener("DOMContentLoaded", function() {
         if (isSidebarExpanded) {
             // Collapse the sidebar
             sidebar.style.transform = "translateX(-100%)"; // Move sidebar offscreen
-            toggleButton.style.left = "0"; // Move the button to the left side
             toggleIcon.classList.add("collapsed"); // Add the .collapsed class
         } else {
             // Expand the sidebar
             sidebar.style.transform = "translateX(0)"; // Move sidebar back onscreen
-            toggleButton.style.left = "360px"; // Position the button at the sidebar's expanded edge
             toggleIcon.classList.remove("collapsed"); // Remove the .collapsed class
         }
 
@@ -1245,7 +1332,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Common elements
     const materialPopup = document.getElementById('materialPopup');
     const vizPopup = document.getElementById('visualizationPopup');
-    const optionsPopup = document.getElementById('optionsPopup');
     const versionPopup = document.getElementById('versionPopup'); 
     const guidePopup = document.getElementById('guidePopup');
     const closePopupButtons = document.querySelectorAll('.popupCloseButton'); 
@@ -1254,7 +1340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoIcon = document.getElementById('materialInfo');
     const roseInfoIcon = document.getElementById('roseInfo');
     const vizInfoIcon = document.getElementById('visualizationArchive');
-    const optionsIcon = document.getElementById('optionsIcon')
     const versionHistoryLink = document.getElementById('versionHistoryLink');
     const guideButton = document.getElementById('guideButton'); 
 
@@ -1275,10 +1360,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let firstVersion = '';
 
             for (let i = 0; i < lines.length; i++) { 
-                if (lines[i].startsWith('alpha')) {
+                if (lines[i].startsWith('0')) {
                     // Extract the version text and remove the date if present
                     firstVersion = lines[i].split('(')[0].trim();
-                    console.log('First alpha version found:', firstVersion); // Debug log
+                    console.log('version', firstVersion); // Debug log
                     break; 
                 }
             }
@@ -1286,7 +1371,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const versionHistoryLink = document.getElementById('versionHistoryLink');
             if (versionHistoryLink && firstVersion) {
                 versionHistoryLink.textContent = firstVersion;
-                console.log('Updated version history link text:', firstVersion); // Debug log
             } else {
                 console.warn('Version history link element not found or no version found');
             }
@@ -1323,19 +1407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         materialPopup.style.display = 'flex'; 
     });
 
-    // Show the visualization popup
-    vizInfoIcon.addEventListener('click', () => {
-        console.log("Rose popup clicked");
-        vizPopup.classList.remove('hidden');
-        vizPopup.style.display = 'flex'; 
-    });
 
-    // Show the options popup
-    optionsIcon.addEventListener('click', () => {
-        console.log("Options popup clicked");
-        optionsPopup.classList.remove('hidden');
-        optionsPopup.style.display = 'flex'; 
-    });
 
     // Fetch and display version history when the link is clicked
     versionHistoryLink.addEventListener('click', () => {
@@ -1358,9 +1430,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
 
-    // Show guide popup on page load
-    guidePopup.classList.remove('hidden');
-    guidePopup.style.display = 'flex';
 
     // Open guide popup when the guide button is clicked
     guideButton.addEventListener('click', (event) => {
@@ -1929,4 +1998,3 @@ toggleButton.addEventListener('click', function () {
         isMaterialLayerActive = true;
     }
 });
-

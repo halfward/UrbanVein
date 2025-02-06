@@ -1,66 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 12.64 13.16">
-  <defs>
-    <style>
-      .cls-1 {
-        isolation: isolate;
-      }
-
-      .cls-2 {
-        fill: none;
-      }
-
-      .cls-2, .cls-3, .cls-4 {
-        stroke-width: 0px;
-      }
-
-      .cls-5 {
-        clip-path: url(#clippath-1);
-      }
-
-      .cls-3 {
-        fill: #fff;
-      }
-
-      .cls-6 {
-        clip-path: url(#clippath);
-      }
-
-      .cls-7 {
-        mix-blend-mode: multiply;
-      }
-
-      .cls-4 {
-        fill: #bfcdcd;
-      }
-    </style>
-    <clipPath id="clippath">
-      <rect class="cls-2" x="-234.19" y="-1509.88" width="1366" height="697.6"/>
-    </clipPath>
-    <clipPath id="clippath-1">
-      <rect class="cls-2" x="125.72" y="-792.29" width="1006.09" height="768"/>
-    </clipPath>
-    <image id="image" width="3507" height="4960" xlink:href="../../../CDP-GIS/Binned_20241014/20241021-all-transformed_adj4.png"/>
-  </defs>
-  <g class="cls-1">
-    <g id="cover">
-      <g class="cls-7">
-        <g class="cls-6">
-          <use transform="translate(-940.77 -3099.51) scale(.81)" xlink:href="#image"/>
-        </g>
-      </g>
-      <g class="cls-7">
-        <g class="cls-5">
-          <use transform="translate(-79.58 -1948.08) scale(.49)" xlink:href="#image"/>
-        </g>
-      </g>
-    </g>
-    <g id="text">
-      <g>
-        <path class="cls-3" d="m6.32.25C2.83.25,0,3.08,0,6.58s2.83,6.32,6.32,6.32,6.33-2.83,6.33-6.32S9.81.25,6.32.25Zm0,11.21c-2.7,0-4.89-2.19-4.89-4.88S3.62,1.69,6.32,1.69s4.89,2.19,4.89,4.89-2.19,4.88-4.89,4.88Z"/>
-        <path class="cls-4" d="m6.32.25C2.83.25,0,3.08,0,6.58s2.83,6.32,6.32,6.32,6.33-2.83,6.33-6.32S9.81.25,6.32.25h0Zm0,11.21c-2.7,0-4.89-2.19-4.89-4.88S3.62,1.69,6.32,1.69s4.89,2.19,4.89,4.89-2.19,4.88-4.89,4.88h0Z"/>
-      </g>
-      <path class="cls-4" d="m6.32.25v12.65C2.83,12.9,0,10.07,0,6.58S2.83.25,6.32.25Z"/>
-    </g>
-  </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.9.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 12.6 13.2" style="enable-background:new 0 0 12.6 13.2;" xml:space="preserve">
+<path d="M6.3,0.2C2.8,0.2,0,3.1,0,6.6s2.8,6.3,6.3,6.3s6.3-2.8,6.3-6.3S9.8,0.2,6.3,0.2z M6.3,11.8V1.4c2.8,0,5.2,2.4,5.2,5.2
+	C11.5,9.4,9.2,11.8,6.3,11.8z"/>
+<path d="M20.8,0.2c-3.5,0-6.3,2.9-6.3,6.4s2.8,6.3,6.3,6.3s6.3-2.8,6.3-6.3S24.3,0.2,20.8,0.2z M20.8,11.8c-2.9,0-5.2-2.4-5.2-5.2
+	s2.4-5.2,5.2-5.2S26,3.8,26,6.6S23.7,11.8,20.8,11.8z"/>
+<path d="M20.8,1.4v10.4c-2.9,0-5.2-2.4-5.2-5.2S18,1.4,20.8,1.4z"/>
 </svg>

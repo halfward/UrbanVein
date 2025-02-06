@@ -7,8 +7,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
@@ -18,22 +18,16 @@
 
 </head>
 <body>
-
-    <div id="customCursor"></div>
-
     <img src="images/hao-lee.png" alt="Hao Lee" id="hao-lee">
 
     <!-- Sidebar Content -->
     <div id="sidebar">
         <div style="display: flex; align-items: center;">
-            <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
-
-            <span id="versionHistoryLink" class="clickable-text" style="margin-top: 19px; margin-left: 3px;color: #000000; font-size: 0.8rem; display: block;"></span>
-
+            
             <!-- Overview Popup Modal-->
             <div id="guidePopup" class="popup hidden" style="display: none;">
                 <div id="guidePopup-content" class="popup-content">
-                    <h3 style="margin-top: 0;">▘welcome to urban vein! <b>click anywhere to continue</b>, or read more about this project below:</h3>
+                    <h3 style="margin-top: 0;">welcome to urban vein! <b>click anywhere to continue</b>, or read more about this project below:</h3>
                     <br>
                     <h2 style="line-height: 1.2; font-size: 0.9rem; color: #585f5f; font-weight: 400;">
                         by mapping the material composition of new york city’s buildings, we can uncover patterns of urban transformation that inform preservation, demolition, and future construction decisions.
@@ -100,82 +94,36 @@
                     </div>
                 </div>
             </div>
-            <!-- Options Popup Modal -->
-            <div id="optionsPopup" class="popup hidden" style="display: none;">
-                <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup">🞁</button>
-                    <h3 style="margin-top: 0;">▘options</h3>
-                    <br>
-                    <button class="layer" id="fullscreenButton">
-                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/fullscreen.svg" alt="Fullscreen Icon" class="popup-icon"">
-                    <span style="color: #585f5f;">fullscreen</span>
-                    </button>
-                    <button class="layer" id="darkModeButton">
-                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/dark-mode.svg" alt="Dark Mode Icon" class="popup-icon">
-                    <span style="color: #585f5f;">dark mode</span>
-                    </button>
-                    <button class="layer" id="guideButton">
-                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/guide.svg" alt="Guide Icon" class="popup-icon">
-                    <span style="color: #585f5f;">overview</span>
-                    </button>
-                    <br>
-                </div>
-                
-            </div>
             
-            <!-- Rose Popup Modal
-            <div id="rosePopup" class="popup hidden" style="display: none;">
-                <div class="popup-content" style="height: 289.5px; overflow: hidden;">
-                    <h3 style="margin: 0;">
-                        ▘if a hexagon grid only has...
-                    </h3>
-                    <br>
-                    <div class="popup-slider">
-                        <div class="popup-slide active">
-                            <p-popup>early 20th century commercial high-rises, <br>like the flatiron building, <br>it would look like this:</p-popup>
-                            <canvas id="RoseChartRefA"></canvas>
-                        </div>
-                        <div class="popup-slide">
-                            <p-popup>post-2000 luxury residential towers, <br>like one57, <br>it would look like this:</p-popup>
-                            <canvas id="RoseChartRefB"></canvas>
-                        </div>
-                        <div class="popup-slide">
-                            <p-popup>industrial warehouses and factories, <br>like the brooklyn navy yard, <br>it would look like this:</p-popup>
-                            <canvas id="RoseChartRefC"></canvas>
-                        </div>
-                    </div>
-                    <button class="popupCloseButton" id="collapsePopup" style="margin-top: 265px;">🞁</button>
-                    <button id="prevSlide" class="popup-arrow">🡰</button>
-                    <button id="nextSlide" class="popup-arrow">🡲</button>
-                </div>
-            </div> -->
-
-        </div>        
-        
-        <div class="nav-button" id="aboutButton">ABOUT</div>
-        <div class="nav-button" id="storiesButton">STORIES</div>
-        <div class="nav-button" id="explorerButton">LAYERS</div>
-        <div class="options-icon" id="optionsIcon">🞳</div>
-        
-        <hr class="sidebar-line">
+        </div>
+        <div id="sidebar-header">
+            <div id="logo-container">
+                <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
+                <span id="versionHistoryLink" class="clickable-text"></span>
+            </div>
+            <div id="nav-container">
+                <div class="nav-button" id="aboutButton">ABOUT</div>
+                <div class="nav-button" id="storiesButton">NARRATIVE</div>
+                <div class="nav-button" id="explorerButton">ANALYSIS</div>
+            </div>
+        </div>
     
         <!-- Content containers -->
         <div id="aboutContentText" class="content-text" style="display: none;">
             <h2>brick by brick</h2>
             <p>
-                this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.
-                <br><br>
                 urban vein is developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>. the project was guided by (in semester & alphabetical orders) william martin, violet witney, laura kurgan, snoweria zhang, catherine griffith, and seth thompson.</p>
         </div>
     
         <div id="storiesContentText" class="content-text" style="display: none;">
             <h2>of memory & vision</h2>
-            <p>urban vein explores new york city through its building materials—their composition, distribution, and transformation. it examines what exists, what is being lost, and what should be built. urban vein is a lens into the city's evolving urban identity.</p>
+            <p>explore new york city through its building materials—their composition, distribution, and transformation. examine what exists, what is being lost, and what should be built. urban vein is a lens into the enw york city's evolving spatial identity.</p>
         </div>
     
         <div id="exploreContentText" class="content-text" style="display: block;">
-            <h2>guide guide guide</h2>
-            <p>guide guide guide</p>
+            <h2>machine learning + urban data</h2>
+            <p>this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.
+            </p>
         </div>
 
         <!-- About -->
@@ -194,26 +142,17 @@
 
         <!-- Explorer -->
         <div id="navButtonCContainer" class="navButtonCContainer">
-            <div id="legendButton" class="nav-button-2">LEGEND</div>
-            <div id="timelineButton" class="nav-button-2">TIMELINE</div>
+            <div id="legendButton" class="nav-button-2">DOCS</div>
+            <div id="timelineButton" class="nav-button-2">BUILDINGS</div>
             <div id="mapsButton" class="nav-button-2">LAYERS</div>
         </div>
 
 
-        <hr class="sidebar-line-2a">
-        <hr class="sidebar-line-2b">
-
-        <!-- <div id="Chart">
-            <canvas id="RoseChart"></canvas>
-            <p id="roseInfo" class="info-icon">compare 🞃</p>
-            
-        </div>
-         -->
 
         <div id="layerControls"></div>
         
         <div id="scrollableTextData" class="scrollable-text-about" style="display: none;">
-                <h3>▘<a id="materialInfo" class="info-link">material estimate 🞃</a> </h3>
+                <h3>▘<a id="materialInfo" class="info-link">material estimate</a> </h3>
                 <p>
                     nyc buliding material estimate data<br>
                     by hao lee
@@ -233,8 +172,8 @@
                     <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">new york state civil boundaries</a><br>
                     by <a href="https://gis.ny.gov/">new york state gis resources</a>
                     <br><br>
-                    <a href="https://gisdata-njdep.opendata.arcgis.com/datasets/3a79b8275ec64325999738b64be8fa14_8/explore?showTable=true">coastline (2012) of new jersey</a><br>
-                    by <a href="https://gisdata-njdep.opendata.arcgis.com/">njdep bureau of gis</a>
+                    <a href="https://njogis-newjersey.opendata.arcgis.com/datasets/middlesexcounty::nj-counties/about">nj counties</a><br>
+                    by <a href="https://njgin.nj.gov/njgin/about/ogis/">nj office of information technology, office of gis (njogis)</a>
                 </p>
 
                 <h3>▘map layers</h3>
@@ -254,15 +193,15 @@
         </div>
 
         <div id="scrollableTextMedia" class="scrollable-text-about" style="display: none;">
-            <h3 id="visualizationArchive" style="cursor: pointer">▘<a>visualization archive 🞃</a></h3>
+            <h3 id="visualizationArchive" style="cursor: pointer; text-decoration: underline;">▘<a>visualization archive</a></h3>
             <p>
                 one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
             </p>
-            <h3 id="colloquiumPoster" style="cursor: pointer">▘<a href="media/colloquiumPoster.pdf" target="_blank">colloquium ii: review poster 🞂🞂</a></h3>
+            <h3 id="colloquiumPoster" style="cursor: pointer">▘<a href="media/colloquiumPoster.pdf" target="_blank">colloquium ii: review poster</a></h3>
             <p>
                 this is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece.
             </p>
-            <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism 🞂🞂</a></h3>
+            <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism</a></h3>
             <p>
                 this is colloquium i's project website, which consists of two material-related speculative projects, booleanify and balloonify.
             </p>
@@ -361,7 +300,8 @@
                 </p>
         </div> 
 
-        <!-- Stories---------------------------------------------- -->
+        <!-- Stories------------------------------------------------>
+        
         <div id="scrollableTextPast" class="scrollable-text-stories" style="display: none;">
             <h3>▘historical nyc</h3>
             <img src="images/placeholder-1.webp" style="width: 100%; height: 90px;">
@@ -392,7 +332,39 @@
 
         <!-- Explorer------------------------------------------- -->
         <div id="scrollableTextTimeline" class="scrollable-text-timeline" style="display: none;">
-            <h3>timeline here</h3>
+            <h3>archetypes</h3>
+            <div class="popup-slider">
+                <div class="popup-slide active">
+                    <p-popup>early 20th century commercial high-rises, <br>like the flatiron building</p-popup>
+                    <canvas id="RoseChartRefA"></canvas>
+                </div>
+                <div class="popup-slide">
+                    <p-popup>post-2000 luxury residential towers, <br>like one57</p-popup>
+                    <canvas id="RoseChartRefB"></canvas>
+                </div>
+                <div class="popup-slide">
+                    <p-popup>industrial warehouses and factories, <br>like the brooklyn navy yard</p-popup>
+                    <canvas id="RoseChartRefC"></canvas>
+                </div>
+            </div>
+            
+            <div class="circle-container">
+                <img src="images/collapse.svg" alt="previous" class="popup-arrow" id="prevSlide">
+                <div class="circle">1</div>
+                <div class="circle">2</div>
+                <div class="circle">3</div>
+                <div class="circle">4</div>
+                <div class="circle">5</div>
+                <div class="circle">6</div>
+                <div class="circle">7</div>
+                <div class="circle">8</div>
+                <div class="circle">9</div>
+                <div class="circle">10</div>
+                <div class="circle">11</div>
+                <div class="circle">12</div>
+                <div class="circle">13</div>
+                <img src="images/collapse.svg" alt="next" class="popup-arrow" id="nextSlide">
+            </div>
         </div>
 
         <div id="scrollableTextMaps" class="scrollable-text-timeline" style="display: none;">
@@ -402,56 +374,56 @@
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          buliding material  <sup> geojson </sup>
+                            buliding material  <sup> geojson </sup>
                         <button class="show-toggle" id="toggle-material"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li data-layer="satelliteLayer">
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          satellite imagery  <sup> tile </sup>
+                            satellite imagery  <sup> tile </sup>
                         <button class="show-toggle" id="toggle-satellite"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li data-layer="grayscaleOSMLayer">
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          openstreetmap  <sup> tile </sup>
+                            openstreetmap  <sup> tile </sup>
                         <button class="show-toggle" id="toggle-osm"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li data-layer="zoningLayer">
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          nyc zoning districts  <sup> geojson </sup>
+                            zoning districts  <sup> geojson </sup>
                         <button class="show-toggle" id="toggle-zoning"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li data-layer="subwayLayer"></li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          nyc subway lines  <sup> geojson </sup>
+                            subway lines  <sup> geojson </sup>
                         <button class="show-toggle" id="toggle-subway"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          <s>bedrock elevation</s>  <sup> geojson </sup>
+                            <s>bedrock elevation</s>  <sup> tif </sup>
                         <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          <s>demolition map</s>  <sup> geojson </sup>
+                            <s>demolition map</s>  <sup> geojson </sup>
                         <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
                 <li>
                     <h3 class="layer">
                         <div class="layer-drag">☰</div>
-                          <s>carbon footprints</s>  <sup> geojson </sup>
+                            <s>carbon footprints</s>  <sup> geojson </sup>
                         <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
                     </h3>
                 </li>
@@ -478,72 +450,64 @@
         <div class="ticker-wrap">
             <div class="ticker">
                 <span class="item-collection-1">
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
                 </span>
                 <span class="item-collection-2">
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2024    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
                 </span>
             </div>
         </div>
 
 
-
+        <button id="toggleButton">
+            <img src="images/collapse.svg" alt="toggle" id="toggleIcon">
+        </button>
     </div>
-    <button id="toggleButton">
-        <img src="images/collapse.svg" alt="toggle" id="toggleIcon">
-    </button>
+    
+
+    <div class="control-panel">
+        <button class="control-button" id="fullscreenButton">
+            <img src="images/fullscreen.svg" alt="Fullscreen Icon" class="control-icon"">
+        </button>
+        <button class="control-button" id="darkModeButton">
+            <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="control-icon">
+        </button>
+        <button class="control-button" id="guideButton">
+            <img src="images/guide.svg" alt="Guide Icon" class="control-icon">
+        </button>
+    </div>
 
     <div id="panelContainer">
         <div id="panelBuilding">
             <div class="panelTitle" id="panelTitleBuilding">
-                BUILDING TYPE BROWSER
+                X-RAY
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleBuilding">
             </div>
             <div class="panelContent" id="panelContentBuilding">
-                <div class="popup-slider">
-                    <div class="popup-slide active">
-                        <p-popup>early 20th century commercial high-rises, <br>like the flatiron building</p-popup>
-                        <canvas id="RoseChartRefA"></canvas>
-                    </div>
-                    <div class="popup-slide">
-                        <p-popup>post-2000 luxury residential towers, <br>like one57</p-popup>
-                        <canvas id="RoseChartRefB"></canvas>
-                    </div>
-                    <div class="popup-slide">
-                        <p-popup>industrial warehouses and factories, <br>like the brooklyn navy yard</p-popup>
-                        <canvas id="RoseChartRefC"></canvas>
-                    </div>
-                </div>
-                
-                <div class="circle-container">
-                    <img src="images/collapse.svg" alt="previous" class="popup-arrow" id="prevSlide">
-                    <div class="circle">1</div>
-                    <div class="circle">2</div>
-                    <div class="circle">3</div>
-                    <div class="circle">4</div>
-                    <div class="circle">5</div>
-                    <div class="circle">6</div>
-                    <div class="circle">7</div>
-                    <div class="circle">8</div>
-                    <div class="circle">9</div>
-                    <div class="circle">10</div>
-                    <div class="circle">11</div>
-                    <div class="circle">12</div>
-                    <div class="circle">13</div>
-                    <img src="images/collapse.svg" alt="next" class="popup-arrow" id="nextSlide">
-                </div>
+                <label>
+                    <input type="radio" id= "xray-none" name="options" checked>
+                    none
+                </label>
+                <label>
+                    <input type="radio" id= "xray-satellite" name="options">
+                    satellite
+                </label>
+                <label>
+                    <input type="radio" id= "xray-osm" name="options">
+                    openstreetmap (osm)
+                </label>
             </div>
         </div>
         
         <div id="panelMaterial">
             <div class="panelTitle" id="panelTitleMaterial">
-                TILE MATERIAL COMPOSITION
+                MATERIAL COMPOSITION
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleMaterial">
             </div>
             <div class="panelContent" id="panelContentMaterial">
@@ -603,13 +567,12 @@
                     <div class="info-text line"></div>
                     <div class="info-text right">Manhattan</div>
                 </div>                
-                <br>
                 <div class="info-text-container">
                     <div class="info-text left">zoning type(s)</div>
                     <div class="info-text line"></div>
                     <div class="info-text right">R7, R10</div>
                 </div>  
-                <div class="info-text-container">
+                <div class="info-text-container" style="margin-top: 10px;">
                     <div class="info-text left">avg./med. FAR</div>
                     <div class="info-text line"></div>
                     <div class="info-text right">8.5 / 7.2</div>
@@ -624,9 +587,8 @@
                     <div class="info-text line"></div>
                     <div class="info-text right">A / B</div>
                 </div>  
-                <br>
-                <div class="info-text-container">
-                    <div class="info-text left">elevation (AMSL)</div>
+                <div class="info-text-container" style="margin-top: 10px;">
+                    <div class="info-text left" title="Above Mean Sea Level">elevation</div>
                     <div class="info-text line"></div>
                     <div class="info-text right">30 ft / 9.1 m</div>
                 </div>  
@@ -644,7 +606,10 @@
         </div>
     </div>
 
-
+    <div id="xray-mask">
+        <div id="xray-map"></div>
+    </div>
+    
     <div id="mainMap"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>

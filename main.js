@@ -55,10 +55,10 @@ const nycBounds = L.latLngBounds(
     [41.0176, -73.4004]  // NE corner
 );
 const mainMap = L.map('mainMap', {
-    center: [40.7128, -73.9460],
+    center: [40.7128, -73.8860],
     zoom: 13,
     minZoom: 11,
-    maxZoom: 15,
+    maxZoom: 19,
     renderer: L.canvas(),
     preferCanvas: true,
     maxBounds: nycBounds,
@@ -69,7 +69,7 @@ L.control.scale({
     position: 'topright',
     metric: true,
     imperial: true,
-    maxWidth: 150
+    maxWidth: 120
 }).addTo(mainMap);
 
 
@@ -415,9 +415,14 @@ const xraySatelliteLayer = L.tileLayer(
         attribution: 'Tiles &copy; Esri',
     }
 );
-
 const xrayOSMLayer = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+    {
+        attribution: '&copy; OpenStreetMap contributors',
+    }
+);
+const xrayFootprintLayer = L.tileLayer(
+    'https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', 
     {
         attribution: '&copy; OpenStreetMap contributors',
     }
@@ -428,8 +433,8 @@ let xrayMask = document.getElementById("xray-mask");
 
 // **Track cursor movement AND adjust X-ray map position**
 document.addEventListener("mousemove", function (e) {
-    xrayMask.style.left = `${e.pageX - 100}px`;  // Center the mask
-    xrayMask.style.top = `${e.pageY - 100}px`;
+    xrayMask.style.left = `${e.pageX}px`;  // Center the mask
+    xrayMask.style.top = `${e.pageY}px`;
 
     // **Adjust the X-ray map center dynamically**
     xrayMap.setView(mainMap.containerPointToLatLng(mainMap.mouseEventToContainerPoint(e)), mainMap.getZoom());
@@ -453,7 +458,9 @@ function updateXray(mode) {
             xraySatelliteLayer.addTo(xrayMap);
         } else if (mode === "osm") {
             xrayOSMLayer.addTo(xrayMap);
-        }
+        } else if (mode === "footprint") {
+            xrayFootprintLayer.addTo(xrayMap);
+        }        
 
         // **Force Leaflet to redraw tiles to prevent gray areas**
         setTimeout(() => {
@@ -466,9 +473,46 @@ function updateXray(mode) {
 document.getElementById("xray-none").addEventListener("change", () => updateXray("none"));
 document.getElementById("xray-satellite").addEventListener("change", () => updateXray("satellite"));
 document.getElementById("xray-osm").addEventListener("change", () => updateXray("osm"));
+document.getElementById("xray-footprint").addEventListener("change", () => updateXray("footprint"));
 
-    
 
+
+// X-ray mask sizing-----------------------------------------------------
+// Select the size buttons
+const smlS = document.getElementById('sml-s');
+const smlM = document.getElementById('sml-m');
+const smlL = document.getElementById('sml-l');
+
+// Set default size to sml-s
+xrayMask.classList.add('sml-s'); // This ensures the mask is small initially
+smlS.classList.add('active'); // Ensure sml-s is active initially
+
+// Event listener for sml-m (medium size)
+smlM.addEventListener('click', () => {
+    xrayMask.classList.remove('sml-s', 'sml-l');
+    xrayMask.classList.add('sml-m');
+    smlS.classList.remove('active');
+    smlM.classList.add('active');
+    smlL.classList.remove('active');
+});
+
+// Event listener for sml-l (large size)
+smlL.addEventListener('click', () => {
+    xrayMask.classList.remove('sml-s', 'sml-m');
+    xrayMask.classList.add('sml-l');
+    smlS.classList.remove('active');
+    smlM.classList.remove('active');
+    smlL.classList.add('active');
+});
+
+// Event listener for sml-s (small size)
+smlS.addEventListener('click', () => {
+    xrayMask.classList.remove('sml-m', 'sml-l');
+    xrayMask.classList.add('sml-s');
+    smlS.classList.add('active');
+    smlM.classList.remove('active');
+    smlL.classList.remove('active');
+});
 
 
 
@@ -592,7 +636,7 @@ const updateLayerVisibility = () => {
     }).forEach(([material, [layer, layer200]]) => {
         // Only consider the layers that are toggled on
         if (layerState[material]) {
-            if (zoom === 13 || zoom === 14 || zoom === 15) {
+            if (zoom >= 13 && zoom <= 19) {
                 // Show primary layers and remove secondary layers
                 if (!mainMap.hasLayer(layer)) {
                     layer.addTo(mainMap);
@@ -998,6 +1042,145 @@ fetch('data/NY+NJ_Shoreline.geojson')
 
 
 
+// Adding the layer tile details------------------------------------
+var layer1 = L.geoJSON(null, {
+    style: function () {
+        return {
+            opacity: 0,          // Set opacity to 0 (fully transparent)
+            fillOpacity: 0,      // Set fillOpacity to 0 (fully transparent)
+            weight: 0,           // Set weight to 0 (no borders)
+            dashArray: '0',      // Ensure no dashed lines
+            color: 'transparent' // Set the color to transparent (no visible color)
+        };
+    }
+}).addTo(mainMap); // tile_data_100m_refined1.geojson
+
+var layer2 = L.geoJSON(null, {
+    style: function () {
+        return {
+            opacity: 0,          // Set opacity to 0 (fully transparent)
+            fillOpacity: 0,      // Set fillOpacity to 0 (fully transparent)
+            weight: 0,           // Set weight to 0 (no borders)
+            dashArray: '0',      // Ensure no dashed lines
+            color: 'transparent' // Set the color to transparent (no visible color)
+        };
+    }
+}).addTo(mainMap); // tile_data_100m_refined2.geojson
+
+// Fetch and load the GeoJSON data from the "data" folder
+fetch('data/tile_data_100m_refined1.geojson')
+    .then(response => response.json())
+    .then(data => {
+        L.geoJSON(data, {
+            style: function () {
+                return {
+                    opacity: 0,
+                    fillOpacity: 0,
+                    weight: 0,
+                    dashArray: '0',
+                    color: 'transparent'
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                layer.on('mouseover', function () {
+                    // Display the values in the divs on hover
+                    document.getElementById("borough").innerHTML = feature.properties.Borough;
+                    var zoneDistSpan = document.createElement("span");
+                    zoneDistSpan.innerHTML = feature.properties.ZoneDist;
+                    document.getElementById("zonedist").innerHTML = '';
+                    document.getElementById("zonedist").appendChild(zoneDistSpan);                    
+                    document.getElementById("builtfar").innerHTML = feature.properties.BuiltFAR_Mean + "&nbsp;/&nbsp;" + feature.properties.BuiltFAR_Median;
+                    document.getElementById("numfloors").innerHTML = feature.properties.NumFloors_Mean + "&nbsp;/&nbsp;" + feature.properties.NumFloors_Median;
+                    document.getElementById("yearbuilt").innerHTML = feature.properties.YearBuilt_Mean + "&nbsp;/&nbsp;" + feature.properties.YearBuilt_Median;
+                    document.getElementById("elev_mean").innerHTML = feature.properties.Elev_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Elev_Mean * 0.3048).toFixed(1) + "m";
+                    document.getElementById("bedrock_mean").innerHTML = feature.properties.Bedrock_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Bedrock_Mean * 0.3048).toFixed(1) + "m";
+                });
+            }
+        }).addTo(layer1); // Adding the GeoJSON data to the first layer
+    });
+
+fetch('data/tile_data_100m_refined2.geojson')
+    .then(response => response.json())
+    .then(data => {
+        L.geoJSON(data, {
+            style: function () {
+                return {
+                    opacity: 0,
+                    fillOpacity: 0,
+                    weight: 0,
+                    dashArray: '0',
+                    color: 'transparent'
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                layer.on('mouseover', function () {
+                    // Display the values in the divs on hover
+                    document.getElementById("borough").innerHTML = feature.properties.Borough;
+                    var zoneDistSpan = document.createElement("span");
+                    zoneDistSpan.innerHTML = feature.properties.ZoneDist;
+                    document.getElementById("zonedist").innerHTML = '';
+                    document.getElementById("zonedist").appendChild(zoneDistSpan);
+                    document.getElementById("builtfar").innerHTML = feature.properties.BuiltFAR_Mean + "&nbsp;/&nbsp;" + feature.properties.BuiltFAR_Median;
+                    document.getElementById("numfloors").innerHTML = feature.properties.NumFloors_Mean + "&nbsp;/&nbsp;" + feature.properties.NumFloors_Median;
+                    document.getElementById("yearbuilt").innerHTML = feature.properties.YearBuilt_Mean + "&nbsp;/&nbsp;" + feature.properties.YearBuilt_Median;
+                    document.getElementById("elev_mean").innerHTML = feature.properties.Elev_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Elev_Mean * 0.3048).toFixed(1) + "m";
+                    document.getElementById("bedrock_mean").innerHTML = feature.properties.Bedrock_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Bedrock_Mean * 0.3048).toFixed(1) + "m";
+                });
+            }
+        }).addTo(layer2); // Adding the GeoJSON data to the second layer
+    });
+
+
+
+// Zonedist overflow scrolling effect--------------------------
+document.addEventListener("DOMContentLoaded", function () {
+    const zonedistDiv = document.getElementById("zonedist");
+
+    if (!zonedistDiv) {
+        console.error("Element with ID 'zonedist' not found.");
+        return;
+    }
+
+    // Function to check if the text overflows and start scrolling
+    function startScrolling() {
+        const textContent = zonedistDiv.textContent.trim();
+
+        if (!textContent) return; // Ensure there is text to scroll
+
+        // Check if the content overflows the parent container
+        const textWidth = zonedistDiv.scrollWidth;
+        const containerWidth = zonedistDiv.clientWidth;
+
+        if (textWidth > containerWidth) {
+            // Apply scrolling effect by setting animation on the span (not the div)
+            if (!zonedistDiv.classList.contains("scrolling")) {
+                zonedistDiv.classList.add("scrolling");
+            }
+        } else {
+            // Remove scrolling effect if no overflow
+            zonedistDiv.classList.remove("scrolling");
+        }
+    }
+
+    // Run check on page load
+    setTimeout(startScrolling, 500);
+
+    // Check periodically if the content changes or if scrolling should start
+    setInterval(startScrolling, 1000);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1046,7 +1229,7 @@ const config = {
                     color: 'transparent', 
                     font: {
                         family: 'Inter',
-                        weight: '500'
+                        weight: '100'
                     },
                     backdropColor: 'rgba(0, 0, 0, 0)', 
                 },
@@ -1249,37 +1432,25 @@ const RoseChartRefC = new Chart(document.getElementById('RoseChartRefC'), config
 
 
 
-// Sidebar
-// Ensure the DOM is fully loaded before running the script
+// Sidebar------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function() {
-    // Initialize the sidebar state as expanded
-    let isSidebarExpanded = true;
+    let isSidebarExpanded = false; // Sidebar starts collapsed
 
-    // Get references to the sidebar, button, and icon
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggleButton");
     const toggleIcon = document.getElementById("toggleIcon");
 
     toggleButton.addEventListener("click", function() {
         if (isSidebarExpanded) {
-            // Collapse the sidebar
-            sidebar.style.transform = "translateX(-100%)"; // Move sidebar offscreen
-            toggleIcon.classList.add("collapsed"); // Add the .collapsed class
+            sidebar.classList.remove("expanded"); // Collapse
+            toggleIcon.src = "images/panel-expand.svg"; // Change icon to expand
         } else {
-            // Expand the sidebar
-            sidebar.style.transform = "translateX(0)"; // Move sidebar back onscreen
-            toggleIcon.classList.remove("collapsed"); // Remove the .collapsed class
+            sidebar.classList.add("expanded"); // Expand
+            toggleIcon.src = "images/panel-collapse.svg"; // Change icon to collapse
         }
-
-        // Toggle the state
         isSidebarExpanded = !isSidebarExpanded;
     });
-
-    // Initialize the sidebar in the expanded state on load
-    sidebar.style.transform = "translateX(0)"; // Ensure the sidebar is expanded initially
 });
-
-
 
 
 
@@ -1296,13 +1467,13 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('sidebar').appendChild(line); // Append to sidebar
 
     // Position line initially under the explorer button
-    const initialButton = document.getElementById('explorerButton');
+    const initialButton = document.getElementById('aboutButton');
     line.style.width = `${initialButton.offsetWidth - 10}px`; // Set width
     line.style.position = 'absolute';
     line.style.bottom = '-5px'; // Position it
     line.style.left = `${initialButton.offsetLeft + 5}px`; // Align with explorer button
 
-    // Mark explorer button as active initially
+    // Mark button as active initially
     initialButton.classList.add('active');
 
     buttons.forEach(button => {
@@ -1570,12 +1741,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 navButtonCContainer.style.display = 'flex'; 
                 break;
             default:
-                aboutContent.style.display = 'none';
+                aboutContent.style.display = 'flex';
                 storiesContent.style.display = 'none';
                 exploreContent.style.display = 'none';
                 navButtonAContainer.style.display = 'none'; 
                 navButtonBContainer.style.display = 'none'; 
-                navButtonCContainer.style.display = 'flex'; 
+                navButtonCContainer.style.display = 'none'; 
         }
     }
 
@@ -1592,8 +1763,8 @@ document.addEventListener("DOMContentLoaded", function() {
         updatecontentMain('explorerButton');
     });
 
-    // Initialize by showing the Explorer content or any default section
-    updatecontentMain('explorerButton');
+    // Initialize by showing the About content or any default section
+    updatecontentMain('aboutButton');
 
     // Function to observe display changes using MutationObserver
     function observeDisplayChanges() {
@@ -1643,7 +1814,6 @@ const scrollableTextPast = document.getElementById('scrollableTextPast');
 const scrollableTextPresent = document.getElementById('scrollableTextPresent');
 const scrollableTextFuture = document.getElementById('scrollableTextFuture');
 const scrollableTextC = document.getElementById('scrollableTextC');
-// const roseChart = document.getElementById('Chart');
 const layerControls = document.getElementById('layerControls');
 const scrollableTextTimeline = document.getElementById('scrollableTextTimeline');
 const scrollableTextMaps = document.getElementById('scrollableTextMaps');
@@ -1759,6 +1929,24 @@ function resetSecondLayerStates() {
 }
 
 // Event listeners for main navigation buttons
+aboutButton.addEventListener('click', () => {
+    resetSecondLayerStates();
+    isAboutActive = true;
+    isExploreActive = false;
+    isStoriesActive = false;
+    isDataActive = true;
+    setActiveButton('dataButton'); // Set dataButton as active
+    updateDisplays();
+});
+storiesButton.addEventListener('click', () => {
+    resetSecondLayerStates();
+    isStoriesActive = true;
+    isExploreActive = false;
+    isAboutActive = false;
+    isPastActive = true;
+    setActiveButton('pastButton'); // Set pastButton as active
+    updateDisplays();
+});
 exploreButton.addEventListener('click', () => {
     resetSecondLayerStates();
     isExploreActive = true;
@@ -1769,25 +1957,6 @@ exploreButton.addEventListener('click', () => {
     updateDisplays();
 });
 
-aboutButton.addEventListener('click', () => {
-    resetSecondLayerStates();
-    isAboutActive = true;
-    isExploreActive = false;
-    isStoriesActive = false;
-    isDataActive = true;
-    setActiveButton('dataButton'); // Set dataButton as active
-    updateDisplays();
-});
-
-storiesButton.addEventListener('click', () => {
-    resetSecondLayerStates();
-    isStoriesActive = true;
-    isExploreActive = false;
-    isAboutActive = false;
-    isPastActive = true;
-    setActiveButton('pastButton'); // Set pastButton as active
-    updateDisplays();
-});
 
 // Add click event listeners to nav-2 buttons
 navButtons.forEach(button => {
@@ -1799,8 +1968,6 @@ navButtons.forEach(button => {
 
 // Function to handle content updates
 function updateContent(buttonId) {
-    console.log('Updating content for:', buttonId);
-
     // Set active states based on button ID
     isDataActive = (buttonId === 'dataButton');
     isMediaActive = (buttonId === 'mediaButton');
@@ -1814,14 +1981,13 @@ function updateContent(buttonId) {
     isTimelineActive = (buttonId === 'timelineButton');
     isMapsActive = (buttonId === 'mapsButton');
 
-    // Update display elements based on states
     updateDisplays();
 }
 
 // Set default states on page load
-isExploreActive = true;
-isLegendActive = true;
-setActiveButton('legendButton');
+isAboutActive = true;
+isDataActive = true;
+setActiveButton('dataButton');
 updateDisplays(); // Update displays based on default state
 
 // MutationObserver to detect display changes

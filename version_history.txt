@@ -1,3 +1,8 @@
+0.3.2 (2025-02-06)
+- added tile info (borough, zoning, FAR, age, floors, elevation, and bedrock depth.)
+- the sidebar is now collapsed on load.
+- changed the default sidebar tab to "about."
+
 0.3.1 (2025-01-29)
 - overall ui update.
 - added an x-ray function for map tiles.

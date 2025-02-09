@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
 
@@ -18,10 +19,17 @@
 
 </head>
 <body>
-    <img src="images/hao-lee.png" alt="Hao Lee" id="hao-lee">
+    <!-- <img src="images/hao-lee.png" alt="Hao Lee" id="hao-lee"> -->
+    <div id="logo-container">
+        <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
+    </div>
 
     <!-- Sidebar Content -->
     <div id="sidebar">
+        <div id="logo-container">
+            <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
+            <span id="versionHistoryLink" class="clickable-text"></span>
+        </div>
         <div style="display: flex; align-items: center;">
             
             <!-- Overview Popup Modal-->
@@ -97,10 +105,6 @@
             
         </div>
         <div id="sidebar-header">
-            <div id="logo-container">
-                <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
-                <span id="versionHistoryLink" class="clickable-text"></span>
-            </div>
             <div id="nav-container">
                 <div class="nav-button" id="aboutButton">ABOUT</div>
                 <div class="nav-button" id="storiesButton">NARRATIVE</div>
@@ -464,24 +468,28 @@
             </div>
         </div>
 
+        <div class="control-panel">
+            <button class="control-button" id="optionsButton">
+                <img src="images/options.png" alt="Options Icon" class="control-icon"">
+            </button>
+            <button class="control-button" id="fullscreenButton">
+                <img src="images/fullscreen.svg" alt="Fullscreen Icon" class="control-icon"">
+            </button>
+            <button class="control-button" id="darkModeButton">
+                <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="control-icon">
+            </button>
+            <button class="control-button" id="guideButton">
+                <img src="images/guide.svg" alt="Guide Icon" class="control-icon">
+            </button>
+        </div>
 
         <button id="toggleButton">
-            <img src="images/collapse.svg" alt="toggle" id="toggleIcon">
+            <img src="images/panel-expand.svg" alt="toggle" id="toggleIcon">
         </button>
     </div>
     
 
-    <div class="control-panel">
-        <button class="control-button" id="fullscreenButton">
-            <img src="images/fullscreen.svg" alt="Fullscreen Icon" class="control-icon"">
-        </button>
-        <button class="control-button" id="darkModeButton">
-            <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="control-icon">
-        </button>
-        <button class="control-button" id="guideButton">
-            <img src="images/guide.svg" alt="Guide Icon" class="control-icon">
-        </button>
-    </div>
+    
 
     <div id="panelContainer">
         <div id="panelBuilding">
@@ -490,18 +498,29 @@
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleBuilding">
             </div>
             <div class="panelContent" id="panelContentBuilding">
-                <label>
-                    <input type="radio" id= "xray-none" name="options" checked>
-                    none
-                </label>
-                <label>
-                    <input type="radio" id= "xray-satellite" name="options">
-                    satellite
-                </label>
-                <label>
-                    <input type="radio" id= "xray-osm" name="options">
-                    openstreetmap (osm)
-                </label>
+                <div class="panelContentWrapper" style="display: flex; flex-direction: column;">
+                    <label class="label-xray">
+                        <input type="radio" id= "xray-none" name="options" checked>
+                        none
+                    </label>
+                    <label class="label-xray">
+                        <input type="radio" id= "xray-satellite" name="options">
+                        satellite
+                    </label>
+                    <label class="label-xray">
+                        <input type="radio" id= "xray-osm" name="options">
+                        openstreetmap (osm)
+                    </label>
+                    <label class="label-xray">
+                        <input type="radio" id= "xray-footprint" name="options">
+                        building footprint
+                    </label>
+                    <div class="sml-container">
+                        <button class="sml" id="sml-s">S</button>
+                        <button class="sml" id="sml-m">M</button>
+                        <button class="sml" id="sml-l">L</button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -511,49 +530,50 @@
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleMaterial">
             </div>
             <div class="panelContent" id="panelContentMaterial">
-                <div id="chart">
-                    <canvas id="Rose"></canvas>
+                <div class="panelContentWrapper" style="padding-top: 0;">
+                    <div id="chart">
+                        <canvas id="Rose"></canvas>
+                    </div>
+                    <div class="toggle-container">
+                        <input type="checkbox" id="toggle1" class="toggle-input" checked>
+                        <label for="toggle1" class="toggle-label toggle-color1"></label>
+                        <div id="toggleText1" class="toggle-text">brick</div>
+                        <div class="info-text line"></div>
+                        <div class="toggle-value right">xxxM tn</div>
+                    </div>
+                    
+                    <div class="toggle-container">
+                        <input type="checkbox" id="toggle2" class="toggle-input" checked>
+                        <label for="toggle2" class="toggle-label toggle-color2"></label>
+                        <div id="toggleText2" class="toggle-text">concrete</div>
+                        <div class="info-text line"></div>
+                        <div class="toggle-value right">xxxM tn</div>
+                    </div>
+                    
+                    <div class="toggle-container">
+                        <input type="checkbox" id="toggle3" class="toggle-input" checked>
+                        <label for="toggle3" class="toggle-label toggle-color3"></label>
+                        <div id="toggleText3" class="toggle-text">glass</div>
+                        <div class="info-text line"></div>
+                        <div class="toggle-value right">xxxK tn</div>
+                    </div>
+                    
+                    <div class="toggle-container">
+                        <input type="checkbox" id="toggle4" class="toggle-input" checked>
+                        <label for="toggle4" class="toggle-label toggle-color4"></label>
+                        <div id="toggleText4" class="toggle-text">stone</div>
+                        <div class="info-text line"></div>
+                        <div class="toggle-value right">xxxM tn</div>
+                    </div>
+                    
+                    <div class="toggle-container">
+                        <input type="checkbox" id="toggle5" class="toggle-input" checked>
+                        <label for="toggle5" class="toggle-label toggle-color5"></label>
+                        <div id="toggleText5" class="toggle-text">steel</div>
+                        <div class="info-text line"></div>
+                        <div class="toggle-value right">xxxM tn</div>
+                    </div>
                 </div>
-                <div class="toggle-container">
-                    <input type="checkbox" id="toggle1" class="toggle-input" checked>
-                    <label for="toggle1" class="toggle-label toggle-color1"></label>
-                    <div id="toggleText1" class="toggle-text">brick</div>
-                    <div class="info-text line"></div>
-                    <div class="toggle-value right">xxxM tn</div>
-                </div>
-                
-                <div class="toggle-container">
-                    <input type="checkbox" id="toggle2" class="toggle-input" checked>
-                    <label for="toggle2" class="toggle-label toggle-color2"></label>
-                    <div id="toggleText2" class="toggle-text">concrete</div>
-                    <div class="info-text line"></div>
-                    <div class="toggle-value right">xxxM tn</div>
-                </div>
-                
-                <div class="toggle-container">
-                    <input type="checkbox" id="toggle3" class="toggle-input" checked>
-                    <label for="toggle3" class="toggle-label toggle-color3"></label>
-                    <div id="toggleText3" class="toggle-text">glass</div>
-                    <div class="info-text line"></div>
-                    <div class="toggle-value right">xxxK tn</div>
-                </div>
-                
-                <div class="toggle-container">
-                    <input type="checkbox" id="toggle4" class="toggle-input" checked>
-                    <label for="toggle4" class="toggle-label toggle-color4"></label>
-                    <div id="toggleText4" class="toggle-text">stone</div>
-                    <div class="info-text line"></div>
-                    <div class="toggle-value right">xxxM tn</div>
-                </div>
-                
-                <div class="toggle-container">
-                    <input type="checkbox" id="toggle5" class="toggle-input" checked>
-                    <label for="toggle5" class="toggle-label toggle-color5"></label>
-                    <div id="toggleText5" class="toggle-text">steel</div>
-                    <div class="info-text line"></div>
-                    <div class="toggle-value right">xxxM tn</div>
-                </div>
-                
             </div>
         </div>
         <div id="panelTile">
@@ -562,45 +582,42 @@
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleInfo">
             </div>
             <div class="panelContent" id="panelContentInfo">
-                <div class="info-text-container">
-                    <div class="info-text left">borough</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">Manhattan</div>
-                </div>                
-                <div class="info-text-container">
-                    <div class="info-text left">zoning type(s)</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">R7, R10</div>
-                </div>  
-                <div class="info-text-container" style="margin-top: 10px;">
-                    <div class="info-text left">avg./med. FAR</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">8.5 / 7.2</div>
-                </div>  
-                <div class="info-text-container">
-                    <div class="info-text left">avg./med. age</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">70 / 66 yrs</div>
-                </div>  
-                <div class="info-text-container">
-                    <div class="info-text left">avg./med. EE</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">A / B</div>
-                </div>  
-                <div class="info-text-container" style="margin-top: 10px;">
-                    <div class="info-text left" title="Above Mean Sea Level">elevation</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">30 ft / 9.1 m</div>
-                </div>  
-                <div class="info-text-container">
-                    <div class="info-text left">soil type</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">GLLD</div>
-                </div>  
-                <div class="info-text-container">
-                    <div class="info-text left">bedrock depth</div>
-                    <div class="info-text line"></div>
-                    <div class="info-text right">xxx m</div>
+                <div class="panelContentWrapper">
+                    <div class="info-text-container">
+                        <div class="info-text left">borough</div>
+                        <div class="info-text line"></div>
+                        <div class="info-text right" id="borough"></div>
+                    </div>                
+                    <div class="info-text-container">
+                        <div class="info-text left">zoning type</div>
+                        <div class="info-text line"></div>
+                        <div class="info-text right" id="zonedist"></div>
+                    </div>  
+                    <div class="info-text-container" style="margin-top: 10px;">
+                        <div class="info-text left">avg./med. FAR</div>
+                        <div class="info-text line"></div>
+                        <div class="info-text right" id="builtfar"></div>
+                    </div>  
+                    <div class="info-text-container">
+                        <div class="info-text left">avg./med. age</div>
+                        <div class="info-text line"></div>
+                        <div class="info-text right" id="yearbuilt"></div>
+                    </div>  
+                    <div class="info-text-container">
+                        <div class="info-text left">avg./med. floors</div>
+                        <div class="info-text line"></div>
+                        <div class="info-text right" id="numfloors"></div>
+                    </div>  
+                    <div class="info-text-container" style="margin-top: 10px;">
+                        <div class="info-text left" title="Above Mean Sea Level">elevation</div>
+                        <div class="info-text line"></div>
+                        <div class="info-text right" id="elev_mean"></div>
+                    </div>  
+                    <div class="info-text-container">
+                        <div class="info-text left">bedrock depth</div>
+                        <div class="info-text line"></div>
+                        <div class="info-text right" id="bedrock_mean"></div>
+                    </div>
                 </div>  
             </div>
         </div>
@@ -612,6 +629,7 @@
     
     <div id="mainMap"></div>
 
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>

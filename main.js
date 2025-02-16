@@ -27,7 +27,6 @@ function togglePanel(panelToggleId, panelContentId, panelTitleId) {
     });
 }
 
-
 // Apply the toggle logic for each panel
 togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding");
 togglePanel("panelToggleMaterial", "panelContentMaterial", "panelTitleMaterial");
@@ -38,17 +37,18 @@ togglePanel("panelToggleInfo", "panelContentInfo", "panelTitleInfo");
 
 
 // Initialize the map-------------------------------------------------
-let steelLayer = L.layerGroup();
-let brickLayer = L.layerGroup();
-let glassLayer = L.layerGroup();
-let concreteLayer = L.layerGroup();
-let stoneLayer = L.layerGroup();
+let steelLayer = L.featureGroup().setZIndex(1);
+let brickLayer = L.featureGroup().setZIndex(2);
+let concreteLayer = L.featureGroup().setZIndex(3);
+let glassLayer = L.featureGroup().setZIndex(4);
+let stoneLayer = L.featureGroup().setZIndex(5);
 
-let steelLayer200 = L.layerGroup();
-let brickLayer200 = L.layerGroup();
-let glassLayer200 = L.layerGroup();
-let concreteLayer200 = L.layerGroup();
-let stoneLayer200 = L.layerGroup();
+let steelLayer200 = L.featureGroup().setZIndex(1);
+let brickLayer200 = L.featureGroup().setZIndex(2);
+let concreteLayer200 = L.featureGroup().setZIndex(3);
+let glassLayer200 = L.featureGroup().setZIndex(4);
+let stoneLayer200 = L.featureGroup().setZIndex(5);
+
 
 const nycBounds = L.latLngBounds(
     [40.3774, -74.5591], // SW corner
@@ -66,7 +66,7 @@ const mainMap = L.map('mainMap', {
 });
 
 L.control.scale({
-    position: 'topright',
+    position: 'bottomright',
     metric: true,
     imperial: true,
     maxWidth: 120
@@ -201,8 +201,44 @@ const addMaterialMarkers200 = (geojsonData, material, color, columnName, layerGr
     layerGroup.addTo(mainMap);
 };
 
+// Function to check zoom level and toggle layers based on zoom level and state
+function toggleLayersByZoom() {
+    const currentZoom = mainMap.getZoom();
 
-// Load GeoJSON data for base layers---------------------------------
+    // Check if zoom level is 11 or 12
+    if (currentZoom === 11 || currentZoom === 12) {
+        // Add the 200 layers based on their current state
+        if (layerState.steel) steelLayer200.addTo(mainMap);
+        if (layerState.brick) brickLayer200.addTo(mainMap);
+        if (layerState.glass) glassLayer200.addTo(mainMap);
+        if (layerState.concrete) concreteLayer200.addTo(mainMap);
+        if (layerState.stone) stoneLayer200.addTo(mainMap);
+
+        // Remove the 100 layers if zoomed out
+        mainMap.removeLayer(steelLayer);
+        mainMap.removeLayer(brickLayer);
+        mainMap.removeLayer(glassLayer);
+        mainMap.removeLayer(concreteLayer);
+        mainMap.removeLayer(stoneLayer);
+    } else {
+        // Remove the 200 layers
+        mainMap.removeLayer(steelLayer200);
+        mainMap.removeLayer(brickLayer200);
+        mainMap.removeLayer(glassLayer200);
+        mainMap.removeLayer(concreteLayer200);
+        mainMap.removeLayer(stoneLayer200);
+
+        // Add the 100 layers based on their current state
+        if (layerState.steel) steelLayer.addTo(mainMap);
+        if (layerState.brick) brickLayer.addTo(mainMap);
+        if (layerState.glass) glassLayer.addTo(mainMap);
+        if (layerState.concrete) concreteLayer.addTo(mainMap);
+        if (layerState.stone) stoneLayer.addTo(mainMap);
+    }
+}
+
+
+// Load GeoJSON data for base 100 layers---------------------------------
 Promise.all([
     d3.json('data/nycBinnedCentroidsMaterialWgs84_A.geojson'),
     d3.json('data/nycBinnedCentroidsMaterialWgs84_B.geojson')
@@ -233,8 +269,9 @@ Promise.all([
         );
     });
 
-    // Update layer visibility after data is loaded
-    updateLayerVisibility();
+    // Call the function to check the zoom and toggle layers
+    toggleLayersByZoom();
+
 }).catch(error => {
     console.error('Error loading centroid GeoJSON:', error);
 });
@@ -261,11 +298,128 @@ d3.json('data/nycBinnedCentroidsMaterial_200Wgs84.geojson').then(geojsonData => 
         );
     });
 
-    // Update layer visibility after data is loaded
-    updateLayerVisibility();
+    // Call the function to check the zoom and toggle layers
+    toggleLayersByZoom();
+
 }).catch(error => {
     console.error('Error loading 200-layer GeoJSON:', error);
 });
+
+// Initialize map zoom event listener to toggle layers based on zoom level
+mainMap.on('zoomend', toggleLayersByZoom);
+
+
+
+
+
+// Toggle material on/off states----------------------------------------------
+// Update layer visibility based on state
+function updateLayerVisibility() {
+    Object.keys(layerState).forEach(material => {
+        if (layerState[material]) {
+            // Add the layer if it's set to true
+            switch (material) {
+                case 'steel':
+                    steelLayer.addTo(mainMap);
+                    steelLayer200.addTo(mainMap);
+                    break;
+                case 'brick':
+                    brickLayer.addTo(mainMap);
+                    brickLayer200.addTo(mainMap);
+                    break;
+                case 'glass':
+                    glassLayer.addTo(mainMap);
+                    glassLayer200.addTo(mainMap);
+                    break;
+                case 'concrete':
+                    concreteLayer.addTo(mainMap);
+                    concreteLayer200.addTo(mainMap);
+                    break;
+                case 'stone':
+                    stoneLayer.addTo(mainMap);
+                    stoneLayer200.addTo(mainMap);
+                    break;
+            }
+        } else {
+            // Remove the layer if it's set to false
+            switch (material) {
+                case 'steel':
+                    mainMap.removeLayer(steelLayer);
+                    mainMap.removeLayer(steelLayer200);
+                    break;
+                case 'brick':
+                    mainMap.removeLayer(brickLayer);
+                    mainMap.removeLayer(brickLayer200);
+                    break;
+                case 'glass':
+                    mainMap.removeLayer(glassLayer);
+                    mainMap.removeLayer(glassLayer200);
+                    break;
+                case 'concrete':
+                    mainMap.removeLayer(concreteLayer);
+                    mainMap.removeLayer(concreteLayer200);
+                    break;
+                case 'stone':
+                    mainMap.removeLayer(stoneLayer);
+                    mainMap.removeLayer(stoneLayer200);
+                    break;
+            }
+        }
+    });
+    enforceLayerOrder();
+    // Ensure correct layers are visible based on zoom
+    toggleLayersByZoom();
+}
+// Function to enforce the correct z-index order
+function enforceLayerOrder() {
+    steelLayer.bringToFront();
+    steelLayer200.bringToFront();
+
+    brickLayer.bringToFront();
+    brickLayer200.bringToFront();
+
+    concreteLayer.bringToFront();
+    concreteLayer200.bringToFront();
+
+    glassLayer.bringToFront();
+    glassLayer200.bringToFront();
+
+    stoneLayer.bringToFront();
+    stoneLayer200.bringToFront();
+}
+
+// Set up event listeners for toggles
+document.getElementById('toggle1').addEventListener('change', function() {
+    layerState.brick = this.checked;  // Update state
+    console.log('Brick layer state:', layerState.brick);
+    updateLayerVisibility();  // Apply new layer state
+});
+document.getElementById('toggle2').addEventListener('change', function() {
+    layerState.concrete = this.checked;  // Update state
+    updateLayerVisibility();  // Apply new layer state
+});
+document.getElementById('toggle3').addEventListener('change', function() {
+    layerState.glass = this.checked;  // Update state
+    updateLayerVisibility();  // Apply new layer state
+});
+document.getElementById('toggle4').addEventListener('change', function() {
+    layerState.stone = this.checked;  // Update state
+    updateLayerVisibility();  // Apply new layer state
+});
+document.getElementById('toggle5').addEventListener('change', function() {
+    layerState.steel = this.checked;  // Update state
+    updateLayerVisibility();  // Apply new layer state
+});
+
+
+// On page load, add layers based on initial state
+document.addEventListener('DOMContentLoaded', function() {
+    updateLayerVisibility();  // Apply the default layer visibility
+    toggleLayersByZoom();  // Apply the correct zoom levels
+});
+
+
+
 
 
 
@@ -291,108 +445,6 @@ mainMap.on('click', function(e) {
 
 
 
-
-// Additional layers--------------------------------------------------
-
-// Define satellite imagery tile layer (Esri)
-const satelliteLayer = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
-    {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-    }
-);
-
-// Create custom pane for the satellite layer with z-index
-const satellitePane = mainMap.createPane('satellitePane');
-satellitePane.style.zIndex = 100; // Set the z-index for satellite layer
-satellitePane.style.pointerEvents = 'none'; // Disable interaction for the satellite layer (optional)
-
-// Define grayscale OSM tile layer
-const grayscaleOSMLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: 'abcd',
-});
-
-// Create custom pane for the grayscale OSM layer with z-index
-const grayscaleOSMPane = mainMap.createPane('grayscaleOSMPane');
-grayscaleOSMPane.style.zIndex = 75; // Set the z-index for grayscale OSM layer
-grayscaleOSMPane.style.pointerEvents = 'none'; // Disable interaction for the OSM layer (optional)
-
-// Define zoning geojson layer
-let zoningLayer; // Declare globally for toggle functionality
-
-fetch('data/nyzd.geojson')
-    .then(response => response.json())
-    .then(data => {
-        // Create a custom pane for the GeoJSON layer
-        const zoningPane = mainMap.createPane('zoningPane');
-        zoningPane.style.zIndex = 50; 
-        zoningPane.style.pointerEvents = 'auto'; // Enable interactions if needed
-
-        // Function to determine fill color based on ZONEDIST property
-        const getFillColor = (zonedist) => {
-            if (zonedist.startsWith('R')) return 'lightgrey';
-            if (zonedist.startsWith('C')) return 'darkgrey';
-            if (zonedist.startsWith('M')) return 'grey';
-            if (zonedist.startsWith('P')) return 'transparent';
-            return 'transparent';
-        };
-
-        // Initialize the GeoJSON layer
-        zoningLayer = L.geoJSON(data, {
-            style: (feature) => {
-                const fillColor = getFillColor(feature.properties.ZONEDIST);
-                return {
-                    weight: 1,                  // Border weight
-                    color: fillColor,           // Border color
-                    fillColor: fillColor,       // Fill color
-                    fillOpacity: 1              // Fill opacity
-                };
-            },
-            pane: 'zoningPane'
-        });
-
-        // Now that zoningLayer is initialized, add it to the layers object
-        layers.zoningLayer = zoningLayer; // Add zoningLayer dynamically to layers
-    })
-    .catch(error => console.error('Error loading GeoJSON:', error));
-
-
-// Define subway geojson layer
-let subwayLayer; // Declare globally for toggle functionality
-
-fetch('data/subwayLines.geojson')
-    .then(response => response.json())
-    .then(data => {
-        // Create a custom pane for the GeoJSON layer
-        const subwayPane = mainMap.createPane('subwayPane');
-        subwayPane.style.zIndex = 60; 
-        subwayPane.style.pointerEvents = 'auto'; // Enable interactions if needed
-
-        // Initialize the GeoJSON layer
-        subwayLayer = L.geoJSON(data, {
-            style: () => {
-                return {
-                    weight: 4,                  // Thick border weight
-                    color: 'black',             // Border color
-                    fillColor: 'transparent',   // No fill color
-                    fillOpacity: 0,             // Fully transparent fill
-                    opacity: 0.5                // Half-transparent border
-                };
-            },
-            pane: 'subwayPane'
-        });
-
-        // Now that subwayLayer is initialized, add it to the layers object
-        layers.subwayLayer = subwayLayer; // Add subwayLayer dynamically to layers
-    })
-    .catch(error => console.error('Error loading GeoJSON:', error));
-
-
-
-
-
-
 // X-ray mask div-----------------------------------------------------
 // Initialize the X-ray map inside the mask
 let xrayMap = L.map("xray-map", {
@@ -407,73 +459,325 @@ let xrayMap = L.map("xray-map", {
     keyboard: false,
     interactive: false,  // Ensures it doesn't interfere with user actions
 });
+let xrayMapElement = document.getElementById("xray-map");
 
-// Define separate X-ray layers
+
+// Define tile layers
 const xraySatelliteLayer = L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
     {
         attribution: 'Tiles &copy; Esri',
     }
 );
-const xrayOSMLayer = L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+const xrayEsriLayer = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', 
     {
-        attribution: '&copy; OpenStreetMap contributors',
-    }
-);
-const xrayFootprintLayer = L.tileLayer(
-    'https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', 
-    {
-        attribution: '&copy; OpenStreetMap contributors',
+        attribution: 'Tiles &copy; Esri',
     }
 );
 
-// X-ray mask element
+// Define zoning layer (GeoJSON)
+let xrayZoningLayer; // Declare globally for toggle functionality
+fetch('data/nyzd.geojson')
+    .then(response => response.json())
+    .then(data => {
+        // Function to determine fill color based on ZONEDIST property
+        const getFillColor = (zonedist) => {
+            if (zonedist.startsWith('R')) return 'gold';
+            if (zonedist.startsWith('C')) return 'tomato';
+            if (zonedist.startsWith('M')) return 'violet';
+            if (zonedist.startsWith('P')) return 'yellowgreen';
+            return 'transparent';
+        };
+
+        // Initialize the GeoJSON layer
+        xrayZoningLayer = L.geoJSON(data, {
+            style: (feature) => {
+                const fillColor = getFillColor(feature.properties.ZONEDIST);
+                return {
+                    weight: 1,                  // Border weight
+                    color: fillColor,           // Border color
+                    fillColor: fillColor,       // Fill color
+                    fillOpacity: 1              // Fill opacity
+                };
+            }
+        });
+    })
+    .catch(error => console.error('Error loading GeoJSON:', error));
+
+
+// Define subway layers (GeoJSON)
+let xraySubwayLayer, xraySubwayStationsLayer; // Declare globally for toggle functionality
+
+fetch('data/subwayLines.geojson')
+    .then(response => response.json())
+    .then(data => {
+        // NYC Subway Colors by MTA Line Symbols
+        const subwayColors = {
+            "1": "#EE352E", "2": "#EE352E", "3": "#EE352E", // Red
+            "4": "#00933C", "5": "#00933C", "6": "#00933C", // Green
+            "7": "#B933AD", // Purple
+            "A": "#0039A6", "C": "#0039A6", "E": "#0039A6", // Blue
+            "B": "#FF6319", "D": "#FF6319", "F": "#FF6319", "M": "#FF6319", // Orange
+            "G": "#6CBE45", // Light Green
+            "J": "#996633", "Z": "#996633", // Brown
+            "L": "#A7A9AC", // Gray
+            "N": "#FCCC0A", "Q": "#FCCC0A", "R": "#FCCC0A", // Yellow
+            "S": "#808183"  // Dark Gray (Shuttle)
+        };
+
+        // Initialize the Subway Lines Layer
+        xraySubwayLayer = L.geoJSON(data, {
+            style: (feature) => {
+                const lineSymbol = feature.properties.rt_symbol;
+                const color = subwayColors[lineSymbol] || "#000000"; // Default black if undefined
+                return {
+                    weight: 3,          // Line thickness
+                    color: color,       // Subway line color
+                    opacity: 1,         
+                    fillOpacity: 0,     
+                    fillColor: 'transparent' 
+                };
+            }
+        });
+
+        // Load and add subway stations
+        fetch('data/subwayStations.geojson')
+            .then(response => response.json())
+            .then(stationData => {
+                xraySubwayStationsLayer = L.geoJSON(stationData, {
+                    pointToLayer: (feature, latlng) => {
+                        return L.circleMarker(latlng, {
+                            radius: 5,       // Circle size
+                            fillColor: "#FFFFFF", // White fill
+                            color: "#000000",     // Black border
+                            weight: 2,      // Border thickness
+                            opacity: 1,    
+                            fillOpacity: 1
+                        });
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading subway stations:', error));
+    })
+    .catch(error => console.error('Error loading subway lines:', error));
+
+
+
+
+// Define bus routes layer (GeoJSON)
+let xrayBusLayer; // Declare globally for toggle functionality
+
+fetch('data/busLines.geojson')
+    .then(response => response.json())
+    .then(data => {
+        // Initialize the GeoJSON layer
+        xrayBusLayer = L.geoJSON(data, {
+            style: (feature) => {
+                const routeColor = feature.properties.color || "#000000"; // Default to black if undefined
+                return {
+                    weight: 2,               // Line thickness
+                    color: routeColor,       // Line color from GeoJSON data
+                    opacity: 1,              // Full visibility
+                    fillOpacity: 0           // No fill for bus lines
+                };
+            }
+        });
+    })
+    .catch(error => console.error('Error loading bus GeoJSON:', error));
+
+
+
+
+
+// X-ray elements
 let xrayMask = document.getElementById("xray-mask");
+let xrayLegend = document.getElementById("xray-legend");
+let xrayControl = document.querySelector(".sml-container");
 
-// **Track cursor movement AND adjust X-ray map position**
+// Get dropdown elements
+let mapDropdown = document.getElementById("map-dropdown");
+let planningDropdown = document.getElementById("planning-dropdown");
+let transportDropdown = document.getElementById("transport-dropdown");
+
+// Handle cursor movement for X-ray effect
 document.addEventListener("mousemove", function (e) {
-    xrayMask.style.left = `${e.pageX}px`;  // Center the mask
-    xrayMask.style.top = `${e.pageY}px`;
+    if (xrayMask.style.display === "block") { 
+        xrayMask.style.left = `${e.pageX}px`; 
+        xrayMask.style.top = `${e.pageY}px`;
 
-    // **Adjust the X-ray map center dynamically**
-    xrayMap.setView(mainMap.containerPointToLatLng(mainMap.mouseEventToContainerPoint(e)), mainMap.getZoom());
+        // Move the legend along with the cursor when zoning mode is on
+        if (xrayLegend.style.display === "block") {
+            xrayLegend.style.left = `${e.pageX}px`;  
+            xrayLegend.style.top = `${e.pageY - 95}px`; 
+        }
+
+        // Adjust X-ray map position dynamically
+        xrayMap.setView(mainMap.containerPointToLatLng(mainMap.mouseEventToContainerPoint(e)), mainMap.getZoom());
+    }
 });
 
-// **Sync X-ray map movement with main map movement**
-mainMap.on("move", function () {
-    xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
-});
-
-// Function to update X-ray mode
+// Function to update X-ray mode based on dropdown selection
 function updateXray(mode) {
     if (mode === "none") {
         xrayMask.style.display = "none"; // Hide the mask
+        xrayLegend.style.display = "none"; // Hide the legend
         xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Remove all layers
+        xrayMapElement.classList.remove("opacity-mask"); // Remove opacity class
+        xrayControl.classList.add("opacity-control");
     } else {
         xrayMask.style.display = "block"; // Show the mask
+        xrayLegend.style.display = "none"; // Hide the legend initially
+        xrayControl.classList.remove("opacity-control");
+
         xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Clear layers first
 
         if (mode === "satellite") {
             xraySatelliteLayer.addTo(xrayMap);
-        } else if (mode === "osm") {
-            xrayOSMLayer.addTo(xrayMap);
-        } else if (mode === "footprint") {
-            xrayFootprintLayer.addTo(xrayMap);
-        }        
+            xrayMapElement.classList.remove("opacity-mask");
+        } else if (mode === "esri-topo") {
+            xrayEsriLayer.addTo(xrayMap);
+            xrayMapElement.classList.remove("opacity-mask"); 
+        } else if (mode === "subway") {
+            xraySubwayLayer.addTo(xrayMap);
+            xraySubwayStationsLayer.addTo(xrayMap);
+            xrayMapElement.classList.remove("opacity-mask"); 
+        } else if (mode === "bus") {
+            xrayBusLayer.addTo(xrayMap);
+            xrayMapElement.classList.add("opacity-mask"); 
+        } else if (mode === "zoning") {
+            if (xrayZoningLayer) {  
+                xrayZoningLayer.addTo(xrayMap);
+                xrayLegend.style.display = "block";  
+                xrayMapElement.classList.add("opacity-mask"); 
+            }
+        }
 
-        // **Force Leaflet to redraw tiles to prevent gray areas**
+        // Force Leaflet to redraw tiles to prevent gray areas
         setTimeout(() => {
             xrayMap.invalidateSize();
         }, 100);
     }
 }
 
-// Attach event listeners to radio buttons
-document.getElementById("xray-none").addEventListener("change", () => updateXray("none"));
-document.getElementById("xray-satellite").addEventListener("change", () => updateXray("satellite"));
-document.getElementById("xray-osm").addEventListener("change", () => updateXray("osm"));
-document.getElementById("xray-footprint").addEventListener("change", () => updateXray("footprint"));
+// Ensure all dropdown texts are initially grey
+document.querySelectorAll(".dropdown-selected").forEach(el => {
+    el.style.color = "grey"; // Set default grey color
+});
+
+// Set "none" button as active by default
+let noneButton = document.getElementById("xray-none");
+noneButton.classList.add("active"); // Add active class
+
+// Function to reset all dropdowns
+function resetDropdowns(except = null) {
+    document.querySelectorAll(".custom-dropdown").forEach(dropdown => {
+        if (dropdown !== except) {
+            let selectedText = dropdown.querySelector(".dropdown-selected");
+            selectedText.textContent = selectedText.dataset.default; // Reset text to default
+            selectedText.style.color = "grey"; // Reset text color to grey
+            dropdown.dataset.value = ""; // Clear stored value
+        }
+    });
+
+    // Reset "none" button state
+    if (!except) {
+        noneButton.classList.add("active");
+    } else {
+        noneButton.classList.remove("active");
+    }
+}
+
+// Function to reset X-ray and dropdown selections
+function resetXray() {
+    updateXray("none"); // Turn off X-ray
+    resetDropdowns(); // Reset all dropdowns
+}
+
+// Add event listener to 'none' button
+noneButton.addEventListener("click", function () {
+    resetXray();
+    noneButton.classList.add("active"); // Ensure "none" stays active
+});
+
+// Handle dropdown selection
+document.querySelectorAll(".dropdown-option").forEach(option => {
+    option.addEventListener("click", function () {
+        let dropdown = this.closest(".custom-dropdown");
+        let selectedText = dropdown.querySelector(".dropdown-selected");
+
+        resetDropdowns(dropdown); // Reset all other dropdowns
+
+        selectedText.textContent = this.textContent; // Update visible text
+        dropdown.dataset.value = this.dataset.value; // Store selected value
+
+        // Highlight only the active dropdown text
+        selectedText.style.color = "black";
+
+        // Ensure layer icon visibility by adding "active" class
+        let layerIcon = dropdown.querySelector(".layer-icon");
+        if (layerIcon) {
+            layerIcon.classList.add("active");
+        }
+
+        updateXray(this.dataset.value); // Trigger X-ray update
+
+        // Remove "none" active state
+        noneButton.classList.remove("active");
+    });
+});
+
+// Reset function should remove active class from icons too
+function resetDropdowns(except = null) {
+    document.querySelectorAll(".custom-dropdown").forEach(dropdown => {
+        if (dropdown !== except) {
+            let selectedText = dropdown.querySelector(".dropdown-selected");
+            selectedText.textContent = selectedText.dataset.default;
+            selectedText.style.color = "grey";  // Set text color back to grey
+
+            let layerIcon = dropdown.querySelector(".layer-icon");
+            if (layerIcon) {
+                layerIcon.classList.remove("active");
+            }
+
+            dropdown.dataset.value = "";
+        }
+    });
+
+    if (!except) {
+        noneButton.classList.add("active");
+    } else {
+        noneButton.classList.remove("active");
+    }
+}
+
+
+// Handle hover delay
+let dropdowns = document.querySelectorAll(".custom-dropdown");
+
+dropdowns.forEach(dropdown => {
+    let timeout;
+
+    dropdown.addEventListener("mouseenter", () => {
+        timeout = setTimeout(() => {
+            dropdown.classList.add("show-options");
+        }, 100); // 0.1s delay
+    });
+
+    dropdown.addEventListener("mouseleave", () => {
+        clearTimeout(timeout);
+        dropdown.classList.remove("show-options");
+    });
+});
+
+// Store default text for resetting
+document.querySelectorAll(".dropdown-selected").forEach(el => {
+    el.dataset.default = el.textContent;
+});
+
+
+
+
 
 
 
@@ -517,323 +821,60 @@ smlS.addEventListener('click', () => {
 
 
 
-
-
-
-// Map layer control-------------------------------------------------
-const layers = {
-    grayscaleOSMLayer,
-    satelliteLayer,
-    // zoningLayer dynamically added here.
-    // Add other layers here as needed
-};
-
-// Function to update the z-index based on the layer order
-function updateLayerZIndexes() {
-    // Get the current order of the layers from the sortable list
-    const layerOrder = Array.from(document.getElementById('sortable-list').children);
-
-    layerOrder.forEach((item, index) => {
-        const layerName = item.getAttribute('data-layer'); // Assuming each item has a data-layer attribute
-        const layer = layers[layerName];
-
-        if (layer) {
-            // Set the z-index based on the index in the sorted list
-            // Higher z-index for layers that come first in the list (top-most layers)
-            layer.getPane().style.zIndex = 100 - index; // Adjust 100 as needed for default spacing
-        }
-    });
-}
-
-// Initialize Sortable functionality for the list
-new Sortable(document.getElementById('sortable-list'), {
-    animation: 150,
-    onEnd: () => {
-        updateLayerZIndexes(); // Ensure the z-index is updated after sorting
-    },
-});
-
-
-
-function updateLayerZIndexes() {
-    const sortableItems = document.getElementById('sortable-list').children;
-    
-    // Loop through the sorted items
-    Array.from(sortableItems).forEach((item, index) => {
-        const layerName = item.dataset.layer;
-        const layer = layers[layerName]; // Get the layer object from your layers collection
-        
-        if (layer) {
-            // Set the new z-index and log for debugging
-            layer.setZIndex(100 - index);
-            console.log(`${layerName} updated to z-index: ${100 - index}`);
-        } else {
-            console.log(`Layer ${layerName} not found.`);
-        }
-    });
-}
-
-
-
-
-
-
-// Set the toggle-material button as active by default
-const toggleMaterialButton = document.getElementById('toggle-material');
-if (toggleMaterialButton) {
-    toggleMaterialButton.classList.add('active'); // Mark button as active initially
-    const img = toggleMaterialButton.querySelector('img');
-    if (img) {
-        img.src = 'images/show.svg'; // Set the "active" icon
-    }
-}
-
-// Toggle buttons
-document.querySelectorAll('.show-toggle').forEach(button => {
-    button.addEventListener('click', function () {
-        const img = this.querySelector('img');
-        
-        // Toggle the active class and update the icon accordingly
-        if (this.classList.contains('active')) {
-            this.classList.remove('active');
-            img.src = 'images/hide.svg'; // Switch back to "hide" icon
-        } else {
-            this.classList.add('active');
-            img.src = 'images/show.svg'; // Switch to "show" icon
-        }
-        
-        // Ensure to update the layer visibility
-        updateLayerVisibility();
+// X-ray dropdown--------------------
+document.querySelectorAll('input[name="options"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.getElementById("transport-dropdown").value = this.value;
     });
 });
 
-// Function to handle layer visibility based on zoom
-const updateLayerVisibility = () => {
-    const isButtonInactive = !document.getElementById('toggle-material').classList.contains('active');
-    if (isButtonInactive) {
-        // If inactive, remove all layers for that material
-        Object.entries({
-            steel: [steelLayer, steelLayer200],
-            brick: [brickLayer, brickLayer200],
-            glass: [glassLayer, glassLayer200],
-            concrete: [concreteLayer, concreteLayer200],
-            stone: [stoneLayer, stoneLayer200]
-        }).forEach(([material, [layer, layer200]]) => {
-            if (mainMap.hasLayer(layer)) mainMap.removeLayer(layer);
-            if (mainMap.hasLayer(layer200)) mainMap.removeLayer(layer200);
-        });
-        return; // Exit early if the button is inactive
-    }
-
-    const zoom = mainMap.getZoom();
-
-    Object.entries({
-        steel: [steelLayer, steelLayer200],
-        brick: [brickLayer, brickLayer200],
-        glass: [glassLayer, glassLayer200],
-        concrete: [concreteLayer, concreteLayer200],
-        stone: [stoneLayer, stoneLayer200]
-    }).forEach(([material, [layer, layer200]]) => {
-        // Only consider the layers that are toggled on
-        if (layerState[material]) {
-            if (zoom >= 13 && zoom <= 19) {
-                // Show primary layers and remove secondary layers
-                if (!mainMap.hasLayer(layer)) {
-                    layer.addTo(mainMap);
-                }
-                if (mainMap.hasLayer(layer200)) {
-                    mainMap.removeLayer(layer200);
-                }
-            } else if (zoom === 11 || zoom === 12) {
-                // Show secondary layers and remove primary layers
-                if (!mainMap.hasLayer(layer200)) {
-                    layer200.addTo(mainMap);
-                }
-                if (mainMap.hasLayer(layer)) {
-                    mainMap.removeLayer(layer);
-                }
-            } else {
-                // Remove both layers outside valid zoom levels
-                if (mainMap.hasLayer(layer)) {
-                    mainMap.removeLayer(layer);
-                }
-                if (mainMap.hasLayer(layer200)) {
-                    mainMap.removeLayer(layer200);
-                }
-            }
-        } else {
-            // If the material is toggled off, ensure both layers are removed
-            if (mainMap.hasLayer(layer)) {
-                mainMap.removeLayer(layer);
-            }
-            if (mainMap.hasLayer(layer200)) {
-                mainMap.removeLayer(layer200);
-            }
-        }
-    });
-};
-
-// Toggle function to control layer visibility
-const toggleLayerVisibility = (layer, layer200, buttonId, material) => {
-    const button = document.getElementById(buttonId);
-
-    // Toggle visibility based on the current state
-    if (mainMap.hasLayer(layer) || mainMap.hasLayer(layer200)) {
-        // Remove both layers
-        mainMap.removeLayer(layer);
-        mainMap.removeLayer(layer200);
-        layerState[material] = false; // Mark as turned off
-        button.classList.remove('active');
-        button.classList.add('inactive');
-    } else {
-        // Add the appropriate layer based on the current zoom level
-        layerState[material] = true; // Mark as turned on
-        updateLayerVisibility(); // Update based on the current zoom level
-        button.classList.remove('inactive');
-        button.classList.add('active');
-    }
-};
 
 
 
 
 
-
-// Define z-index for each layer
-const Z_INDEX_SATELLITE = 115;
-const Z_INDEX_OSM = 110;
-const Z_INDEX_ZONING = 105; 
-
-// Function to toggle grayscale OSM layer visibility
-const toggleOSMLayer = () => {
-    const button = document.getElementById('toggle-osm');
-
-    if (mainMap.hasLayer(grayscaleOSMLayer)) {
-        // Remove the grayscale OSM layer
-        mainMap.removeLayer(grayscaleOSMLayer);
-        button.classList.remove('active');
-        button.classList.add('inactive');
-    } else {
-        // Add the grayscale OSM layer
-        mainMap.addLayer(grayscaleOSMLayer);
-        grayscaleOSMLayer.getPane().style.zIndex = Z_INDEX_OSM; // Ensure z-index is correct
-        button.classList.remove('inactive');
-        button.classList.add('active');
-    }
-};
-
-// Function to toggle satellite imagery layer visibility
-const toggleSatelliteLayer = () => {
-    const button = document.getElementById('toggle-satellite');
-
-    if (mainMap.hasLayer(satelliteLayer)) {
-        // Remove the satellite imagery layer
-        mainMap.removeLayer(satelliteLayer);
-        button.classList.remove('active');
-        button.classList.add('inactive');
-    } else {
-        // Add the satellite imagery layer
-        mainMap.addLayer(satelliteLayer);
-        satelliteLayer.getPane().style.zIndex = Z_INDEX_SATELLITE; // Ensure z-index is correct
-        button.classList.remove('inactive');
-        button.classList.add('active');
-    }
-};
-
-// Function to toggle zoning layer visibility
-const toggleZoningLayer = () => {
-    const button = document.getElementById('toggle-zoning');
-
-    if (zoningLayer) { // Ensure the layer is defined before toggling
-        if (mainMap.hasLayer(zoningLayer)) {
-            // Remove the zoning layer
-            mainMap.removeLayer(zoningLayer);
-            button.classList.remove('active');
-            button.classList.add('inactive');
-        } else {
-            // Add the zoning layer
-            mainMap.addLayer(zoningLayer);
-            zoningLayer.getPane().style.zIndex = Z_INDEX_ZONING; // Ensure z-index is correct
-            button.classList.remove('inactive');
-            button.classList.add('active');
-        }
-    } else {
-        console.error('Zoning layer is not yet loaded.');
-    }
-};
-
-// Function to toggle subway layer visibility
-const toggleSubwayLayer = () => {
-    const button = document.getElementById('toggle-zoning');
-
-    if (subwayLayer) { // Ensure the layer is defined before toggling
-        if (mainMap.hasLayer(subwayLayer)) {
-            // Remove the zoning layer
-            mainMap.removeLayer(subwayLayer);
-            button.classList.remove('active');
-            button.classList.add('inactive');
-        } else {
-            // Add the zoning layer
-            mainMap.addLayer(subwayLayer);
-            subwayLayer.getPane().style.zIndex = Z_INDEX_ZONING; // Ensure z-index is correct
-            button.classList.remove('inactive');
-            button.classList.add('active');
-        }
-    } else {
-        console.error('Subway layer is not yet loaded.');
-    }
-};
-
-
-// Event listeners for toggling layers
-document.getElementById('toggle5').addEventListener('click', () => {
-    toggleLayerVisibility(steelLayer, steelLayer200, 'toggle5', 'steel');
+// Mini maps--------------------------------
+// Initialize Mini Esri Map
+let esriMap = L.map("esri-preview", {
+    center: mainMap.getCenter(),
+    zoom: 17,
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    interactive: false,
 });
-document.getElementById('toggle1').addEventListener('click', () => {
-    toggleLayerVisibility(brickLayer, brickLayer200, 'toggle1', 'brick');
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA'
+}).addTo(esriMap);
+
+
+// Initialize Mini Satellite Map
+let satelliteMap = L.map("satellite-preview", {
+    center: mainMap.getCenter(),
+    zoom: mainMap.getZoom(),
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    interactive: false,
 });
-document.getElementById('toggle3').addEventListener('click', () => {
-    toggleLayerVisibility(glassLayer, glassLayer200, 'toggle3', 'glass');
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri',
+}).addTo(satelliteMap);
+
+// Update previews based on cursor movement
+mainMap.on("mousemove", function (e) {
+    let cursorLatLng = e.latlng;
+    esriMap.setView(cursorLatLng, 17);
+    satelliteMap.setView(cursorLatLng, 17);
 });
-document.getElementById('toggle2').addEventListener('click', () => {
-    toggleLayerVisibility(concreteLayer, concreteLayer200, 'toggle2', 'concrete');
-});
-document.getElementById('toggle4').addEventListener('click', () => {
-    toggleLayerVisibility(stoneLayer, stoneLayer200, 'toggle4', 'stone');
-});
-
-// Event listener for toggling OSM layer
-document.getElementById('toggle-osm').addEventListener('click', toggleOSMLayer);
-// Ensure the OSM layer is inactive by default
-if (mainMap.hasLayer(grayscaleOSMLayer)) {
-    mainMap.removeLayer(grayscaleOSMLayer);
-}
-
-// Event listener for toggling satellite imagery layer
-document.getElementById('toggle-satellite').addEventListener('click', toggleSatelliteLayer);
-// Ensure the satellite imagery layer is inactive by default
-if (mainMap.hasLayer(satelliteLayer)) {
-    mainMap.removeLayer(satelliteLayer);
-}
-
-// Event listener for toggling zoning layer
-document.getElementById('toggle-zoning').addEventListener('click', toggleZoningLayer);
-
-// Event listener for toggling subway layer
-document.getElementById('toggle-subway').addEventListener('click', toggleSubwayLayer);
-
-
-// Restore visibility on zoomend (with the correct layer visibility)
-mainMap.on('zoomend', () => {
-    updateLayerVisibility();
-});
-
-
-
-
-
-
-
 
 
 
@@ -878,257 +919,6 @@ fetch('data/NY+NJ_Shoreline.geojson')
 
 
 
-
-
-
-
-
-// Geojson Hex Data (including hover interactions)-----------------------
-    let lockedData = null; // Variable to store the fixed values when clicked
-    let isHovering = false; // Flag to check if currently hovering over a GeoJSON feature
-    let geojsonLayer;
-
-    fetch('data/hex_all.geojson')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error loading GeoJSON file');
-            }
-            return response.json();
-        })
-        .then(geojsonData => {
-            const materials = ['steel', 'stone', 'glass', 'concrete', 'brick'];
-            let allValues = {};
-    
-            // Collect all values for each material across the GeoJSON
-            geojsonData.features.forEach(feature => {
-                materials.forEach(material => {
-                    const materialKey = `binned_data_${material}_sum`;
-                    const materialValue = feature.properties[materialKey];
-                    if (materialValue) {
-                        if (!allValues[material]) {
-                            allValues[material] = [];
-                        }
-                        allValues[material].push(materialValue);
-                    }
-                });
-            });
-    
-            // Function to calculate quantiles for each material
-            function calculateQuantiles(values, numBins) {
-                values.sort((a, b) => a - b); // Ascending order sort
-                const quantiles = [];
-                for (let i = 1; i <= numBins; i++) {
-                    const index = Math.floor((i / numBins) * values.length);
-                    quantiles.push(values[index]);
-                }
-                return quantiles;
-            }
-    
-            // Calculate quantiles for each material
-            const numBins = 6;
-            const quantiles = {};
-            materials.forEach(material => {
-                quantiles[material] = calculateQuantiles(allValues[material], numBins);
-            });
-    
-            // Function to classify a value into its corresponding quantile bin
-            function getQuantileBin(value, quantiles) {
-                for (let i = 0; i < quantiles.length; i++) {
-                    if (value <= quantiles[i]) {
-                        return i; // Return the class index (0-5)
-                    }
-                }
-                return quantiles.length - 1; // If the value is higher than the last quantile
-            }
-    
-            // Helper function to format large numbers
-            function formatNumber(value) {
-                if (value >= 1e6) {
-                    return (value / 1e6).toFixed(2) + ' million'; 
-                } else if (value >= 1e3) {
-                    return (value / 1e3).toFixed(2) + ' thousand'; 
-                }
-                return value.toString();
-            }
-    
-            // Add geoJSON layer and bind mouseover and click events
-            const geojsonLayer = L.geoJSON(geojsonData, {
-                style: {
-                    weight: 0,
-                    opacity: 0,
-                    fillOpacity: 0
-                },
-                interactive: true,
-                onEachFeature: (feature, layer) => {
-                    layer.on('mouseover', () => {
-                        isHovering = true; // Set hovering flag
-    
-                        // Extract values for the hovered feature
-                        let materialData = materials.map(material => {
-                            const materialKey = `binned_data_${material}_sum`;
-                            const materialValue = feature.properties[materialKey];
-                            if (materialValue) {
-                                const binIndex = getQuantileBin(materialValue, quantiles[material]);
-                                return binIndex;
-                            }
-                            return 0;
-                        });
-    
-                        // Check if all values are 0
-                        const allZero = materialData.every(value => value === 0);
-                        if (allZero && lockedData) {
-                            // Display locked data if all hovered values are 0
-                            RoseChart.data.datasets[0].data = lockedData;
-                        } else {
-                            // Update the rose chart with hovered data
-                            RoseChart.data.datasets[0].data = materialData;
-                        }
-                        RoseChart.update();
-                    });
-    
-                    layer.on('mouseout', () => {
-                        isHovering = false; // Clear hovering flag
-    
-                        // Revert to locked data if no hover data is available
-                        if (lockedData) {
-                            RoseChart.data.datasets[0].data = lockedData;
-                            RoseChart.update();
-                        }
-                    });
-    
-                    layer.on('click', () => {
-                        // Extract and lock values for the clicked feature
-                        const materialData = materials.map(material => {
-                            const materialKey = `binned_data_${material}_sum`;
-                            const materialValue = feature.properties[materialKey];
-                            if (materialValue) {
-                                const binIndex = getQuantileBin(materialValue, quantiles[material]);
-                                return binIndex;
-                            }
-                            return 0;
-                        });
-    
-                        lockedData = materialData;
-    
-                        // Update the rose chart with locked data
-                        RoseChart.data.datasets[0].data = materialData;
-                        RoseChart.update();
-    
-                        const materialValues = materials.map(material => {
-                            const materialKey = `binned_data_${material}_sum`;
-                            const rawValue = feature.properties[materialKey];
-                            const formattedValue = rawValue ? formatNumber(rawValue) : 'N/A';
-                            return `${material.charAt(0).toUpperCase() + material.slice(1)}: ${formattedValue}`;
-                        }).join('<br>');
-                    });
-                }
-            }).addTo(mainMap);
-    
-            // Handle mousemove outside any GeoJSON features
-            mainMap.on('mousemove', () => {
-                if (!isHovering && lockedData) {
-                    // Revert to locked data when not hovering or all values are 0
-                    RoseChart.data.datasets[0].data = lockedData;
-                    RoseChart.update();
-                }
-            });
-    
-            // Set the z-index to ensure it's above any other layers
-            geojsonLayer.setZIndex(9999);
-        })
-        .catch(error => {
-            console.error('Error loading GeoJSON data:', error);
-        });
-
-
-
-// Adding the layer tile details------------------------------------
-var layer1 = L.geoJSON(null, {
-    style: function () {
-        return {
-            opacity: 0,          // Set opacity to 0 (fully transparent)
-            fillOpacity: 0,      // Set fillOpacity to 0 (fully transparent)
-            weight: 0,           // Set weight to 0 (no borders)
-            dashArray: '0',      // Ensure no dashed lines
-            color: 'transparent' // Set the color to transparent (no visible color)
-        };
-    }
-}).addTo(mainMap); // tile_data_100m_refined1.geojson
-
-var layer2 = L.geoJSON(null, {
-    style: function () {
-        return {
-            opacity: 0,          // Set opacity to 0 (fully transparent)
-            fillOpacity: 0,      // Set fillOpacity to 0 (fully transparent)
-            weight: 0,           // Set weight to 0 (no borders)
-            dashArray: '0',      // Ensure no dashed lines
-            color: 'transparent' // Set the color to transparent (no visible color)
-        };
-    }
-}).addTo(mainMap); // tile_data_100m_refined2.geojson
-
-// Fetch and load the GeoJSON data from the "data" folder
-fetch('data/tile_data_100m_refined1.geojson')
-    .then(response => response.json())
-    .then(data => {
-        L.geoJSON(data, {
-            style: function () {
-                return {
-                    opacity: 0,
-                    fillOpacity: 0,
-                    weight: 0,
-                    dashArray: '0',
-                    color: 'transparent'
-                };
-            },
-            onEachFeature: function (feature, layer) {
-                layer.on('mouseover', function () {
-                    // Display the values in the divs on hover
-                    document.getElementById("borough").innerHTML = feature.properties.Borough;
-                    var zoneDistSpan = document.createElement("span");
-                    zoneDistSpan.innerHTML = feature.properties.ZoneDist;
-                    document.getElementById("zonedist").innerHTML = '';
-                    document.getElementById("zonedist").appendChild(zoneDistSpan);                    
-                    document.getElementById("builtfar").innerHTML = feature.properties.BuiltFAR_Mean + "&nbsp;/&nbsp;" + feature.properties.BuiltFAR_Median;
-                    document.getElementById("numfloors").innerHTML = feature.properties.NumFloors_Mean + "&nbsp;/&nbsp;" + feature.properties.NumFloors_Median;
-                    document.getElementById("yearbuilt").innerHTML = feature.properties.YearBuilt_Mean + "&nbsp;/&nbsp;" + feature.properties.YearBuilt_Median;
-                    document.getElementById("elev_mean").innerHTML = feature.properties.Elev_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Elev_Mean * 0.3048).toFixed(1) + "m";
-                    document.getElementById("bedrock_mean").innerHTML = feature.properties.Bedrock_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Bedrock_Mean * 0.3048).toFixed(1) + "m";
-                });
-            }
-        }).addTo(layer1); // Adding the GeoJSON data to the first layer
-    });
-
-fetch('data/tile_data_100m_refined2.geojson')
-    .then(response => response.json())
-    .then(data => {
-        L.geoJSON(data, {
-            style: function () {
-                return {
-                    opacity: 0,
-                    fillOpacity: 0,
-                    weight: 0,
-                    dashArray: '0',
-                    color: 'transparent'
-                };
-            },
-            onEachFeature: function (feature, layer) {
-                layer.on('mouseover', function () {
-                    // Display the values in the divs on hover
-                    document.getElementById("borough").innerHTML = feature.properties.Borough;
-                    var zoneDistSpan = document.createElement("span");
-                    zoneDistSpan.innerHTML = feature.properties.ZoneDist;
-                    document.getElementById("zonedist").innerHTML = '';
-                    document.getElementById("zonedist").appendChild(zoneDistSpan);
-                    document.getElementById("builtfar").innerHTML = feature.properties.BuiltFAR_Mean + "&nbsp;/&nbsp;" + feature.properties.BuiltFAR_Median;
-                    document.getElementById("numfloors").innerHTML = feature.properties.NumFloors_Mean + "&nbsp;/&nbsp;" + feature.properties.NumFloors_Median;
-                    document.getElementById("yearbuilt").innerHTML = feature.properties.YearBuilt_Mean + "&nbsp;/&nbsp;" + feature.properties.YearBuilt_Median;
-                    document.getElementById("elev_mean").innerHTML = feature.properties.Elev_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Elev_Mean * 0.3048).toFixed(1) + "m";
-                    document.getElementById("bedrock_mean").innerHTML = feature.properties.Bedrock_Mean + "ft&nbsp;/&nbsp;" + (feature.properties.Bedrock_Mean * 0.3048).toFixed(1) + "m";
-                });
-            }
-        }).addTo(layer2); // Adding the GeoJSON data to the second layer
-    });
 
 
 
@@ -1179,253 +969,260 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+// Traffic lights: Toggle -------------------------------------------
 
-
-
-
-
-
-// Rose Chart------------------------------------------------------------
-// Initial chart data with original colors
-const data = {
-    labels: ['steel', 'stone', 'glass', 'concrete', 'brick'],
-    datasets: [{
-        label: 'density level',
-        data: [0, 0, 0, 0, 0],  // Initialize with zero
-        backgroundColor: [
-            '#ec49fd',  // Steel
-            '#60bdff',  // Stone
-            '#49fcd7',  // Glass
-            '#ddfa47',  // Concrete
-            '#ff785a'   // Brick
-        ],
-        borderWidth: 0
-    }]
-};
-
-const config = {
-    type: 'polarArea',
-    data: data,
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            r: {
-                min: 0,
-                max: 5,
-                grid: {
-                    color: '#bfcdcd', 
-                    lineWidth: 0.5,
-                    z: 1,
-                    circular: true, 
-                },
-                angleLines: {
-                    color: 'rgba(0, 0, 0, 0.2)', 
-                    lineWidth: 1,
-                    z: 1,
-                },
-                ticks: {
-                    z: 2,
-                    color: 'transparent', 
-                    font: {
-                        family: 'Inter',
-                        weight: '100'
-                    },
-                    backdropColor: 'rgba(0, 0, 0, 0)', 
-                },
-            }
-        },
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                titleFont: {
-                    family: 'Inter, sans-serif',
-                    size: 14,
-                    weight: 'normal'
-                },
-                titleColor: 'black',
-                bodyFont: {
-                    family: 'Inter, sans-serif',
-                    size: 12,
-                    weight: 'normal'
-                },
-                bodyColor: 'black',
-                borderColor: 'rgba(0, 0, 0, 0.1)',
-                borderWidth: 1,
-                cornerRadius: 6,
-                displayColors: false,
-                padding: 10
-            }
-        }
-    }
-};
-
-
-// Create the chart instance
-const RoseChart = new Chart(document.getElementById('Rose'), config);
-
-// Original colors for each layer
-const originalColors = {
-    Brick: '#ff785a',
-    Concrete: '#ddfa47',
-    Glass: '#49fcd7',
-    Stone: '#60bdff',
-    Steel: '#ec49fd'
-};
-
-// Add event listeners to the buttons to toggle the layers' visibility
-document.getElementById('toggle1').addEventListener('click', () => toggleLayer('Brick'));
-document.getElementById('toggle2').addEventListener('click', () => toggleLayer('Concrete'));
-document.getElementById('toggle3').addEventListener('click', () => toggleLayer('Glass'));
-document.getElementById('toggle4').addEventListener('click', () => toggleLayer('Stone'));
-document.getElementById('toggle5').addEventListener('click', () => toggleLayer('Steel'));
-
-
-
-
-
-
-// Rose chart color toggle function----------------------------------------
-function toggleLayer(layer) {
-    const layerIndex = data.labels.indexOf(layer);
-    
-    // If the color is transparent, reset to the original color
-    if (data.datasets[0].backgroundColor[layerIndex] === 'transparent') {
-        data.datasets[0].backgroundColor[layerIndex] = originalColors[layer];
+// Handle toggle1 for brick
+document.getElementById('toggle1').addEventListener('change', function() {
+    const radarBrick = document.getElementById('radar-brick');
+    if (!this.checked) {
+        radarBrick.classList.add('inactive');
     } else {
-        // Otherwise, set the color to transparent
-        data.datasets[0].backgroundColor[layerIndex] = 'transparent';
+        radarBrick.classList.remove('inactive');
     }
-    
-    // Update the chart to reflect the changes
-    RoseChart.update();
-}
+});
 
-// Quantile calculation (unchanged)
-function calculateQuantiles(values, numBins) {
-    values.sort((a, b) => a - b);  // Ascending order sort
-    const quantiles = [];
-    for (let i = 1; i <= numBins; i++) {
-        const index = Math.floor((i / numBins) * values.length);
-        quantiles.push(values[index]);
+// Handle toggle2 for concrete
+document.getElementById('toggle2').addEventListener('change', function() {
+    const radarConcrete = document.getElementById('radar-concrete');
+    if (!this.checked) {
+        radarConcrete.classList.add('inactive');
+    } else {
+        radarConcrete.classList.remove('inactive');
     }
-    return quantiles;
-}
+});
 
-function getQuantileBin(value, quantiles) {
-    for (let i = 0; i < quantiles.length; i++) {
-        if (value <= quantiles[i]) {
-            return i;  // Return the bin index
-        }
+// Handle toggle3 for glass
+document.getElementById('toggle3').addEventListener('change', function() {
+    const radarGlass = document.getElementById('radar-glass');
+    if (!this.checked) {
+        radarGlass.classList.add('inactive');
+    } else {
+        radarGlass.classList.remove('inactive');
     }
-    return quantiles.length - 1;  // If value is greater than the highest quantile
-}
+});
+
+// Handle toggle4 for stone
+document.getElementById('toggle4').addEventListener('change', function() {
+    const radarStone = document.getElementById('radar-stone');
+    if (!this.checked) {
+        radarStone.classList.add('inactive');
+    } else {
+        radarStone.classList.remove('inactive');
+    }
+});
+
+// Handle toggle5 for steel
+document.getElementById('toggle5').addEventListener('change', function() {
+    const radarSteel = document.getElementById('radar-steel');
+    if (!this.checked) {
+        radarSteel.classList.add('inactive');
+    } else {
+        radarSteel.classList.remove('inactive');
+    }
+});
 
 
 
 
+// Traffic lights Update, & Tile info update -------------------------------------------
+var layer1 = L.geoJSON(null, {
+    style: () => ({
+        opacity: 0,
+        fillOpacity: 0,
+        weight: 0,
+        dashArray: '0',
+        color: 'transparent'
+    })
+}).addTo(mainMap);
 
+var layer2 = L.geoJSON(null, {
+    style: () => ({
+        opacity: 0,
+        fillOpacity: 0,
+        weight: 0,
+        dashArray: '0',
+        color: 'transparent'
+    })
+}).addTo(mainMap);
 
-// Rose Chart References----------------------------------------
-function createDataObject(dataValues) {
-    return {
-        labels: ['steel', 'stone', 'glass', 'concrete', 'brick'],
-        datasets: [{
-            label: 'density level',
-            data: dataValues,
-            backgroundColor: [
-                '#ec49fd',  // Steel
-                '#60bdff',  // Stone
-                '#49fcd7',  // Glass
-                '#ddfa47',  // Concrete
-                '#ff785a'   // Brick
-            ],
-            borderWidth: 0
-        }]
-    };
-}
+let quantiles = {};
+let materialTypes = ["brick", "concrete", "glass", "stone", "steel"];
 
-const dataA = createDataObject([3, 5, 1, 1, 2]);
-const dataB = createDataObject([4, 1, 5, 3, 0]);
-const dataC = createDataObject([5, 1, 2, 4, 3]);
-function createPolarAreaConfig(data) {
-    return {
-        type: 'polarArea',
-        data: data,
-        options: {
-            responsive: false, 
-            maintainAspectRatio: true, 
-            scales: {
-                r: {
-                    min: 0,
-                    max: 5,
-                    grid: {
-                        color: '#bfcdcd',
-                        lineWidth: 1,
-                        z: 1,
-                        circular: true,
-                    },
-                    angleLines: {
-                        color: 'rgba(0, 0, 0, 0.2)',
-                        lineWidth: 1,
-                        z: 1,
-                    },
-                    ticks: {
-                        callback: function (value) {
-                            const romanNumerals = ['NULL', 'I', 'II', 'III', 'IV', 'V'];
-                            return romanNumerals[value];
-                        },
-                        z: 2,
-                        color: 'transparent',
-                        padding: 0,
-                        backdropColor: 'rgba(0, 0, 0, 0)', 
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    titleFont: {
-                        family: 'Inter, sans-serif',
-                        size: 14,
-                        weight: 'normal'
-                    },
-                    titleColor: 'black',
-                    bodyFont: {
-                        family: 'Inter, sans-serif',
-                        size: 12,
-                        weight: 'normal'
-                    },
-                    bodyColor: 'black',
-                    borderColor: 'rgba(0, 0, 0, 0.1)',
-                    borderWidth: 1,
-                    cornerRadius: 6,
-                    displayColors: false,
-                    padding: 10
+fetch('data/tile_data_100m_refined1.geojson')
+    .then(response => response.json())
+    .then(data1 => fetch('data/tile_data_100m_refined2.geojson')
+        .then(response => response.json())
+        .then(data2 => {
+            let combinedData = [...data1.features, ...data2.features];
+
+            materialTypes.forEach(material => {
+                let values = combinedData.map(f => f.properties[material]).filter(v => v !== null && v !== undefined);
+                values.sort((a, b) => a - b);
+                quantiles[material] = [
+                    values[0],
+                    getQuantile(values, 0.2),
+                    getQuantile(values, 0.4),
+                    getQuantile(values, 0.6),
+                    getQuantile(values, 0.8),
+                    values[values.length - 1]
+                ];
+            });
+
+            function getQuantile(arr, q) {
+                let pos = (arr.length - 1) * q;
+                let base = Math.floor(pos);
+                let rest = pos - base;
+                return arr[base + 1] !== undefined ? arr[base] + rest * (arr[base + 1] - arr[base]) : arr[base];
+            }
+
+            function getSizeCategory(value, material) {
+                if (value === null || value === 0) return "0%";
+            
+                let breaks = quantiles[material];
+                if (value <= breaks[1]) return "20%";
+                if (value <= breaks[2]) return "40%";
+                if (value <= breaks[3]) return "60%";
+                if (value <= breaks[4]) return "80%";
+                return "100%";
+            }
+            
+
+            function resetRadarSizes() {
+                materialTypes.forEach(material => {
+                    document.getElementById(`radar-${material}`).style.width = "0%";
+                });
+            }
+
+            function updateRadarSizes(feature) {
+                materialTypes.forEach(material => {
+                    let value = feature.properties[material];
+                    let size = value !== null && value !== undefined ? getSizeCategory(value, material) : "0%";
+                    document.getElementById(`radar-${material}`).style.width = size;
+                });
+            }
+
+            function formatNumber(num) {
+                if (num === null || num === 0) {
+                    return "-";
+                } else if (num >= 1_000_000_000) {
+                    return (num / 1_000_000_000).toFixed(1) + " G";
+                } else if (num >= 1_000_000) {
+                    return (num / 1_000_000).toFixed(1) + " M";
+                } else if (num >= 1_000) {
+                    return (num / 1_000).toFixed(1) + " k";
+                } else {
+                    return num.toFixed(0); // Integer format
                 }
             }
-        }
+            
+            function onEachFeatureHandler(feature, layer) {
+                layer.on('mouseover', function () {
+                    document.getElementById("value-brick").innerHTML = formatNumber(feature.properties.brick) + "t";
+                    document.getElementById("value-concrete").innerHTML = formatNumber(feature.properties.concrete) + "t";
+                    document.getElementById("value-glass").innerHTML = formatNumber(feature.properties.glass) + "t";
+                    document.getElementById("value-stone").innerHTML = formatNumber(feature.properties.stone) + "t";
+                    document.getElementById("value-steel").innerHTML = formatNumber(feature.properties.steel) + "t";
+                    document.getElementById("borough").innerHTML = feature.properties.Borough;
+                    document.getElementById("zonedist").innerHTML = feature.properties.ZoneDist;
+                    document.getElementById("builtfar").innerHTML = `${feature.properties.BuiltFAR_Mean} / ${feature.properties.BuiltFAR_Median}`;
+                    document.getElementById("numfloors").innerHTML = `${feature.properties.NumFloors_Mean} / ${feature.properties.NumFloors_Median}`;
+                    document.getElementById("yearbuilt").innerHTML = `${feature.properties.YearBuilt_Mean} / ${feature.properties.YearBuilt_Median}`;
+                    document.getElementById("elev_mean").innerHTML = `${feature.properties.Elev_Mean}ft / ${(feature.properties.Elev_Mean * 0.3048).toFixed(1)}m`;
+                    document.getElementById("bedrock_mean").innerHTML = `${feature.properties.Bedrock_Mean}ft / ${(feature.properties.Bedrock_Mean * 0.3048).toFixed(1)}m`;
+                    updateRadarSizes(feature);
+                });
+                layer.on('mouseout', resetRadarSizes);
+            }
+
+            function addGeoJSONLayer(data, layer) {
+                L.geoJSON(data, {
+                    style: () => ({
+                        opacity: 0,
+                        fillOpacity: 0,
+                        weight: 0,
+                        dashArray: '0',
+                        color: 'transparent'
+                    }),
+                    onEachFeature: onEachFeatureHandler
+                }).addTo(layer);
+            }
+
+            addGeoJSONLayer(data1, layer1);
+            addGeoJSONLayer(data2, layer2);
+        })
+    );
+
+
+
+
+
+
+
+// Intro------------------------------------------------------
+document.addEventListener("DOMContentLoaded", function () {
+    const intro = document.getElementById("intro");
+    const exitButton = document.getElementById("intro-exit");
+    const exitButton2 = document.getElementById("intro-exit-2");
+    const controlDoc = document.querySelector(".control-doc");
+
+    if (controlDoc) {
+        controlDoc.addEventListener("click", function () {
+            intro.classList.add("expanded"); // Expand intro
+        });
+    }
+
+    if (exitButton) {
+        exitButton.addEventListener("click", function () {
+            intro.classList.remove("expanded"); // Collapse intro
+        });
+    }
+
+    if (exitButton2) {
+        exitButton2.addEventListener("click", function () {
+            intro.classList.remove("expanded"); // Collapse intro
+        });
+    }
+});
+
+
+// Intro chapters---------------------------
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".chapter-button");
+    const sections = document.querySelectorAll(".chapter-section");
+
+    // Smooth scrolling when clicking a button
+    buttons.forEach(button => {
+        button.addEventListener("click", function () {
+            const targetId = this.getAttribute("data-target");
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    });
+
+    // Intersection Observer to highlight active button
+    const observerOptions = {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.2, // Adjust for better sensitivity
     };
-}
 
-// Creating the configurations
-const configA = createPolarAreaConfig(dataA);
-const configB = createPolarAreaConfig(dataB);
-const configC = createPolarAreaConfig(dataC);
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                buttons.forEach(btn => btn.classList.remove("active")); // Remove active from all
+                const activeButton = document.querySelector(`.chapter-button[data-target="${entry.target.id}"]`);
+                if (activeButton) {
+                    activeButton.classList.add("active");
+                }
+            }
+        });
+    }, observerOptions);
 
-
-// Create the chart instance
-const RoseChartRefA = new Chart(document.getElementById('RoseChartRefA'), configA);
-const RoseChartRefB = new Chart(document.getElementById('RoseChartRefB'), configB);
-const RoseChartRefC = new Chart(document.getElementById('RoseChartRefC'), configC);
-
-
+    sections.forEach(section => observer.observe(section));
+});
 
 
 
@@ -1437,7 +1234,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let isSidebarExpanded = false; // Sidebar starts collapsed
 
     const sidebar = document.getElementById("sidebar");
-    const toggleButton = document.getElementById("toggleButton");
+    const toggleButton = document.getElementById("control-toggle");
     const toggleIcon = document.getElementById("toggleIcon");
 
     toggleButton.addEventListener("click", function() {
@@ -1453,21 +1250,15 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-
-
-
-
-
 // Nav Button-------------------------------------------------------
 // Ensure the DOM is fully loaded before running the script
 document.addEventListener("DOMContentLoaded", function() {
     const buttons = document.querySelectorAll('.nav-button');
     const line = document.createElement('div'); // Create line element
-    line.classList.add('active-line'); // Set class for styling
     document.getElementById('sidebar').appendChild(line); // Append to sidebar
 
     // Position line initially under the explorer button
-    const initialButton = document.getElementById('aboutButton');
+    const initialButton = document.getElementById('dataButton');
     line.style.width = `${initialButton.offsetWidth - 10}px`; // Set width
     line.style.position = 'absolute';
     line.style.bottom = '-5px'; // Position it
@@ -1504,15 +1295,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const materialPopup = document.getElementById('materialPopup');
     const vizPopup = document.getElementById('visualizationPopup');
     const versionPopup = document.getElementById('versionPopup'); 
-    const guidePopup = document.getElementById('guidePopup');
     const closePopupButtons = document.querySelectorAll('.popupCloseButton'); 
 
     // Info icons
     const infoIcon = document.getElementById('materialInfo');
-    const roseInfoIcon = document.getElementById('roseInfo');
     const vizInfoIcon = document.getElementById('visualizationArchive');
     const versionHistoryLink = document.getElementById('versionHistoryLink');
-    const guideButton = document.getElementById('guideButton'); 
 
     // Version history element
     const versionHistoryContent = document.getElementById('versionHistoryContent');
@@ -1600,106 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Fetch operation error:', error);
             });
     });
-
-
-    // Open guide popup when the guide button is clicked
-    guideButton.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent the document click event from firing
-        guidePopup.classList.remove('hidden');
-        guidePopup.style.display = 'flex';
-    });
-    // Close guide popup on clicking anywhere (inside or outside)
-    document.addEventListener('click', (event) => {
-        if (guidePopup && !guidePopup.classList.contains('hidden')) {
-            guidePopup.classList.add('hidden'); // Add the hidden class to hide it
-            setTimeout(() => {
-                guidePopup.style.display = 'none'; // Completely hide after animation
-            }, 500);
-        }
-    });
 });
-
-
-
-
-
-// Splide slider---------------------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
-    const visualizationPopup = document.getElementById('visualizationPopup');
-    const collapsePopup = document.getElementById('collapsePopup');
-    const mainSliderList = document.querySelector('#main-slider .splide__list');
-    const thumbnailSliderList = document.querySelector('#thumbnail-slider .splide__list');
-
-    const images = [
-        "VA-01.webp", "VA-02.webp", "VA-03.webp", "VA-04.webp",
-        "VA-05.webp", "VA-06.webp", "VA-07.webp", "VA-08.webp",
-        "VA-09.webp", "VA-10.webp", "VA-11.webp", "VA-12.webp"
-    ];
-
-    // Generate slides for main and thumbnail sliders
-    images.forEach(image => {
-        const mainLi = document.createElement('li');
-        mainLi.classList.add('splide__slide');
-        const mainImg = document.createElement('img');
-        mainImg.src = `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`;
-        mainImg.alt = `Slide ${image}`;
-        mainLi.appendChild(mainImg);
-        mainSliderList.appendChild(mainLi);
-
-        const thumbLi = document.createElement('li');
-        thumbLi.classList.add('splide__slide');
-        const thumbImg = document.createElement('img');
-        thumbImg.src = `https://raw.githubusercontent.com/halfward/UrbanVein/main/media/${image}`;
-        thumbImg.alt = `Thumbnail ${image}`;
-        thumbLi.appendChild(thumbImg);
-        thumbnailSliderList.appendChild(thumbLi);
-    });
-
-    // Initialize Splide sliders
-    const mainSlider = new Splide('#main-slider', {
-        type       : 'fade',
-        heightRatio: 1.5,
-        pagination : false,
-        arrows     : false,
-        cover      : true,
-    });
-
-    const thumbnailSlider = new Splide('#thumbnail-slider', {
-        rewind       : true,
-        fixedWidth   : 50,
-        fixedHeight  : 75,
-        isNavigation : true,
-        gap          : 10,
-        focus        : 'center',
-        pagination   : false,
-        cover        : true,
-        breakpoints  : {
-            640: {
-                fixedWidth  : 66,
-                fixedHeight : 38,
-            },
-        },
-    });
-
-    // Sync main slider with thumbnails
-    mainSlider.sync(thumbnailSlider);
-    mainSlider.mount();
-    thumbnailSlider.mount();
-
-    // Open popup and refresh sliders
-    document.getElementById('visualizationArchive').addEventListener('click', () => {
-        visualizationPopup.style.display = 'flex';
-        mainSlider.refresh(); // Refresh main slider
-        thumbnailSlider.refresh(); // Refresh thumbnails
-    });
-
-    // Close popup
-    collapsePopup.addEventListener('click', () => {
-        visualizationPopup.style.display = 'none';
-    });
-});
-
-
 
 
 
@@ -1707,70 +1396,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Content text-----------------------------------------------
 document.addEventListener("DOMContentLoaded", function() {
-    const aboutContent = document.getElementById('aboutContentText');
-    const storiesContent = document.getElementById('storiesContentText');
-    const exploreContent = document.getElementById('exploreContentText');
-    const navButtonAContainer = document.getElementById('navButtonAContainer');
-    const navButtonBContainer = document.getElementById('navButtonBContainer');
-    const navButtonCContainer = document.getElementById('navButtonCContainer');
+    const dataContent = document.getElementById('dataContentText');
+    const mediaContent = document.getElementById('mediaContentText');
+    const referencesContent = document.getElementById('referencesContentText');
 
     // Function to update content based on button clicked
     function updatecontentMain(buttonId) {
         // Hide all content divs
-        aboutContent.style.display = 'none';
-        storiesContent.style.display = 'none';
-        exploreContent.style.display = 'none';
-
-        // Hide all nav button containers initially
-        navButtonAContainer.style.display = 'none';
-        navButtonBContainer.style.display = 'none';
-        navButtonCContainer.style.display = 'none';
+        dataContent.style.display = 'none';
+        mediaContent.style.display = 'none';
+        referencesContent.style.display = 'none';
 
         // Show relevant content based on button ID
         switch (buttonId) {
-            case 'aboutButton':
-                aboutContent.style.display = 'block';
-                navButtonAContainer.style.display = 'flex'; 
+            case 'dataButton':
+                dataContent.style.display = 'block';
+
                 break;
-            case 'storiesButton':
-                storiesContent.style.display = 'block';
-                navButtonBContainer.style.display = 'flex'; 
+            case 'mediaButton':
+                mediaContent.style.display = 'block';
+
                 break;
-            case 'explorerButton':
-                exploreContent.style.display = 'block';
-                navButtonCContainer.style.display = 'flex'; 
+            case 'referencesButton':
+                referencesContent.style.display = 'block';
+
                 break;
             default:
-                aboutContent.style.display = 'flex';
-                storiesContent.style.display = 'none';
-                exploreContent.style.display = 'none';
-                navButtonAContainer.style.display = 'none'; 
-                navButtonBContainer.style.display = 'none'; 
-                navButtonCContainer.style.display = 'none'; 
+                dataContent.style.display = 'flex';
+                mediaContent.style.display = 'none';
+                referencesContent.style.display = 'none';
+
         }
     }
 
     // Attach event listeners to buttons
-    document.getElementById('aboutButton').addEventListener('click', function() {
-        updatecontentMain('aboutButton');
+    document.getElementById('dataButton').addEventListener('click', function() {
+        updatecontentMain('dataButton');
     });
 
-    document.getElementById('storiesButton').addEventListener('click', function() {
-        updatecontentMain('storiesButton');
+    document.getElementById('mediaButton').addEventListener('click', function() {
+        updatecontentMain('mediaButton');
     });
 
-    document.getElementById('explorerButton').addEventListener('click', function() {
-        updatecontentMain('explorerButton');
+    document.getElementById('referencesButton').addEventListener('click', function() {
+        updatecontentMain('referencesButton');
     });
 
     // Initialize by showing the About content or any default section
-    updatecontentMain('aboutButton');
+    updatecontentMain('dataButton');
 
     // Function to observe display changes using MutationObserver
     function observeDisplayChanges() {
         // Select all the target elements
-        const elements = [aboutContent, storiesContent, exploreContent, 
-                          navButtonAContainer, navButtonBContainer, navButtonCContainer];
+        const elements = [dataContent, mediaContent, referencesContent];
 
         // Create a MutationObserver to listen for style changes
         const observer = new MutationObserver(mutations => {
@@ -1791,243 +1469,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Initialize the MutationObserver
     observeDisplayChanges();
 });
-
-
-
-
-
-// Second Tab Logic
-
-// Main navigation buttons
-const exploreButton = document.getElementById('explorerButton');
-const aboutButton = document.getElementById('aboutButton');
-const storiesButton = document.getElementById('storiesButton');
-
-// Second-layer navigation buttons
-const navButtons = document.querySelectorAll('.nav-button-2');
-
-// Content elements
-const scrollableTextData = document.getElementById('scrollableTextData');
-const scrollableTextMedia = document.getElementById('scrollableTextMedia');
-const scrollableTextRef = document.getElementById('scrollableTextRef');
-const scrollableTextPast = document.getElementById('scrollableTextPast');
-const scrollableTextPresent = document.getElementById('scrollableTextPresent');
-const scrollableTextFuture = document.getElementById('scrollableTextFuture');
-const scrollableTextC = document.getElementById('scrollableTextC');
-const layerControls = document.getElementById('layerControls');
-const scrollableTextTimeline = document.getElementById('scrollableTextTimeline');
-const scrollableTextMaps = document.getElementById('scrollableTextMaps');
-
-// Variables to track button states
-let isExploreActive = false;
-let isAboutActive = false;
-let isStoriesActive = false;
-let isDataActive = false;
-let isMediaActive = false;
-let isRefActive = false;
-let isPastActive = false;
-let isPresentActive = false;
-let isFutureActive = false;
-let isLegendActive = false;
-let isTimelineActive = false;
-let isMapsActive = false;
-
-// Helper function to toggle element visibility
-function updateDisplay(element, condition) {
-    element.style.display = condition ? 'block' : 'none';
-}
-
-// Reset all second-layer content visibility
-function resetSecondLayerContent() {
-    const allSecondLayerContent = [
-        scrollableTextData, scrollableTextMedia, scrollableTextRef,
-        scrollableTextPast, scrollableTextPresent, scrollableTextFuture,
-        scrollableTextC, layerControls,
-        scrollableTextTimeline, scrollableTextMaps
-    ];
-    allSecondLayerContent.forEach(content => {
-        if (content) content.style.display = 'none';
-    });
-}
-
-// Update individual display groups
-function updateAboutAndDataDisplay() {
-    updateDisplay(scrollableTextData, isAboutActive && isDataActive);
-}
-function updateAboutAndMediaDisplay() {
-    updateDisplay(scrollableTextMedia, isAboutActive && isMediaActive);
-}
-function updateAboutAndRefDisplay() {
-    updateDisplay(scrollableTextRef, isAboutActive && isRefActive);
-}
-function updateStoriesAndPastDisplay() {
-    updateDisplay(scrollableTextPast, isStoriesActive && isPastActive);
-}
-function updateStoriesAndPresentDisplay() {
-    updateDisplay(scrollableTextPresent, isStoriesActive && isPresentActive);
-}
-function updateStoriesAndFutureDisplay() {
-    updateDisplay(scrollableTextFuture, isStoriesActive && isFutureActive);
-}
-function updateExploreAndLegendDisplay() {
-    const shouldDisplay = isExploreActive && isLegendActive;
-
-    // Update the display property for flex layout
-    if (shouldDisplay) {
-        layerControls.style.display = 'flex';
-        layerControls.style.flexWrap = 'wrap';
-        layerControls.style.justifyContent = 'space-between';
-    } else {
-        layerControls.style.display = 'none';
-    }
-
-    // Update other elements
-    // updateDisplay(roseChart, shouldDisplay);
-    updateDisplay(scrollableTextC, shouldDisplay);
-}
-function updateExploreAndTimelineDisplay() {
-    updateDisplay(scrollableTextTimeline, isExploreActive && isTimelineActive);
-}
-function updateExploreAndMapsDisplay() {
-    updateDisplay(scrollableTextMaps, isExploreActive && isMapsActive);
-}
-
-// Function to update display elements based on active states
-function updateDisplays() {
-    resetSecondLayerContent(); // Reset all second-layer content visibility
-    updateAboutAndDataDisplay();
-    updateAboutAndMediaDisplay();
-    updateAboutAndRefDisplay();
-    updateStoriesAndPastDisplay();
-    updateStoriesAndPresentDisplay();
-    updateStoriesAndFutureDisplay();
-    updateExploreAndLegendDisplay();
-    updateExploreAndTimelineDisplay();
-    updateExploreAndMapsDisplay();
-}
-
-// Helper function to manage active button states
-function setActiveButton(buttonId) {
-    navButtons.forEach(btn => btn.classList.remove('active')); // Remove 'active' from all buttons
-    const activeButton = document.getElementById(buttonId);
-    if (activeButton) {
-        activeButton.classList.add('active'); // Add 'active' to the specified button
-    }
-}
-
-// Reset layer states when switched to another major tab
-function resetSecondLayerStates() {
-    isDataActive = false;
-    isMediaActive = false;
-    isRefActive = false;
-    isPastActive = false;
-    isPresentActive = false;
-    isFutureActive = false;
-    isLegendActive = false;
-    isTimelineActive = false;
-    isMapsActive = false;
-}
-
-// Event listeners for main navigation buttons
-aboutButton.addEventListener('click', () => {
-    resetSecondLayerStates();
-    isAboutActive = true;
-    isExploreActive = false;
-    isStoriesActive = false;
-    isDataActive = true;
-    setActiveButton('dataButton'); // Set dataButton as active
-    updateDisplays();
-});
-storiesButton.addEventListener('click', () => {
-    resetSecondLayerStates();
-    isStoriesActive = true;
-    isExploreActive = false;
-    isAboutActive = false;
-    isPastActive = true;
-    setActiveButton('pastButton'); // Set pastButton as active
-    updateDisplays();
-});
-exploreButton.addEventListener('click', () => {
-    resetSecondLayerStates();
-    isExploreActive = true;
-    isAboutActive = false;
-    isStoriesActive = false;
-    isLegendActive = true;
-    setActiveButton('legendButton'); // Set legendButton as active
-    updateDisplays();
-});
-
-
-// Add click event listeners to nav-2 buttons
-navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        setActiveButton(button.id); // Update active state for clicked button
-        updateContent(button.id);
-    });
-});
-
-// Function to handle content updates
-function updateContent(buttonId) {
-    // Set active states based on button ID
-    isDataActive = (buttonId === 'dataButton');
-    isMediaActive = (buttonId === 'mediaButton');
-    isRefActive = (buttonId === 'refButton');
-
-    isPastActive = (buttonId === 'pastButton');
-    isPresentActive = (buttonId === 'presentButton');
-    isFutureActive = (buttonId === 'futureButton');
-
-    isLegendActive = (buttonId === 'legendButton');
-    isTimelineActive = (buttonId === 'timelineButton');
-    isMapsActive = (buttonId === 'mapsButton');
-
-    updateDisplays();
-}
-
-// Set default states on page load
-isAboutActive = true;
-isDataActive = true;
-setActiveButton('dataButton');
-updateDisplays(); // Update displays based on default state
-
-// MutationObserver to detect display changes
-function observeDisplayChanges() {
-    const elementsToObserve = [
-        scrollableTextData, scrollableTextMedia, scrollableTextRef,
-        scrollableTextPast, scrollableTextPresent, scrollableTextFuture,
-        scrollableTextC, layerControls,
-        scrollableTextTimeline, scrollableTextMaps
-    ];
-
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                if (mutation.target.style.display === 'none') {
-                    adjustHeight();
-                }
-            }
-        });
-    });
-
-    // Observer options
-    const config = { attributes: true, attributeFilter: ['style'] };
-    
-    elementsToObserve.forEach(element => {
-        observer.observe(element, config);
-    });
-}
-
-// Initialize the MutationObserver
-observeDisplayChanges();
-
-// Function to adjust height when display is set to 'none'
-function adjustHeight() {
-    console.log("Adjusting height...");
-    // You can implement your height adjustment logic here
-}
-
-
-
 
 
 
@@ -2083,8 +1524,8 @@ function adjustHeight() {
 // Dynamic Scrollable Text Height----------------------------------
 // Also requires mutation observers in the tab logics--------------
 function adjustHeight() {
-    const elements = document.querySelectorAll('.scrollable-text-about, .scrollable-text-stories, .scrollable-text-timeline, .scrollable-text-c');
-    const tenVH = window.innerHeight * 0.06; // 6% of the viewport height
+    const elements = document.querySelectorAll('.scrollable-text-data, .scrollable-text-media, .scrollable-text-references');
+    const tenVH = 30; // ticker height
 
     elements.forEach(element => {
         // Calculate the distance from the top of the element to the bottom of the viewport
@@ -2106,61 +1547,3 @@ function adjustHeight() {
 window.addEventListener('load', adjustHeight);
 window.addEventListener('resize', adjustHeight);
 window.addEventListener('scroll', adjustHeight);
-
-
-
-
-
-
-
-// Rose Chart Refs
-const slides = document.querySelectorAll('.popup-slide');
-let currentIndex = 0;
-
-// Update slide visibility
-function updateSlides() {
-    slides.forEach((slide, index) => {
-        if (index === currentIndex) {
-            slide.classList.add('active');
-        } else {
-            slide.classList.remove('active');
-        }
-    });
-}
-
-// Navigation buttons
-document.getElementById('prevSlide').addEventListener('click', () => {
-    currentIndex = (currentIndex === 0) ? slides.length - 1 : currentIndex - 1;
-    updateSlides();
-});
-
-document.getElementById('nextSlide').addEventListener('click', () => {
-    currentIndex = (currentIndex === slides.length - 1) ? 0 : currentIndex + 1;
-    updateSlides();
-});
-
-// Initialize the first slide as active
-updateSlides();
-
-
-
-
-
-
-// Layer toggle
-const toggleButton = document.getElementById('toggle-material');
-let isMaterialLayerActive = true; // Assume layer is active by default
-
-toggleButton.addEventListener('click', function () {
-    if (isMaterialLayerActive) {
-        // Remove the layer from the map
-        map.removeLayer(layerGroup);
-        toggleButton.classList.remove('active'); // Update button style
-        isMaterialLayerActive = false;
-    } else {
-        // Add the layer back to the map
-        map.addLayer(layerGroup);
-        toggleButton.classList.add('active'); // Update button style
-        isMaterialLayerActive = true;
-    }
-});

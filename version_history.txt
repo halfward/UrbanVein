@@ -1,11 +1,28 @@
-0.3.2 (2025-02-06)
+0.3.3 (2025-02-13 x-ray & chart update)
+- added subway & bus x-ray layer.
+- added two minimaps, esri and satellite, to the tile info panel.
+- added material info for brooklyn, queens, bronx, and staten island.
+- made the sidebar 40px thinner.
+- adjusted the x-ray panel layout and button interaction.
+- adjusted the sidebar content to only contain data, media, and references.
+- adjusted the material composition display so that it resembles more the actual map tile visualization.
+- fixed the issue where toggling off and on layers would affect the layer order.
+- removed the rose chart.
+- removed the layer function.
+- js code clean-up.
+
+0.3.2 (2025-02-06 ui clean-up)
 - added tile info (borough, zoning, FAR, age, floors, elevation, and bedrock depth.)
+- added an intro page.
+- added zoning (zola) x-ray layer
+- slightly shrinked the rose chart to make way for more x-ray options.
+- options ui overhaul.
 - the sidebar is now collapsed on load.
 - changed the default sidebar tab to "about."
 
-0.3.1 (2025-01-29)
+0.3.1 (2025-01-29 ui update)
 - overall ui update.
-- added an x-ray function for map tiles.
+- added an x-ray function for satellite imagery and osm.
 - added an extra zoom level (15.)
 - added google street view statics on click.
 - added map scale.

@@ -13,69 +13,54 @@
     
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/css/splide.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/js/splide.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <!-- <img src="images/hao-lee.png" alt="Hao Lee" id="hao-lee"> -->
-    <div id="logo-container">
-        <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
+
+    <div id="intro">
+        <div id="intro-button-container">
+            <button id="intro-exit">
+                <img src="images/panel-collapse.svg" alt="exit">
+            </button>
+            <button class="chapter-button" id="btn-what" data-target="chapter-what">WHAT</button>
+            <div class="intro-chapter-line"></div>
+            <button class="chapter-button" id="btn-why" data-target="chapter-why">WHY</button>
+            <div class="intro-chapter-line"></div>
+            <button class="chapter-button" id="btn-how" data-target="chapter-how">HOW</button>
+            <div class="intro-chapter-line"></div>
+            <button class="chapter-button" id="btn-who" data-target="chapter-who">WHO</button>
+        </div>
+        <div class="intro-text"></div>
+        <script>
+            fetch("articles/intro.md")
+                .then(response => response.text())
+                .then(markdown => {
+                    document.querySelector(".intro-text").innerHTML = marked.parse(markdown);
+                });
+        </script>
     </div>
 
-    <!-- Sidebar Content -->
+    <!-- <div id="welcome-panel">
+        read the story!
+    </div> -->
+
     <div id="sidebar">
+        <div id="sidebar-background"></div>
         <div id="logo-container">
             <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
             <span id="versionHistoryLink" class="clickable-text"></span>
         </div>
+
         <div style="display: flex; align-items: center;">
-            
-            <!-- Overview Popup Modal-->
-            <div id="guidePopup" class="popup hidden" style="display: none;">
-                <div id="guidePopup-content" class="popup-content">
-                    <h3 style="margin-top: 0;">welcome to urban vein! <b>click anywhere to continue</b>, or read more about this project below:</h3>
-                    <br>
-                    <h2 style="line-height: 1.2; font-size: 0.9rem; color: #585f5f; font-weight: 400;">
-                        by mapping the material composition of new york city’s buildings, we can uncover patterns of urban transformation that inform preservation, demolition, and future construction decisions.
-                    </h2>
-                    <br>
-                    <img src="images/guide-diagram.webp" alt="Intro" class="intro">
-                    <br><br>
-                    <h2 style="line-height: 1.2; font-size: 0.9rem; color: #585f5f; font-weight: 400;">
-                        what is urban vein?<br><br>
-                        urban vein is a dynamic web platform that reimagines new york city’s evolving identity through the lens of its building materials. this project bridges computation, design, and storytelling, offering spatial decision-makers the tools to identify trends and uncover patterns. it visualizes material archetypes across scales and explores temporal dimensions through historical and speculative narratives. at stake is the question of sustainability and urban memory. urban vein invites us to consider how material knowledge might guide responsible design practices in an ever-changing cityscape.
-                        <br><br><br>
-                        why is this important?<br><br>
-                        urban vein is an analytic and narrative tool that explores material histories, promotes sustainable urban practices, and challenges conventional demolition-preservation dynamics. it operates across scales—from the micro (individual buildings) to the macro (city-wide trends)—while fostering new practices in spatial storytelling.<br>
-                        through its focus on material life cycles and speculative timelines, urban vein invites users to engage with critical questions of sustainability and urban identity, presenting data in an interactive, participatory manner. the platform prioritizes user accessibility and narrative clarity, aiming to inspire informed decision-making for the built environment.
-                        <br><br><br>
-                        how does it work?<br><br>
-                        urban vein uses open data to estimate material compositions for the majority of its buildings. machine learning models analyze building age, size, and use to identify material archetypes, leveraging reference data where exact information is unavailable. these material archetypes inform a dynamic d3.js-based visualization that overlays five material layers.<br>
-                        this computational workflow affords granular insights into urban material trends. it enables seamless user interaction with layered data, offering toggles, hover functions, and future timeline animations. these methods transform abstract data into tangible actions to aid contextualizing material flows.
-                    </h2>
-                    <br><br>
-                    
-                    <br><br>
-                    
-                </div>
-            </div>
-    
             <!-- Version Popup Modal -->
             <div id="versionPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
                     <button class="popupCloseButton" id="collapsePopup">🞁</button>
                     <p-popup id="versionHistoryContent"></p-popup>
-                </div>
-            </div>
-            <!-- Material Popup Modal -->
-            <div id="materialPopup" class="popup hidden" style="display: none;">
-                <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup"
-                    style="margin-top: 268px">🞁</button>
-                    <h3 style="margin-top: 0;">▘material estimation method</h3>
-                    <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/data-diagram.webp" alt="DataDiagram" id="dataDiagram">
                 </div>
             </div>
             <!-- Viz History Popup Modal -->
@@ -106,113 +91,83 @@
         </div>
         <div id="sidebar-header">
             <div id="nav-container">
-                <div class="nav-button" id="aboutButton">ABOUT</div>
-                <div class="nav-button" id="storiesButton">NARRATIVE</div>
-                <div class="nav-button" id="explorerButton">ANALYSIS</div>
+                <div class="nav-button" id="dataButton">DATA</div>
+                <div class="nav-button" id="mediaButton">MEDIA</div>
+                <div class="nav-button" id="referencesButton">REFERENCES</div>
             </div>
         </div>
     
         <!-- Content containers -->
-        <div id="aboutContentText" class="content-text" style="display: none;">
+        <div id="dataContentText" class="content-text">
             <h2>brick by brick</h2>
             <p>
                 urban vein is developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>. the project was guided by (in semester & alphabetical orders) william martin, violet witney, laura kurgan, snoweria zhang, catherine griffith, and seth thompson.</p>
+                <div class="scrollable-text-data">
+                    <h3>▘<a id="materialInfo" class="info-link">material estimate</a> </h3>
+                    <p>
+                        nyc buliding material estimate data<br>
+                        by hao lee
+                    </p>
+                    
+                    <h3>▘base map</h3>
+                    <p>
+                        <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a><br>
+                        by <a href="https://www.nyc.gov/site/planning/index.page">nyc department of city planning</a>
+                        <br><br>
+                        <a href="https://github.com/CityOfNewYork/nyc-geo-metadata/blob/main/Metadata/Metadata_BuildingFootprints.md">nyc building footprints</a><br>
+                        by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
+                    </p>
+    
+                    <h3>▘base map background</h3>
+                    <p>
+                        <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">new york state civil boundaries</a><br>
+                        by <a href="https://gis.ny.gov/">new york state gis resources</a>
+                        <br><br>
+                        <a href="https://njogis-newjersey.opendata.arcgis.com/datasets/middlesexcounty::nj-counties/about">nj counties</a><br>
+                        by <a href="https://njgin.nj.gov/njgin/about/ogis/">nj office of information technology, office of gis (njogis)</a>
+                    </p>
+    
+                    <h3>▘map layers</h3>
+                    <p>
+                        <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-gis-zoning.page">nyc gis zoning features</a><br>
+                        by <a href="https://www.nyc.gov/site/planning/index.page">the department of city planning (dcp)</a>
+                        <br><br>
+                        <a href="https://data.cityofnewyork.us/Transportation/Subway-Lines/3qz8-muuu">nyc subway lines</a><br>
+                        by <a href="https://new.mta.info/">the metropolitan transportation authority (mta)</a>
+                        <br><br>
+                        <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">construction demolition registrants</a><br>
+                        by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
+                        <br><br>
+                        <a href="https://www.sciencebase.gov/catalog/item/62154ed5d34e4465d409099f">geospatial data for bedrock elevation and overburden thickness maps of the five boroughs, new york city, new york</a><br>
+                        by laura m.demott, frederick stumm, and jason s. finkelstein, in cooperation with the new york city department of design and construction
+                    </p>
+            </div>
         </div>
     
-        <div id="storiesContentText" class="content-text" style="display: none;">
+        <div id="mediaContentText" class="content-text">
             <h2>of memory & vision</h2>
             <p>explore new york city through its building materials—their composition, distribution, and transformation. examine what exists, what is being lost, and what should be built. urban vein is a lens into the enw york city's evolving spatial identity.</p>
+            <div class="scrollable-text-media">
+                <h3 id="visualizationArchive" style="cursor: pointer; text-decoration: underline;">▘<a>visualization archive</a></h3>
+                <p>
+                    one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
+                </p>
+                <h3 id="colloquiumPoster" style="cursor: pointer">▘<a href="media/colloquiumPoster.pdf" target="_blank">colloquium ii: review poster</a></h3>
+                <p>
+                    this is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece.
+                </p>
+                <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism</a></h3>
+                <p>
+                    this is colloquium i's project website, which consists of two material-related speculative projects, booleanify and balloonify.
+                </p>
+            </div>
         </div>
     
-        <div id="exploreContentText" class="content-text" style="display: block;">
+        <div id="referencesContentText" class="content-text">
             <h2>machine learning + urban data</h2>
             <p>this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.
             </p>
-        </div>
-
-        <!-- About -->
-        <div id="navButtonAContainer" class="navButtonAContainer">
-            <div id="dataButton" class="nav-button-2">DATA</div>
-            <div id="mediaButton" class="nav-button-2">MEDIA</div>
-            <div id="refButton" class="nav-button-2">REFERENCES</div>
-        </div>
-
-        <!-- Stories -->
-        <div id="navButtonBContainer" class="navButtonBContainer">
-            <div id="pastButton" class="nav-button-2">PAST</div>
-            <div id="presentButton" class="nav-button-2">PRESENT</div>
-            <div id="futureButton" class="nav-button-2">FUTURE</div>
-        </div>
-
-        <!-- Explorer -->
-        <div id="navButtonCContainer" class="navButtonCContainer">
-            <div id="legendButton" class="nav-button-2">DOCS</div>
-            <div id="timelineButton" class="nav-button-2">BUILDINGS</div>
-            <div id="mapsButton" class="nav-button-2">LAYERS</div>
-        </div>
-
-
-
-        <div id="layerControls"></div>
-        
-        <div id="scrollableTextData" class="scrollable-text-about" style="display: none;">
-                <h3>▘<a id="materialInfo" class="info-link">material estimate</a> </h3>
-                <p>
-                    nyc buliding material estimate data<br>
-                    by hao lee
-                </p>
-                
-                <h3>▘base map</h3>
-                <p>
-                    <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a><br>
-                    by <a href="https://www.nyc.gov/site/planning/index.page">nyc department of city planning</a>
-                    <br><br>
-                    <a href="https://github.com/CityOfNewYork/nyc-geo-metadata/blob/main/Metadata/Metadata_BuildingFootprints.md">nyc building footprints</a><br>
-                    by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
-                </p>
-
-                <h3>▘base map background</h3>
-                <p>
-                    <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">new york state civil boundaries</a><br>
-                    by <a href="https://gis.ny.gov/">new york state gis resources</a>
-                    <br><br>
-                    <a href="https://njogis-newjersey.opendata.arcgis.com/datasets/middlesexcounty::nj-counties/about">nj counties</a><br>
-                    by <a href="https://njgin.nj.gov/njgin/about/ogis/">nj office of information technology, office of gis (njogis)</a>
-                </p>
-
-                <h3>▘map layers</h3>
-                <p>
-                    <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-gis-zoning.page">nyc gis zoning features</a><br>
-                    by <a href="https://www.nyc.gov/site/planning/index.page">the department of city planning (dcp)</a>
-                    <br><br>
-                    <a href="https://data.cityofnewyork.us/Transportation/Subway-Lines/3qz8-muuu">nyc subway lines</a><br>
-                    by <a href="https://new.mta.info/">the metropolitan transportation authority (mta)</a>
-                    <br><br>
-                    <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">construction demolition registrants</a><br>
-                    by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
-                    <br><br>
-                    <a href="https://www.sciencebase.gov/catalog/item/62154ed5d34e4465d409099f">geospatial data for bedrock elevation and overburden thickness maps of the five boroughs, new york city, new york</a><br>
-                    by laura m.demott, frederick stumm, and jason s. finkelstein, in cooperation with the new york city department of design and construction
-                </p>
-        </div>
-
-        <div id="scrollableTextMedia" class="scrollable-text-about" style="display: none;">
-            <h3 id="visualizationArchive" style="cursor: pointer; text-decoration: underline;">▘<a>visualization archive</a></h3>
-            <p>
-                one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
-            </p>
-            <h3 id="colloquiumPoster" style="cursor: pointer">▘<a href="media/colloquiumPoster.pdf" target="_blank">colloquium ii: review poster</a></h3>
-            <p>
-                this is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece.
-            </p>
-            <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism</a></h3>
-            <p>
-                this is colloquium i's project website, which consists of two material-related speculative projects, booleanify and balloonify.
-            </p>
-        </div>
-
-        <div id="scrollableTextRef" class="scrollable-text-about" style="display: none;">
-            
+            <div class="scrollable-text-references" >
                 <h3>▘graphic/visuals</h3>
                 <p>
                     <a href="https://climate-conflict.org/www/data-pages/hazards">climate-conflict-vulnerability index</a>
@@ -291,9 +246,6 @@
                     <a href="https://www.chartjs.org/">chart</a><br>
                     by <a href="https://github.com/etimberg">evert timberg</a> and <a href="https://github.com/chartjs/Chart.js/graphs/contributors">github contributors</a>
                     <br><br>
-                    <a href="https://sortablejs.github.io/Sortable/">sortable</a><br>
-                    by <a href="https://github.com/RubaXa">lebedev konstantin</a> and <a href="https://github.com/SortableJS/Sortable/graphs/contributors">github contributors</a>
-                    <br><br>
                     <a href="https://splidejs.com/">splide</a><br>
                     by <a href="https://github.com/NaotoshiFujita">naotoshi fujita</a>
                 </p>
@@ -302,154 +254,8 @@
                 <p>
                     <a href="https://gsapp-cdp.github.io/archive/">capstone project archive</a>
                 </p>
-        </div> 
-
-        <!-- Stories------------------------------------------------>
-        
-        <div id="scrollableTextPast" class="scrollable-text-stories" style="display: none;">
-            <h3>▘historical nyc</h3>
-            <img src="images/placeholder-1.webp" style="width: 100%; height: 90px;">
-            <p>using materials to identify key decisions in city planning and urban development.</p>
-            <h3>▘demolition materials</h3>
-            <img src="images/placeholder-3.webp" style="width: 100%; height: 90px;">
-            <p>demolition activity from the 1980s to 2023.</p>
+            </div> 
         </div>
-        <div id="scrollableTextPresent" class="scrollable-text-stories" style="display: none;">
-            <div id="scrollytelling-container"></div>
-            <h3 id="introUrbanVein">
-                ▘intro to URBAN VEIN
-            </h3>
-            <img src="images/placeholder-5.webp" style="width: 100%; height: 90px;">
-            <p>what is urban vein? why is it important?</p>
-            <h3>▘underground nyc</h3>
-            <img src="images/placeholder-2.webp" style="width: 100%; height: 90px;">
-            <p>concrete foundations.</p>
-            <h3>▘the carbon impact of bulidilng materials</h3>
-            <img src="images/placeholder-4.webp" style="width: 100%; height: 90px;">
-            <p>the carbon footprint of our built environment.</p>
-        </div>
-        <div id="scrollableTextFuture" class="scrollable-text-stories" style="display: none;">
-            <h3>▘the united material kingdoms</h3>
-            <img src="images/placeholder-5.webp" style="width: 100%; height: 90px;">
-            <p>identifying material clusters.</p>
-        </div>
-
-        <!-- Explorer------------------------------------------- -->
-        <div id="scrollableTextTimeline" class="scrollable-text-timeline" style="display: none;">
-            <h3>archetypes</h3>
-            <div class="popup-slider">
-                <div class="popup-slide active">
-                    <p-popup>early 20th century commercial high-rises, <br>like the flatiron building</p-popup>
-                    <canvas id="RoseChartRefA"></canvas>
-                </div>
-                <div class="popup-slide">
-                    <p-popup>post-2000 luxury residential towers, <br>like one57</p-popup>
-                    <canvas id="RoseChartRefB"></canvas>
-                </div>
-                <div class="popup-slide">
-                    <p-popup>industrial warehouses and factories, <br>like the brooklyn navy yard</p-popup>
-                    <canvas id="RoseChartRefC"></canvas>
-                </div>
-            </div>
-            
-            <div class="circle-container">
-                <img src="images/collapse.svg" alt="previous" class="popup-arrow" id="prevSlide">
-                <div class="circle">1</div>
-                <div class="circle">2</div>
-                <div class="circle">3</div>
-                <div class="circle">4</div>
-                <div class="circle">5</div>
-                <div class="circle">6</div>
-                <div class="circle">7</div>
-                <div class="circle">8</div>
-                <div class="circle">9</div>
-                <div class="circle">10</div>
-                <div class="circle">11</div>
-                <div class="circle">12</div>
-                <div class="circle">13</div>
-                <img src="images/collapse.svg" alt="next" class="popup-arrow" id="nextSlide">
-            </div>
-        </div>
-
-        <div id="scrollableTextMaps" class="scrollable-text-timeline" style="display: none;">
-            <h3>▘drag to reorganize map layers</h3>
-            <h3>add transparency control here</h3>
-            <ul id="sortable-list">
-                <li>
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            buliding material  <sup> geojson </sup>
-                        <button class="show-toggle" id="toggle-material"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li data-layer="satelliteLayer">
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            satellite imagery  <sup> tile </sup>
-                        <button class="show-toggle" id="toggle-satellite"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li data-layer="grayscaleOSMLayer">
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            openstreetmap  <sup> tile </sup>
-                        <button class="show-toggle" id="toggle-osm"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li data-layer="zoningLayer">
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            zoning districts  <sup> geojson </sup>
-                        <button class="show-toggle" id="toggle-zoning"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li data-layer="subwayLayer"></li>
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            subway lines  <sup> geojson </sup>
-                        <button class="show-toggle" id="toggle-subway"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li>
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            <s>bedrock elevation</s>  <sup> tif </sup>
-                        <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li>
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            <s>demolition map</s>  <sup> geojson </sup>
-                        <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-                <li>
-                    <h3 class="layer">
-                        <div class="layer-drag">☰</div>
-                            <s>carbon footprints</s>  <sup> geojson </sup>
-                        <button class="show-toggle"><img src="images/hide.svg" alt="Hide"></button>
-                    </h3>
-                </li>
-            </ul>
-        </div>
-
-        <div id="scrollableTextC" class="scrollable-text-c" style="display: none;">
-
-                <h3>▘quantitative classification</h3>
-                this map uses individual quantile classifications for each material instead of a universal one. this decision is based on several key considerations:
-                <br><br>
-                <h3>▘data precision and integrity</h3>
-                the dataset is based on approximations and educated estimates rather than precise measurements. as such, it is essential to avoid creating over-confident visual representations that could imply a level of accuracy that the data does not possess.
-                <br><br>
-                <h3>▘material weight differences</h3>
-                different materials, such as steel, concrete, or brick, have vastly different densities. these differences make it inaccurate to compare the values of one material to another using a universal bin. a direct comparison between materials could distort the understanding of their distribution, as the weight and volume of each material influence its presence in the dataset.<br>
-                instead, by using separate bins for each material, each material’s distribution is evaluated within its own context. this method allows for a comparison of a single material against its own distribution (color,) ensuring that variations in material properties do not skew the analysis.
-                <br><br>
-                <h3>▘enabling meaningful comparison</h3>
-                the use of individual bins allows for a more granular comparison of material distributions. for instance, when comparing a specific region's material composition to that of the entire city of new york, the data reflects the characteristics of each material while still situating it in the context of the broader landscape.
-        </div>
-
 
         <div class="ticker-wrap">
             <div class="ticker">
@@ -468,28 +274,38 @@
             </div>
         </div>
 
-        <div class="control-panel">
-            <button class="control-button" id="optionsButton">
-                <img src="images/options.png" alt="Options Icon" class="control-icon"">
-            </button>
-            <button class="control-button" id="fullscreenButton">
-                <img src="images/fullscreen.svg" alt="Fullscreen Icon" class="control-icon"">
-            </button>
-            <button class="control-button" id="darkModeButton">
-                <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="control-icon">
-            </button>
-            <button class="control-button" id="guideButton">
-                <img src="images/guide.svg" alt="Guide Icon" class="control-icon">
-            </button>
+        <div id="control-panel">
+            <div class="control-toggle" id="control-toggle">
+                <button class="control-button">
+                    <img src="images/panel-expand.svg" alt="toggle" class="control-icon" id="toggleIcon">
+                </button>
+                <div class="control-text">database</div>
+            </div>
+            <div class="control-doc">
+                <button class="control-button rainbow" id="docButton">
+                    <img src="images/doc.svg" alt="Doc Icon" class="control-icon" id="doc-icon">
+                </button>
+                <div class="control-text">the story of urbanvein</div>
+            </div>
+            <div class="control-options">
+                <button class="control-button" id="optionsButton">
+                    <img src="images/options.png" alt="Options Icon" class="control-icon" id="options-icon">
+                </button>
+                <button class="control-button" id="fullscreenButton">
+                    <img src="images/fullscreen.svg" alt="Fullscreen Icon" class="control-icon"">
+                </button>
+                <button class="control-button" id="darkModeButton">
+                    <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="control-icon">
+                </button>
+                <button class="control-button" id="guideButton">
+                    <img src="images/guide.svg" alt="Guide Icon" class="control-icon">
+                </button>
+            </div>
         </div>
-
-        <button id="toggleButton">
-            <img src="images/panel-expand.svg" alt="toggle" id="toggleIcon">
-        </button>
     </div>
-    
 
-    
+
+
 
     <div id="panelContainer">
         <div id="panelBuilding">
@@ -499,23 +315,40 @@
             </div>
             <div class="panelContent" id="panelContentBuilding">
                 <div class="panelContentWrapper" style="display: flex; flex-direction: column;">
-                    <label class="label-xray">
-                        <input type="radio" id= "xray-none" name="options" checked>
-                        none
-                    </label>
-                    <label class="label-xray">
-                        <input type="radio" id= "xray-satellite" name="options">
-                        satellite
-                    </label>
-                    <label class="label-xray">
-                        <input type="radio" id= "xray-osm" name="options">
-                        openstreetmap (osm)
-                    </label>
-                    <label class="label-xray">
-                        <input type="radio" id= "xray-footprint" name="options">
-                        building footprint
-                    </label>
-                    <div class="sml-container">
+                    <button class="label-xray" id= "xray-none">
+                        <img src="images/panel-collapse.svg" alt="exit">
+                    </button>
+                    <div class="custom-dropdown" id="map-dropdown">
+                        <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
+                        <img src="images/layer-map.svg" class="layer-icon">
+                        <div class="dropdown-selected">basemap</div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" data-value="satellite">satellite imagery</div>
+                            <div class="dropdown-option" data-value="esri-topo">esri topographic</div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="custom-dropdown" id="planning-dropdown">
+                        <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
+                        <img src="images/layer-planning.svg" class="layer-icon">
+                        <div class="dropdown-selected">planning</div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" data-value="zoning">zoning & landuse</div>
+                        </div>
+                    </div>
+                    
+                    <div class="custom-dropdown" id="transport-dropdown">
+                        <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
+                        <img src="images/layer-transport.svg" class="layer-icon">
+                        <div class="dropdown-selected">transportation</div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" data-value="subway">subway</div>
+                            <div class="dropdown-option" data-value="bus">bus</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sml-container opacity-control">
                         <button class="sml" id="sml-s">S</button>
                         <button class="sml" id="sml-m">M</button>
                         <button class="sml" id="sml-l">L</button>
@@ -526,52 +359,94 @@
         
         <div id="panelMaterial">
             <div class="panelTitle" id="panelTitleMaterial">
-                MATERIAL COMPOSITION
+                TILE COMPOSITION
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleMaterial">
             </div>
             <div class="panelContent" id="panelContentMaterial">
                 <div class="panelContentWrapper" style="padding-top: 0;">
-                    <div id="chart">
-                        <canvas id="Rose"></canvas>
+                    <div class="radar-box">
+                        <div class="radar-container">
+                            <div class="radar-base" id="radar-brick"></div>
+                            <div class="radar-ring ring-1"></div>
+                            <div class="radar-ring ring-2"></div>
+                            <div class="radar-ring ring-3"></div>
+                            <div class="radar-ring ring-4"></div>
+                            <div class="radar-ring ring-5"></div>
+                        </div>
+                        <div class="radar-container">
+                            <div class="radar-base" id="radar-concrete"></div>
+                            <div class="radar-ring ring-1"></div>
+                            <div class="radar-ring ring-2"></div>
+                            <div class="radar-ring ring-3"></div>
+                            <div class="radar-ring ring-4"></div>
+                            <div class="radar-ring ring-5"></div>
+                        </div>
+                        <div class="radar-container">
+                            <div class="radar-base" id="radar-glass"></div>
+                            <div class="radar-ring ring-1"></div>
+                            <div class="radar-ring ring-2"></div>
+                            <div class="radar-ring ring-3"></div>
+                            <div class="radar-ring ring-4"></div>
+                            <div class="radar-ring ring-5"></div>
+                        </div>
+                        <div class="radar-container">
+                            <div class="radar-base" id="radar-stone"></div>
+                            <div class="radar-ring ring-1"></div>
+                            <div class="radar-ring ring-2"></div>
+                            <div class="radar-ring ring-3"></div>
+                            <div class="radar-ring ring-4"></div>
+                            <div class="radar-ring ring-5"></div>
+                        </div>
+                        <div class="radar-container">
+                            <div class="radar-base" id="radar-steel"></div>
+                            <div class="radar-ring ring-1"></div>
+                            <div class="radar-ring ring-2"></div>
+                            <div class="radar-ring ring-3"></div>
+                            <div class="radar-ring ring-4"></div>
+                            <div class="radar-ring ring-5"></div>
+                        </div>
                     </div>
-                    <div class="toggle-container">
-                        <input type="checkbox" id="toggle1" class="toggle-input" checked>
-                        <label for="toggle1" class="toggle-label toggle-color1"></label>
-                        <div id="toggleText1" class="toggle-text">brick</div>
-                        <div class="info-text line"></div>
-                        <div class="toggle-value right">xxxM tn</div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <input type="checkbox" id="toggle2" class="toggle-input" checked>
-                        <label for="toggle2" class="toggle-label toggle-color2"></label>
-                        <div id="toggleText2" class="toggle-text">concrete</div>
-                        <div class="info-text line"></div>
-                        <div class="toggle-value right">xxxM tn</div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <input type="checkbox" id="toggle3" class="toggle-input" checked>
-                        <label for="toggle3" class="toggle-label toggle-color3"></label>
-                        <div id="toggleText3" class="toggle-text">glass</div>
-                        <div class="info-text line"></div>
-                        <div class="toggle-value right">xxxK tn</div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <input type="checkbox" id="toggle4" class="toggle-input" checked>
-                        <label for="toggle4" class="toggle-label toggle-color4"></label>
-                        <div id="toggleText4" class="toggle-text">stone</div>
-                        <div class="info-text line"></div>
-                        <div class="toggle-value right">xxxM tn</div>
-                    </div>
-                    
-                    <div class="toggle-container">
-                        <input type="checkbox" id="toggle5" class="toggle-input" checked>
-                        <label for="toggle5" class="toggle-label toggle-color5"></label>
-                        <div id="toggleText5" class="toggle-text">steel</div>
-                        <div class="info-text line"></div>
-                        <div class="toggle-value right">xxxM tn</div>
+                    <div id="toggle-box">
+                        <div class="toggle-container">
+                            <input type="checkbox" id="toggle1" class="toggle-input" checked>
+                            <label for="toggle1" class="toggle-label toggle-color1"></label>
+                            <!-- <img src="images/material-brick.svg" class="material-icon"> -->
+                            <div id="toggleText1" class="toggle-text">brick</div>
+                            <div class="info-text line"></div>
+                            <div class="toggle-value right" id="value-brick"></div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="toggle2" class="toggle-input" checked>
+                            <label for="toggle2" class="toggle-label toggle-color2"></label>
+                            <!-- <img src="images/material-concrete.svg" class="material-icon"> -->
+                            <div id="toggleText2" class="toggle-text">concrete</div>
+                            <div class="info-text line"></div>
+                            <div class="toggle-value right" id="value-concrete"></div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="toggle3" class="toggle-input" checked>
+                            <label for="toggle3" class="toggle-label toggle-color3"></label>
+                            <!-- <img src="images/material-glass.svg" class="material-icon"> -->
+                            <div id="toggleText3" class="toggle-text">glass</div>
+                            <div class="info-text line"></div>
+                            <div class="toggle-value right" id="value-glass"></div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="toggle4" class="toggle-input" checked>
+                            <label for="toggle4" class="toggle-label toggle-color4"></label>
+                            <!-- <img src="images/material-stone.svg" class="material-icon"> -->
+                            <div id="toggleText4" class="toggle-text">stone</div>
+                            <div class="info-text line"></div>
+                            <div class="toggle-value right" id="value-stone"></div>
+                        </div>
+                        <div class="toggle-container">
+                            <input type="checkbox" id="toggle5" class="toggle-input" checked>
+                            <label for="toggle5" class="toggle-label toggle-color5"></label>
+                            <!-- <img src="images/material-steel.svg" class="material-icon"> -->
+                            <div id="toggleText5" class="toggle-text">steel</div>
+                            <div class="info-text line"></div>
+                            <div class="toggle-value right" id="value-steel"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -583,6 +458,13 @@
             </div>
             <div class="panelContent" id="panelContentInfo">
                 <div class="panelContentWrapper">
+                    <div class="mini-map-container">
+                        <div id="miniMap"></div> <!-- Hidden main map -->
+                        <div id="esri-preview" class="mini-map"></div>
+                        <div id="satellite-preview" class="mini-map"></div>
+                    </div>
+
+
                     <div class="info-text-container">
                         <div class="info-text left">borough</div>
                         <div class="info-text line"></div>
@@ -626,16 +508,16 @@
     <div id="xray-mask">
         <div id="xray-map"></div>
     </div>
-    
+    <div id="xray-legend">
+        <div class="xray-legend-li">residential</div>
+        <div class="xray-legend-li">commercial</div>
+        <div class="xray-legend-li">manufacturing</div>
+        <div class="xray-legend-li">park</div>
+    </div>
     <div id="mainMap"></div>
 
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
     <script src="main.js"></script>
 </body>
 </html>

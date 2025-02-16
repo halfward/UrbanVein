@@ -109,16 +109,19 @@
                         by hao lee
                     </p>
                     
-                    <h3>▘base map</h3>
+                    <h3>▘basemap</h3>
                     <p>
                         <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">nyc pluto data</a><br>
                         by <a href="https://www.nyc.gov/site/planning/index.page">nyc department of city planning</a>
                         <br><br>
                         <a href="https://github.com/CityOfNewYork/nyc-geo-metadata/blob/main/Metadata/Metadata_BuildingFootprints.md">nyc building footprints</a><br>
                         by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
+                        <br><br>
+                        <a href="https://data.cityofnewyork.us/Housing-Development/Individual-Landmark-and-Historic-District-Building/7mgd-s57w">individual landmark and historic district building database</a><br>
+                        by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
                     </p>
     
-                    <h3>▘base map background</h3>
+                    <h3>▘basemap background</h3>
                     <p>
                         <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">new york state civil boundaries</a><br>
                         by <a href="https://gis.ny.gov/">new york state gis resources</a>
@@ -140,6 +143,12 @@
                         <br><br>
                         <a href="https://www.sciencebase.gov/catalog/item/62154ed5d34e4465d409099f">geospatial data for bedrock elevation and overburden thickness maps of the five boroughs, new york city, new york</a><br>
                         by laura m.demott, frederick stumm, and jason s. finkelstein, in cooperation with the new york city department of design and construction
+                        <br><br>
+                        <a href="https://archive.nyu.edu/jspui/handle/2451/60058">new york city bus routes, dec 2019</a><br>
+                        by <a href="https://guides.newman.baruch.cuny.edu/gis/lab">gis lab, newman library, baruch cuny</a>
+                        <br><br>
+                        <a href="https://github.com/kevin-brown/nyc-open-geojson/blob/master/transportation/bus-stops.geojson">new york city bus stops</a><br>
+                        by <a href="https://devpost.com/software/49012">new york startup index</a>
                     </p>
             </div>
         </div>
@@ -168,11 +177,23 @@
             <p>this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.
             </p>
             <div class="scrollable-text-references" >
-                <h3>▘graphic/visuals</h3>
+                <h3>▘visuals/interactivity</h3>
                 <p>
                     <a href="https://climate-conflict.org/www/data-pages/hazards">climate-conflict-vulnerability index</a>
                     <br>
                     by <a href="https://truth-and-beauty.net/">moritz stefaner</a>
+                    <br><br>
+                    <a href="https://www.artic.edu/artworks/204516/atlas-of-the-new-dutch-water-defence-line">atlas of the new dutch water defence line</a>
+                    <br>
+                    by <a href="https://www.joostgrootens.nl/">joost grootens</a>
+                    <br><br>
+                    <a href="https://civilization.2k.com/">sid meier's civilization series</a>
+                    <br>
+                    by <a href="https://firaxis.com/">firaxis games</a>
+                    <br><br>
+                    <a href="https://rimworldgame.com/">rimworld</a>
+                    <br>
+                    by <a href="https://ludeon.com/blog/">ludeon studios</a>
                     <br><br>
                     <a href="https://www.marathonthegame.com/y3vmGPNRxH3RNTqLkq5PFXZy">marathon</a>
                     <br>
@@ -315,9 +336,18 @@
             </div>
             <div class="panelContent" id="panelContentBuilding">
                 <div class="panelContentWrapper" style="display: flex; flex-direction: column;">
-                    <button class="label-xray" id= "xray-none">
-                        <img src="images/panel-collapse.svg" alt="exit">
-                    </button>
+                    <div class="close-container">
+                        <button class="label-xray" id="xray-none">
+                            <img src="images/panel-collapse.svg" alt="exit">
+                        </button>
+                        <button class="label-xray" id="xray-none">
+                            <img src="images/panel-collapse.svg" alt="exit">
+                        </button>
+                        <button class="label-xray" id="xray-none">
+                            <img src="images/panel-collapse.svg" alt="exit">
+                        </button>
+                    </div>
+                    
                     <div class="custom-dropdown" id="map-dropdown">
                         <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
                         <img src="images/layer-map.svg" class="layer-icon">
@@ -326,7 +356,6 @@
                             <div class="dropdown-option" data-value="satellite">satellite imagery</div>
                             <div class="dropdown-option" data-value="esri-topo">esri topographic</div>
                         </div>
-                        
                     </div>
                     
                     <div class="custom-dropdown" id="planning-dropdown">
@@ -463,8 +492,18 @@
                         <div id="esri-preview" class="mini-map"></div>
                         <div id="satellite-preview" class="mini-map"></div>
                     </div>
-
-
+                    <div class="mini-map-scale-container">
+                        <div class="mini-map-scale">
+                            <div class="mini-map-line"></div>
+                            <div class="mini-map-text">100m</div>
+                            <div class="mini-map-line"></div>
+                        </div>
+                        <div class="mini-map-scale">
+                            <div class="mini-map-line"></div>
+                            <div class="mini-map-text">100m</div>
+                            <div class="mini-map-line"></div>
+                        </div>
+                    </div>
                     <div class="info-text-container">
                         <div class="info-text left">borough</div>
                         <div class="info-text line"></div>

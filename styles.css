@@ -101,7 +101,8 @@ a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-bottom: #bfcdcd solid 1px;
+    /* border-bottom: #bfcdcd solid 1px; */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.15);
 }
 #sidebar-background {
     position: absolute;
@@ -530,10 +531,20 @@ pre[class*="language-"], code[class*="language-"] {
     flex-direction: column;
     overflow: visible;
 }
+#panelContentBuilding.panelContent.hidden {
+    overflow: hidden;
+}
 
+
+.close-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    right: 15px;
+    gap: 3px;
+}
 /* collapse button: clickable state */
 .label-xray {
-    position: absolute;
     right: 20px;
     display: flex;
     justify-content: center;
@@ -541,13 +552,11 @@ pre[class*="language-"], code[class*="language-"] {
     padding: 0;
     width: 27px;
     height: 27px;
+    border: none;
     border-radius: 50%;
-    border: black solid 1px;
     background-color: transparent;
+    opacity: 0.45;
     transition: border 0.3s ease;
-}
-.label-xray:hover {
-    background-color: rgba(220, 225, 230, 0.6);
 }
 .label-xray img {
     width: 16px;
@@ -555,10 +564,6 @@ pre[class*="language-"], code[class*="language-"] {
 }
 
 /* collapse button: default state */
-.label-xray.active {
-    background-color: transparent;
-    border: #ccc solid 1px;
-}
 .label-xray.active img {
     opacity: 0.25;
 }
@@ -567,7 +572,7 @@ pre[class*="language-"], code[class*="language-"] {
 /* Dropdown */
 .custom-dropdown {
     position: relative;
-    width: 165px;
+    width: calc(100% - 15px);
     cursor: pointer;
     background: white;
     border: #e1e4e4 1px solid;
@@ -576,7 +581,8 @@ pre[class*="language-"], code[class*="language-"] {
     margin-bottom: 3px;
     user-select: none;
     font-size: 0.8rem;
-    border-radius: 6px;
+    border-radius: 13px;
+    /* transition: width 0.3s ease-in; */
 }
 .custom-dropdown:hover {
     border-bottom-right-radius: 0;
@@ -590,6 +596,11 @@ pre[class*="language-"], code[class*="language-"] {
 .dropdown-selected.active {
     color: black;
 }
+.custom-dropdown.expanded {
+    width: 180px;
+}
+
+
 .dropdown-options {
     position: absolute;
     top: 100%;
@@ -611,7 +622,7 @@ pre[class*="language-"], code[class*="language-"] {
     background-color:transparent;
 }
 .custom-dropdown:hover {
-    background-color: rgba(220, 225, 230, 0.6);
+    background-color: #ecefef;
 }
 .dropdown-option {
     padding: 8px;
@@ -690,8 +701,8 @@ pre[class*="language-"], code[class*="language-"] {
 
 #xray-mask {
     position: absolute;
-    width: 200px;
-    height: 200px;
+    width: 350px;
+    height: 350px;
     border-radius: 6px;
     border: #bfcdcd 1px solid;
     pointer-events: none;
@@ -699,14 +710,14 @@ pre[class*="language-"], code[class*="language-"] {
     overflow: hidden;
     z-index: 999;
 }
-#xray-mask.sml-m {
+/* #xray-mask.sml-m {
     width: 300px; 
     height: 300px; 
 }
 #xray-mask.sml-l {
     width: 400px; 
     height: 400px;
-}
+} */
 #xray-map {
     position: absolute;
     width: 800px;  
@@ -894,7 +905,7 @@ pre[class*="language-"], code[class*="language-"] {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin-bottom: 10px;
+
 }
 .mini-map {
     display: flex;
@@ -905,6 +916,35 @@ pre[class*="language-"], code[class*="language-"] {
     overflow: hidden;
     z-index: 1000;
 }
+.mini-map-scale-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    opacity: 40%;
+}
+.mini-map-scale {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 105px;
+    height: 8px;
+    font-family: Inter, sans-serif;
+    font-size: 0.7rem;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+.mini-map-text {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+.mini-map-line {
+    flex-grow: 1; 
+    border-bottom: 1px solid black; 
+}
+
 /* Info text */
 .info-text-container {
     display: flex;

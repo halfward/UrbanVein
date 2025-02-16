@@ -644,7 +644,7 @@ function updateXray(mode) {
             xrayMapElement.classList.remove("opacity-mask"); 
         } else if (mode === "bus") {
             xrayBusLayer.addTo(xrayMap);
-            xrayMapElement.classList.add("opacity-mask"); 
+            xrayMapElement.classList.remove("opacity-mask"); 
         } else if (mode === "zoning") {
             if (xrayZoningLayer) {  
                 xrayZoningLayer.addTo(xrayMap);
@@ -666,8 +666,10 @@ document.querySelectorAll(".dropdown-selected").forEach(el => {
 });
 
 // Set "none" button as active by default
-let noneButton = document.getElementById("xray-none");
-noneButton.classList.add("active"); // Add active class
+let noneButton = document.querySelectorAll(".label-xray");
+noneButton.forEach((button) => {
+    button.classList.add("active"); // Add "active" class to each element
+});
 
 // Function to reset all dropdowns
 function resetDropdowns(except = null) {
@@ -695,9 +697,16 @@ function resetXray() {
 }
 
 // Add event listener to 'none' button
-noneButton.addEventListener("click", function () {
-    resetXray();
-    noneButton.classList.add("active"); // Ensure "none" stays active
+noneButton.forEach((button) => {
+    button.addEventListener("click", function () {
+        resetXray();
+
+        // Remove "active" from all buttons first (optional, if you want only one to be active at a time)
+        noneButton.forEach((btn) => btn.classList.remove("active"));
+
+        // Ensure the clicked button stays active
+        button.classList.add("active");
+    });
 });
 
 // Handle dropdown selection
@@ -722,13 +731,18 @@ document.querySelectorAll(".dropdown-option").forEach(option => {
 
         updateXray(this.dataset.value); // Trigger X-ray update
 
-        // Remove "none" active state
-        noneButton.classList.remove("active");
+        // Remove "none" active state for all noneButtons
+        let noneButton = document.querySelectorAll(".label-xray");
+        noneButton.forEach((button) => {
+            button.classList.remove("active");
+        });
     });
 });
 
+
 // Reset function should remove active class from icons too
 function resetDropdowns(except = null) {
+    // Select all dropdowns and reset their content
     document.querySelectorAll(".custom-dropdown").forEach(dropdown => {
         if (dropdown !== except) {
             let selectedText = dropdown.querySelector(".dropdown-selected");
@@ -744,12 +758,19 @@ function resetDropdowns(except = null) {
         }
     });
 
-    if (!except) {
-        noneButton.classList.add("active");
-    } else {
-        noneButton.classList.remove("active");
-    }
+    // Select all elements with class "label-xray"
+    let noneButton = document.querySelectorAll(".label-xray");
+
+    // Loop through all "noneButtons" and update their state
+    noneButton.forEach((button) => {
+        if (!except) {
+            button.classList.add("active"); // Add "active" class if no dropdown is excepted
+        } else {
+            button.classList.remove("active"); // Remove "active" class if one dropdown is excepted
+        }
+    });
 }
+
 
 
 // Handle hover delay
@@ -774,6 +795,41 @@ dropdowns.forEach(dropdown => {
 document.querySelectorAll(".dropdown-selected").forEach(el => {
     el.dataset.default = el.textContent;
 });
+
+
+
+
+// X-ray layer remove appearance
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdowns = document.querySelectorAll(".custom-dropdown");
+    const labelXray = document.querySelectorAll(".label-xray"); // Select all label-xray buttons
+
+    dropdowns.forEach((dropdown) => {
+        const selected = dropdown.querySelector(".dropdown-selected");
+        const options = dropdown.querySelectorAll(".dropdown-option");
+
+        options.forEach((option) => {
+            option.addEventListener("click", function () {
+                // Remove 'expanded' class from all dropdowns
+                dropdowns.forEach((d) => d.classList.remove("expanded"));
+
+                // Update selected text
+                selected.textContent = this.textContent;
+
+                // Expand only the parent dropdown of the selected option
+                dropdown.classList.add("expanded");
+            });
+        });
+    });
+
+    // Remove 'expanded' class from all dropdowns when clicking on any '.label-xray'
+    labelXray.forEach((button) => {
+        button.addEventListener("click", function () {
+            dropdowns.forEach((d) => d.classList.remove("expanded"));
+        });
+    });
+});
+
 
 
 

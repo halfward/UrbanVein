@@ -445,7 +445,7 @@ pre[class*="language-"], code[class*="language-"] {
 /* Panels---------------------------------- */
 #panelContainer {
     position: absolute;
-    right: 75px;
+    right: 50px;
     bottom: 30px;
     display: flex;
     flex-direction: column; 
@@ -1212,7 +1212,7 @@ a.leaflet-popup-close-button {
 }
 .leaflet-control-zoom {
     bottom: 34px !important;
-    right: 364px !important;
+    right: 340px !important;
     position: fixed !important;
     bottom: 0;
     box-shadow: none;
@@ -1257,7 +1257,7 @@ a.leaflet-popup-close-button {
 }
 
 .leaflet-control-scale {
-    margin-right: 360px !important;
+    margin-right: 336px !important;
     margin-bottom: 13px !important;
     background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(15px) !important; 

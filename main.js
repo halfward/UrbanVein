@@ -239,20 +239,11 @@ function toggleLayersByZoom() {
 
 
 // Load GeoJSON data for base 100 layers---------------------------------
-Promise.all([
-    d3.json('data/nycBinnedCentroidsMaterialWgs84_A.geojson'),
-    d3.json('data/nycBinnedCentroidsMaterialWgs84_B.geojson')
-]).then(([geojsonDataA, geojsonDataB]) => {
-    // Combine the two GeoJSON datasets
-    const combinedGeojsonData = {
-        type: 'FeatureCollection',
-        features: [...geojsonDataA.features, ...geojsonDataB.features]
-    };
-
+d3.json('data/material_centroid_20250217.geojson').then(geojsonData => {
     // Loop through each material type and add markers
     Object.keys(materialColumns).forEach(material => {
         addMaterialMarkers(
-            combinedGeojsonData, 
+            geojsonData, 
             material, 
             materialColors[material], 
             materialColumns[material], 
@@ -275,7 +266,6 @@ Promise.all([
 }).catch(error => {
     console.error('Error loading centroid GeoJSON:', error);
 });
-
 
 // Load GeoJSON data for 200 layers---------------------------------
 d3.json('data/nycBinnedCentroidsMaterial_200Wgs84.geojson').then(geojsonData => {

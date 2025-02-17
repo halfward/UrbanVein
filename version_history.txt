@@ -9,6 +9,8 @@
 - fixed the issue where toggling off and on layers would affect the layer order.
 - removed the rose chart.
 - removed the layer function.
+- removed the empty rows in the hex layer and shaved off ~40% of the file size.
+- removed the empty rows in the centroid 100 layer and shaved off ~75% of the file size.
 - js code clean-up.
 
 0.3.2 (2025-02-06 ui clean-up)

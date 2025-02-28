@@ -32,6 +32,33 @@ togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding")
 togglePanel("panelToggleMaterial", "panelContentMaterial", "panelTitleMaterial");
 togglePanel("panelToggleInfo", "panelContentInfo", "panelTitleInfo");
 
+// Ensure specific panels start collapsed
+document.addEventListener("DOMContentLoaded", function () {
+    ["panelContentBuilding", "panelContentMaterial"].forEach((panelId) => {
+        const panel = document.getElementById(panelId);
+        if (panel) {
+            panel.classList.add("hidden");
+            panel.style.maxHeight = "0px"; // Ensure transition works properly
+        }
+    });
+
+    ["panelTitleBuilding", "panelTitleMaterial"].forEach((titleId) => {
+        const title = document.getElementById(titleId);
+        if (title) {
+            title.classList.add("collapsed");
+        }
+    });
+
+    ["panelToggleBuilding", "panelToggleMaterial"].forEach((toggleId) => {
+        const toggle = document.getElementById(toggleId);
+        if (toggle) {
+            toggle.classList.add("rotated");
+        }
+    });
+});
+
+
+
 
 
 
@@ -71,6 +98,26 @@ L.control.scale({
     imperial: true,
     maxWidth: 120
 }).addTo(mainMap);
+
+// Create a separate tile layer for the minimap (usually the same as main map)
+const miniMapLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    attribution: '&copy; CartoDB, OpenStreetMap contributors'
+});
+
+// Create the minimap and add it to the main map
+const miniMap = new L.Control.MiniMap(miniMapLayer, {
+    toggleDisplay: true,
+    minimized: false,
+    position: 'bottomleft',
+    width: 150,
+    height: 150,
+    zoomLevelOffset: -5  // Show a zoomed out view on the minimap
+}).addTo(mainMap);
+
+// Geocoder control
+new L.Control.Geocoder().addTo(mainMap);
+
 
 
 // Material colors and offsets
@@ -415,22 +462,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Tooltip streetview API-----------------------------------------------------
-var googleApiKey = "AIzaSyBUoZdH38mDXhXTKEpqo6e-tSEfaBqufOQ"; 
-mainMap.on('click', function(e) {
-    var lat = e.latlng.lat;
-    var lng = e.latlng.lng;
+// var googleApiKey = "AIzaSyBUoZdH38mDXhXTKEpqo6e-tSEfaBqufOQ"; 
+// mainMap.on('click', function(e) {
+//     var lat = e.latlng.lat;
+//     var lng = e.latlng.lng;
 
-    var streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=300x200&location=${lat},${lng}&fov=90&heading=235&pitch=10&key=${googleApiKey}`;
+//     var streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=300x200&location=${lat},${lng}&fov=90&heading=235&pitch=10&key=${googleApiKey}`;
 
-    var popupContent = `<img src="${streetViewUrl}" alt="Street View"">`;
+//     var popupContent = `<img src="${streetViewUrl}" alt="Street View"">`;
 
-    L.popup({
-        offset: [-150, 0] // Adjusts the popup position
-    })
-        .setLatLng([lat, lng])
-        .setContent(popupContent)
-        .openOn(mainMap);
-});
+//     L.popup({
+//         offset: [-150, 0] // Adjusts the popup position
+//     })
+//         .setLatLng([lat, lng])
+//         .setContent(popupContent)
+//         .openOn(mainMap);
+// });
 
 
 
@@ -579,6 +626,61 @@ fetch('data/busLines.geojson')
 
 
 
+// Define custom markers----------------------------------------
+// Define marker locations
+const markerLocations = [
+    { lat: 40.785091, lng: -73.968285, id: "central-park", text: "Central Park: A major green space in NYC." },
+    { lat: 40.747994, lng: -73.941901, id: "long-island-city", text: "Long Island City: Rapidly developing area with industrial past." }
+];
+
+// Create markers with non-blocking interactions
+let xrayMarkers = markerLocations.map(location => {
+    let markerHtml = `<div class="xray-marker" id="${location.id}">
+                        <div class="xray-marker-icon"></div>
+                        <div class="xray-marker-info">${location.text}</div>
+                    </div>`;
+
+    let marker = L.marker([location.lat, location.lng], {
+        icon: L.divIcon({
+            className: "custom-xray-marker",
+            html: markerHtml,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        }),
+        interactive: false // Prevents interference with other layers
+    });
+
+    // Attach hover events to forward to the layer below
+    marker.on("mouseover", function (event) {
+        let belowElement = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
+        if (belowElement && belowElement.classList.contains('leaflet-interactive')) {
+            belowElement.dispatchEvent(new MouseEvent('mouseover', {
+                bubbles: true,
+                clientX: event.originalEvent.clientX,
+                clientY: event.originalEvent.clientY,
+                relatedTarget: marker.getElement()
+            }));
+        }
+    });
+
+    marker.on("mouseout", function (event) {
+        let belowElement = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
+        if (belowElement && belowElement.classList.contains('leaflet-interactive')) {
+            belowElement.dispatchEvent(new MouseEvent('mouseout', {
+                bubbles: true,
+                clientX: event.originalEvent.clientX,
+                clientY: event.originalEvent.clientY,
+                relatedTarget: marker.getElement()
+            }));
+        }
+    });
+
+    return marker;
+});
+
+
+
+
 
 // X-ray elements
 let xrayMask = document.getElementById("xray-mask");
@@ -593,13 +695,13 @@ let transportDropdown = document.getElementById("transport-dropdown");
 // Handle cursor movement for X-ray effect
 document.addEventListener("mousemove", function (e) {
     if (xrayMask.style.display === "block") { 
-        xrayMask.style.left = `${e.pageX}px`; 
-        xrayMask.style.top = `${e.pageY}px`;
+        xrayMask.style.left = `${e.pageX + 10}px`; 
+        xrayMask.style.top = `${e.pageY + 10}px`;
 
         // Move the legend along with the cursor when zoning mode is on
         if (xrayLegend.style.display === "block") {
             xrayLegend.style.left = `${e.pageX}px`;  
-            xrayLegend.style.top = `${e.pageY - 95}px`; 
+            xrayLegend.style.top = `${e.pageY}px`; 
         }
 
         // Adjust X-ray map position dynamically
@@ -614,17 +716,16 @@ function updateXray(mode) {
         xrayLegend.style.display = "none"; // Hide the legend
         xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Remove all layers
         xrayMapElement.classList.remove("opacity-mask"); // Remove opacity class
-        xrayControl.classList.add("opacity-control");
+        xrayMarkers.forEach(marker => mainMap.removeLayer(marker));
     } else {
         xrayMask.style.display = "block"; // Show the mask
         xrayLegend.style.display = "none"; // Hide the legend initially
-        xrayControl.classList.remove("opacity-control");
-
         xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Clear layers first
 
         if (mode === "satellite") {
             xraySatelliteLayer.addTo(xrayMap);
             xrayMapElement.classList.remove("opacity-mask");
+            xrayMarkers.forEach(marker => marker.addTo(mainMap));
         } else if (mode === "esri-topo") {
             xrayEsriLayer.addTo(xrayMap);
             xrayMapElement.classList.remove("opacity-mask"); 
@@ -823,47 +924,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+// // X-ray mask sizing-----------------------------------------------------
+// // Select the size buttons
+// const smlS = document.getElementById('sml-s');
+// const smlM = document.getElementById('sml-m');
+// const smlL = document.getElementById('sml-l');
 
+// // Set default size to sml-s
+// xrayMask.classList.add('sml-s'); // This ensures the mask is small initially
+// smlS.classList.add('active'); // Ensure sml-s is active initially
 
+// // Event listener for sml-m (medium size)
+// smlM.addEventListener('click', () => {
+//     xrayMask.classList.remove('sml-s', 'sml-l');
+//     xrayMask.classList.add('sml-m');
+//     smlS.classList.remove('active');
+//     smlM.classList.add('active');
+//     smlL.classList.remove('active');
+// });
 
+// // Event listener for sml-l (large size)
+// smlL.addEventListener('click', () => {
+//     xrayMask.classList.remove('sml-s', 'sml-m');
+//     xrayMask.classList.add('sml-l');
+//     smlS.classList.remove('active');
+//     smlM.classList.remove('active');
+//     smlL.classList.add('active');
+// });
 
-// X-ray mask sizing-----------------------------------------------------
-// Select the size buttons
-const smlS = document.getElementById('sml-s');
-const smlM = document.getElementById('sml-m');
-const smlL = document.getElementById('sml-l');
-
-// Set default size to sml-s
-xrayMask.classList.add('sml-s'); // This ensures the mask is small initially
-smlS.classList.add('active'); // Ensure sml-s is active initially
-
-// Event listener for sml-m (medium size)
-smlM.addEventListener('click', () => {
-    xrayMask.classList.remove('sml-s', 'sml-l');
-    xrayMask.classList.add('sml-m');
-    smlS.classList.remove('active');
-    smlM.classList.add('active');
-    smlL.classList.remove('active');
-});
-
-// Event listener for sml-l (large size)
-smlL.addEventListener('click', () => {
-    xrayMask.classList.remove('sml-s', 'sml-m');
-    xrayMask.classList.add('sml-l');
-    smlS.classList.remove('active');
-    smlM.classList.remove('active');
-    smlL.classList.add('active');
-});
-
-// Event listener for sml-s (small size)
-smlS.addEventListener('click', () => {
-    xrayMask.classList.remove('sml-m', 'sml-l');
-    xrayMask.classList.add('sml-s');
-    smlS.classList.add('active');
-    smlM.classList.remove('active');
-    smlL.classList.remove('active');
-});
-
+// // Event listener for sml-s (small size)
+// smlS.addEventListener('click', () => {
+//     xrayMask.classList.remove('sml-m', 'sml-l');
+//     xrayMask.classList.add('sml-s');
+//     smlS.classList.add('active');
+//     smlM.classList.remove('active');
+//     smlL.classList.remove('active');
+// });
 
 
 
@@ -1162,7 +1258,16 @@ fetch('data/tile_data_100m_refined1.geojson')
             }
             
             function onEachFeatureHandler(feature, layer) {
-                layer.on('mouseover', function () {
+                layer.on('mouseover', function (e) {
+                    let targetLayer = e.target;
+                    targetLayer.bringToFront(); // Move to top
+            
+                    targetLayer.setStyle({
+                        color: "black", // Make border black on hover
+                        weight: 2,      
+                        opacity: 1      
+                    });
+            
                     document.getElementById("value-brick").innerHTML = formatNumber(feature.properties.brick) + "t";
                     document.getElementById("value-concrete").innerHTML = formatNumber(feature.properties.concrete) + "t";
                     document.getElementById("value-glass").innerHTML = formatNumber(feature.properties.glass) + "t";
@@ -1175,10 +1280,22 @@ fetch('data/tile_data_100m_refined1.geojson')
                     document.getElementById("yearbuilt").innerHTML = `${feature.properties.YearBuilt_Mean} / ${feature.properties.YearBuilt_Median}`;
                     document.getElementById("elev_mean").innerHTML = `${feature.properties.Elev_Mean}ft / ${(feature.properties.Elev_Mean * 0.3048).toFixed(1)}m`;
                     document.getElementById("bedrock_mean").innerHTML = `${feature.properties.Bedrock_Mean}ft / ${(feature.properties.Bedrock_Mean * 0.3048).toFixed(1)}m`;
+            
                     updateRadarSizes(feature);
                 });
-                layer.on('mouseout', resetRadarSizes);
+            
+                layer.on('mouseout', function (e) {
+                    e.target.bringToBack(); // Move back to original order
+                    e.target.setStyle({
+                        color: "transparent",
+                        weight: 1,
+                        opacity: 0
+                    });
+                    resetRadarSizes();
+                });
             }
+            
+            
 
             function addGeoJSONLayer(data, layer) {
                 L.geoJSON(data, {
@@ -1522,43 +1639,57 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 // Dark mode------------------------------------------
-    // Select the options icon and the body element
-    const optionsIcon = document.getElementById('darkModeButton');
-    const body = document.body;
+// Select the options icon and the body element
+const optionsIcon = document.getElementById('darkModeButton');
+const body = document.body;
 
-    // Check if dark mode is already saved in localStorage (if you want to persist the mode between sessions)
-    if(localStorage.getItem('darkMode') === 'enabled') {
-        body.classList.add('darkmode');
+// Check if dark mode is already saved in localStorage (if you want to persist the mode between sessions)
+if(localStorage.getItem('darkMode') === 'enabled') {
+    body.classList.add('darkmode');
+}
+
+// Event listener to toggle dark mode when clicking the icon
+optionsIcon.addEventListener('click', function() {
+    body.classList.toggle('darkmode');
+
+    // Save the state of dark mode in localStorage
+    if (body.classList.contains('darkmode')) {
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        localStorage.removeItem('darkMode');
     }
+});
 
-    // Event listener to toggle dark mode when clicking the icon
-    optionsIcon.addEventListener('click', function() {
-        body.classList.toggle('darkmode');
+document.addEventListener("DOMContentLoaded", () => {
+    // Fullscreen button action
+    const fullscreenButton = document.getElementById("fullscreenButton");
 
-        // Save the state of dark mode in localStorage
-        if (body.classList.contains('darkmode')) {
-            localStorage.setItem('darkMode', 'enabled');
-        } else {
-            localStorage.removeItem('darkMode');
-        }
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-        // Fullscreen button action
-        const fullscreenButton = document.getElementById("fullscreenButton");
-        
-        fullscreenButton.addEventListener("click", () => {
-            if (!document.fullscreenElement) {
+    fullscreenButton.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch((err) => {
                 console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
             });
-            } else {
+        } else {
             document.exitFullscreen().catch((err) => {
                 console.error(`Error attempting to exit fullscreen mode: ${err.message} (${err.name})`);
             });
         }
+    });
+});
+
+// Apply exceptions for dark mode
+document.addEventListener('DOMContentLoaded', () => {
+    const excludedElements = document.querySelectorAll('.no-darkmode');
+    excludedElements.forEach((element) => {
+        // Add an event listener to remove dark mode when it's toggled
+        element.addEventListener('click', () => {
+            if (body.classList.contains('darkmode')) {
+                body.classList.remove('darkmode');
+            }
         });
     });
+});
+
 
 
 
@@ -1593,3 +1724,6 @@ function adjustHeight() {
 window.addEventListener('load', adjustHeight);
 window.addEventListener('resize', adjustHeight);
 window.addEventListener('scroll', adjustHeight);
+
+
+

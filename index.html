@@ -13,9 +13,12 @@
     
     <link rel="icon" href="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/icon.svg" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.css" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
@@ -258,6 +261,12 @@
                     <a href="https://leafletjs.com/">leaflet</a><br>
                     originally created by <a href="https://agafonkin.com/">volodymyr agafonkin</a>
                     <br><br>
+                    <a href="https://github.com/Norkart/Leaflet-MiniMap">leaflet-minimap</a><br>
+                    originally created by <a href="https://www.robpvn.net/">robert nordan</a>
+                    <br><br>
+                    <a href="https://github.com/perliedman/leaflet-control-geocoder">leaflet control geocoder</a><br>
+                    originally created by <a href="https://www.liedman.net/">per liedman</a>
+                    <br><br>
                     <a href="https://d3js.org/">d3</a><br>
                     by <a href="https://bost.ocks.org/mike/">mike bostock</a> and <a href="https://observablehq.com/">observable, inc.</a>
                     <br><br>
@@ -303,7 +312,7 @@
                 <div class="control-text">database</div>
             </div>
             <div class="control-doc">
-                <button class="control-button rainbow" id="docButton">
+                <button class="control-button" id="docButton">
                     <img src="images/doc.svg" alt="Doc Icon" class="control-icon" id="doc-icon">
                 </button>
                 <div class="control-text">the story of urbanvein</div>
@@ -318,9 +327,9 @@
                 <button class="control-button" id="darkModeButton">
                     <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="control-icon">
                 </button>
-                <button class="control-button" id="guideButton">
+                <!-- <button class="control-button" id="guideButton">
                     <img src="images/guide.svg" alt="Guide Icon" class="control-icon">
-                </button>
+                </button> -->
             </div>
         </div>
     </div>
@@ -331,11 +340,11 @@
     <div id="panelContainer">
         <div id="panelBuilding">
             <div class="panelTitle" id="panelTitleBuilding">
-                X-RAY
+                MAP X-RAY
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleBuilding">
             </div>
             <div class="panelContent" id="panelContentBuilding">
-                <div class="panelContentWrapper" style="display: flex; flex-direction: column;">
+                <div class="panelContentWrapper" id="dropdown-container" style="display: flex; flex-direction: column;">
                     <div class="close-container">
                         <button class="label-xray" id="xray-none">
                             <img src="images/panel-collapse.svg" alt="exit">
@@ -377,11 +386,11 @@
                         </div>
                     </div>
                     
-                    <div class="sml-container opacity-control">
+                    <!-- <div class="sml-container opacity-control">
                         <button class="sml" id="sml-s">S</button>
                         <button class="sml" id="sml-m">M</button>
                         <button class="sml" id="sml-l">L</button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -488,9 +497,9 @@
             <div class="panelContent" id="panelContentInfo">
                 <div class="panelContentWrapper">
                     <div class="mini-map-container">
-                        <div id="miniMap"></div> <!-- Hidden main map -->
-                        <div id="esri-preview" class="mini-map"></div>
-                        <div id="satellite-preview" class="mini-map"></div>
+                        <div id="miniMap"></div>
+                        <div id="esri-preview" class="mini-map no-darkmode"></div>
+                        <div id="satellite-preview" class="mini-map no-darkmode"></div>
                     </div>
                     <div class="mini-map-scale-container">
                         <div class="mini-map-scale">
@@ -544,18 +553,24 @@
         </div>
     </div>
 
-    <div id="xray-mask">
+    <div id="xray-mask" class="no-darkmode">
         <div id="xray-map"></div>
     </div>
     <div id="xray-legend">
-        <div class="xray-legend-li">residential</div>
-        <div class="xray-legend-li">commercial</div>
-        <div class="xray-legend-li">manufacturing</div>
-        <div class="xray-legend-li">park</div>
+        <ul>
+            <div class="xray-legend-li">residential</div>
+            <div class="xray-legend-li">commercial</div>
+            <div class="xray-legend-li">manufacturing</div>
+            <div class="xray-legend-li">park</div>
+        </ul>
     </div>
     <div id="mainMap"></div>
 
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.js"></script>
+
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="main.js"></script>
 </body>

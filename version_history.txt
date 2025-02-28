@@ -1,3 +1,14 @@
+- put story markers on the map (activate with x-ray masks)
+
+0.3.4 (2025-02-24 post-playtesting adjustments)
+- added a viewport mini map via leafalet-minimap.
+- added a visual cue for the hex geojson shape on mouseover.
+- added search function via leaflet control geocoder.
+- added background colors for the material radar charts for better visual identification.
+- increased the top-left buttons' sizes by 25% and increased their shadow opacity.
+- the map x-ray and tile composition panels are now collapsed on load.
+- removed the api streetview function due to its confusing nature.
+
 0.3.3 (2025-02-13 x-ray & chart update)
 - added subway & bus x-ray layer.
 - added two minimaps, esri and satellite, to the tile info panel.

@@ -1265,6 +1265,7 @@ sup {
     margin-top: 25px;
     padding-right: 10px;
     overflow-y: auto;
+    overflow-x: hidden;
     font-size: 0.8rem;
     scrollbar-width: thin;
     scrollbar-color: #bfcdcd transparent;

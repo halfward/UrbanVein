@@ -812,43 +812,54 @@ pre[class*="language-"], code[class*="language-"] {
     position: relative;
     cursor: pointer;
     text-align: center;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     pointer-events: none;
 }
-
 .xray-marker-icon {
-    width: 40px;
-    height: 40px;
-    background-color: white;
-    border: #8f9a9a 1px solid;
+    width: 25px;
+    height: 25px;
+    background-image: url('images/marker.svg');
+    background-size: cover;
     border-radius: 50%;
     display: inline-block;
     transition: transform 0.2s ease;
     pointer-events: auto;
+    z-index: 1001;
+}
+.xray-marker:hover .xray-marker-icon {
+    transform: rotate(60deg);
 }
 
 .xray-marker-info {
-    display: none;
+    display: flex;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    flex-direction: column; 
+    justify-content: flex-end; 
     position: absolute;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.75);
+    bottom: 0px;
+    background: black;
     color: white;
-    padding: 5px 10px;
+    /* width: 200px; */
+    white-space: normal;
+    text-wrap: normal;
+    padding: 0;
     border-radius: 5px;
-    white-space: nowrap;
-    font-size: 12px;
+    font-size: 0.8rem;
+    text-align: left;
     pointer-events: auto;
+    z-index: -1;
+    transition: width 0.3s ease, height 0.3s ease, padding 0.3s ease;
 }
-
-.xray-marker:hover .xray-marker-icon {
-    transform: scale(1.3);
-}
-
 .xray-marker:hover .xray-marker-info {
-    display: block;
+    display: flex;
+    width: 200px;
+    height: 100px;
+    padding: 10px;
+    padding-left: 40px;
+    padding-right: 20px;
 }
 
 

@@ -93,10 +93,10 @@ const mainMap = L.map('mainMap', {
 });
 
 L.control.scale({
-    position: 'bottomright',
+    position: 'bottomleft',
     metric: true,
     imperial: true,
-    maxWidth: 120
+    maxWidth: 100
 }).addTo(mainMap);
 
 // Create a separate tile layer for the minimap (usually the same as main map)
@@ -116,7 +116,24 @@ const miniMap = new L.Control.MiniMap(miniMapLayer, {
 }).addTo(mainMap);
 
 // Geocoder control
-new L.Control.Geocoder().addTo(mainMap);
+var geocoder = new L.Control.Geocoder({
+    defaultMarkGeocode: false
+}).on('markgeocode', function(e) {
+    mainMap.setView(e.geocode.center, 14); // Adjust zoom level
+});
+
+// Add the geocoder to the map initially, then move it to the custom container
+geocoder.addTo(mainMap);
+
+// Wait for the geocoder control to be added, then move it
+setTimeout(() => {
+    var geocoderElement = document.querySelector('.leaflet-control-geocoder');
+    if (geocoderElement) {
+        geocoderElement.remove(); // Remove from the default location
+        document.getElementById('custom-geocoder-container').appendChild(geocoder.getContainer()); // Move it to the custom container
+    }
+}, 100);
+
 
 
 
@@ -458,30 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-
-
-
-// Tooltip streetview API-----------------------------------------------------
-// var googleApiKey = "AIzaSyBUoZdH38mDXhXTKEpqo6e-tSEfaBqufOQ"; 
-// mainMap.on('click', function(e) {
-//     var lat = e.latlng.lat;
-//     var lng = e.latlng.lng;
-
-//     var streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=300x200&location=${lat},${lng}&fov=90&heading=235&pitch=10&key=${googleApiKey}`;
-
-//     var popupContent = `<img src="${streetViewUrl}" alt="Street View"">`;
-
-//     L.popup({
-//         offset: [-150, 0] // Adjusts the popup position
-//     })
-//         .setLatLng([lat, lng])
-//         .setContent(popupContent)
-//         .openOn(mainMap);
-// });
-
-
-
-
 // X-ray mask div-----------------------------------------------------
 // Initialize the X-ray map inside the mask
 let xrayMap = L.map("xray-map", {
@@ -513,13 +506,17 @@ const xrayEsriLayer = L.tileLayer(
     }
 );
 
+
 // Define zoning layer (GeoJSON)
 let xrayZoningLayer; // Declare globally for toggle functionality
+
 fetch('data/nyzd.geojson')
     .then(response => response.json())
     .then(data => {
         // Function to determine fill color based on ZONEDIST property
         const getFillColor = (zonedist) => {
+            if (!zonedist) return 'transparent'; // Handle undefined values
+            zonedist = zonedist.trim(); // Remove extra spaces
             if (zonedist.startsWith('R')) return 'gold';
             if (zonedist.startsWith('C')) return 'tomato';
             if (zonedist.startsWith('M')) return 'violet';
@@ -527,7 +524,7 @@ fetch('data/nyzd.geojson')
             return 'transparent';
         };
 
-        // Initialize the GeoJSON layer
+        // Initialize the GeoJSON layer (but do not add to map yet)
         xrayZoningLayer = L.geoJSON(data, {
             style: (feature) => {
                 const fillColor = getFillColor(feature.properties.ZONEDIST);
@@ -535,10 +532,11 @@ fetch('data/nyzd.geojson')
                     weight: 1,                  // Border weight
                     color: fillColor,           // Border color
                     fillColor: fillColor,       // Fill color
-                    fillOpacity: 1              // Fill opacity
+                    fillOpacity: 1            // Adjust opacity for visibility
                 };
             }
         });
+        // xrayZoningLayer.addTo(mainMap);
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
 
@@ -729,18 +727,26 @@ function updateXray(mode) {
         } else if (mode === "esri-topo") {
             xrayEsriLayer.addTo(xrayMap);
             xrayMapElement.classList.remove("opacity-mask"); 
+            xrayMarkers.forEach(marker => marker.addTo(mainMap));
+
         } else if (mode === "subway") {
             xraySubwayLayer.addTo(xrayMap);
             xraySubwayStationsLayer.addTo(xrayMap);
             xrayMapElement.classList.remove("opacity-mask"); 
+            xrayMarkers.forEach(marker => marker.addTo(mainMap));
+
         } else if (mode === "bus") {
             xrayBusLayer.addTo(xrayMap);
             xrayMapElement.classList.remove("opacity-mask"); 
+            xrayMarkers.forEach(marker => marker.addTo(mainMap));
+
         } else if (mode === "zoning") {
             if (xrayZoningLayer) {  
                 xrayZoningLayer.addTo(xrayMap);
                 xrayLegend.style.display = "block";  
                 xrayMapElement.classList.add("opacity-mask"); 
+                xrayMarkers.forEach(marker => marker.addTo(mainMap));
+
             }
         }
 
@@ -759,7 +765,7 @@ document.querySelectorAll(".dropdown-selected").forEach(el => {
 // Set "none" button as active by default
 let noneButton = document.querySelectorAll(".label-xray");
 noneButton.forEach((button) => {
-    button.classList.add("active"); // Add "active" class to each element
+    button.classList.add("active"); 
 });
 
 // Function to reset all dropdowns
@@ -922,47 +928,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-
-
-// // X-ray mask sizing-----------------------------------------------------
-// // Select the size buttons
-// const smlS = document.getElementById('sml-s');
-// const smlM = document.getElementById('sml-m');
-// const smlL = document.getElementById('sml-l');
-
-// // Set default size to sml-s
-// xrayMask.classList.add('sml-s'); // This ensures the mask is small initially
-// smlS.classList.add('active'); // Ensure sml-s is active initially
-
-// // Event listener for sml-m (medium size)
-// smlM.addEventListener('click', () => {
-//     xrayMask.classList.remove('sml-s', 'sml-l');
-//     xrayMask.classList.add('sml-m');
-//     smlS.classList.remove('active');
-//     smlM.classList.add('active');
-//     smlL.classList.remove('active');
-// });
-
-// // Event listener for sml-l (large size)
-// smlL.addEventListener('click', () => {
-//     xrayMask.classList.remove('sml-s', 'sml-m');
-//     xrayMask.classList.add('sml-l');
-//     smlS.classList.remove('active');
-//     smlM.classList.remove('active');
-//     smlL.classList.add('active');
-// });
-
-// // Event listener for sml-s (small size)
-// smlS.addEventListener('click', () => {
-//     xrayMask.classList.remove('sml-m', 'sml-l');
-//     xrayMask.classList.add('sml-s');
-//     smlS.classList.add('active');
-//     smlM.classList.remove('active');
-//     smlL.classList.remove('active');
-// });
-
-
-
 // X-ray dropdown--------------------
 document.querySelectorAll('input[name="options"]').forEach(radio => {
     radio.addEventListener('change', function() {
@@ -980,6 +945,8 @@ document.querySelectorAll('input[name="options"]').forEach(radio => {
 let esriMap = L.map("esri-preview", {
     center: mainMap.getCenter(),
     zoom: 17,
+    zoomSnap: 0, // Allow fractional zoom levels
+    zoomDelta: 0.1,
     zoomControl: false,
     attributionControl: false,
     dragging: false,
@@ -993,11 +960,12 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map
     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA'
 }).addTo(esriMap);
 
-
 // Initialize Mini Satellite Map
 let satelliteMap = L.map("satellite-preview", {
     center: mainMap.getCenter(),
     zoom: mainMap.getZoom(),
+    zoomSnap: 0, // Allow fractional zoom levels
+    zoomDelta: 0.1,
     zoomControl: false,
     attributionControl: false,
     dragging: false,
@@ -1014,8 +982,8 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 // Update previews based on cursor movement
 mainMap.on("mousemove", function (e) {
     let cursorLatLng = e.latlng;
-    esriMap.setView(cursorLatLng, 17);
-    satelliteMap.setView(cursorLatLng, 17);
+    esriMap.setView(cursorLatLng, 17.25);
+    satelliteMap.setView(cursorLatLng, 17.25);
 });
 
 
@@ -1107,61 +1075,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-
-
-
-
 // Traffic lights: Toggle -------------------------------------------
+// Function to handle toggle changes for radar rings and radar base
+function handleToggle(toggleId, radarRingClass, radarRingMaterial, radarBaseId) {
+    document.getElementById(toggleId).addEventListener('change', function () {
+        // Get the radar ring element
+        const radarRing = document.querySelector(`.${radarRingClass}.${radarRingMaterial}`);
+        // Get the radar base element by ID
+        const radarBase = document.getElementById(radarBaseId);
 
-// Handle toggle1 for brick
-document.getElementById('toggle1').addEventListener('change', function() {
-    const radarBrick = document.getElementById('radar-brick');
-    if (!this.checked) {
-        radarBrick.classList.add('inactive');
-    } else {
-        radarBrick.classList.remove('inactive');
-    }
-});
+        if (radarRing && radarBase) {
+            if (!this.checked) {
+                radarRing.classList.add('inactive');  // Add 'inactive' to the radar ring when unchecked
+                radarBase.classList.add('inactive');  // Add 'inactive' to the radar base when unchecked
+            } else {
+                radarRing.classList.remove('inactive');  // Remove 'inactive' from the radar ring when checked
+                radarBase.classList.remove('inactive');  // Remove 'inactive' from the radar base when checked
+            }
+        }
+    });
+}
 
-// Handle toggle2 for concrete
-document.getElementById('toggle2').addEventListener('change', function() {
-    const radarConcrete = document.getElementById('radar-concrete');
-    if (!this.checked) {
-        radarConcrete.classList.add('inactive');
-    } else {
-        radarConcrete.classList.remove('inactive');
-    }
-});
-
-// Handle toggle3 for glass
-document.getElementById('toggle3').addEventListener('change', function() {
-    const radarGlass = document.getElementById('radar-glass');
-    if (!this.checked) {
-        radarGlass.classList.add('inactive');
-    } else {
-        radarGlass.classList.remove('inactive');
-    }
-});
-
-// Handle toggle4 for stone
-document.getElementById('toggle4').addEventListener('change', function() {
-    const radarStone = document.getElementById('radar-stone');
-    if (!this.checked) {
-        radarStone.classList.add('inactive');
-    } else {
-        radarStone.classList.remove('inactive');
-    }
-});
-
-// Handle toggle5 for steel
-document.getElementById('toggle5').addEventListener('change', function() {
-    const radarSteel = document.getElementById('radar-steel');
-    if (!this.checked) {
-        radarSteel.classList.add('inactive');
-    } else {
-        radarSteel.classList.remove('inactive');
-    }
-});
+// Assign handlers for each toggle based on the HTML structure
+handleToggle('toggle1', 'radar-ring', 'brick', 'radar-brick');   // Brick
+handleToggle('toggle2', 'radar-ring', 'concrete', 'radar-concrete'); // Concrete
+handleToggle('toggle3', 'radar-ring', 'glass', 'radar-glass');    // Glass
+handleToggle('toggle4', 'radar-ring', 'stone', 'radar-stone');    // Stone
+handleToggle('toggle5', 'radar-ring', 'steel', 'radar-steel');    // Steel
 
 
 
@@ -1247,11 +1187,11 @@ fetch('data/tile_data_100m_refined1.geojson')
                 if (num === null || num === 0) {
                     return "-";
                 } else if (num >= 1_000_000_000) {
-                    return (num / 1_000_000_000).toFixed(1) + " G";
+                    return (num / 1_000_000_000).toFixed(1) + " Gt";
                 } else if (num >= 1_000_000) {
-                    return (num / 1_000_000).toFixed(1) + " M";
+                    return (num / 1_000_000).toFixed(1) + " Mt";
                 } else if (num >= 1_000) {
-                    return (num / 1_000).toFixed(1) + " k";
+                    return (num / 1_000).toFixed(1) + " kt";
                 } else {
                     return num.toFixed(0); // Integer format
                 }
@@ -1268,11 +1208,11 @@ fetch('data/tile_data_100m_refined1.geojson')
                         opacity: 1      
                     });
             
-                    document.getElementById("value-brick").innerHTML = formatNumber(feature.properties.brick) + "t";
-                    document.getElementById("value-concrete").innerHTML = formatNumber(feature.properties.concrete) + "t";
-                    document.getElementById("value-glass").innerHTML = formatNumber(feature.properties.glass) + "t";
-                    document.getElementById("value-stone").innerHTML = formatNumber(feature.properties.stone) + "t";
-                    document.getElementById("value-steel").innerHTML = formatNumber(feature.properties.steel) + "t";
+                    document.getElementById("value-brick").innerHTML = formatNumber(feature.properties.brick);
+                    document.getElementById("value-concrete").innerHTML = formatNumber(feature.properties.concrete);
+                    document.getElementById("value-glass").innerHTML = formatNumber(feature.properties.glass);
+                    document.getElementById("value-stone").innerHTML = formatNumber(feature.properties.stone);
+                    document.getElementById("value-steel").innerHTML = formatNumber(feature.properties.steel);
                     document.getElementById("borough").innerHTML = feature.properties.Borough;
                     document.getElementById("zonedist").innerHTML = feature.properties.ZoneDist;
                     document.getElementById("builtfar").innerHTML = `${feature.properties.BuiltFAR_Mean} / ${feature.properties.BuiltFAR_Median}`;
@@ -1347,6 +1287,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Version History------------------------------------------------------
+document.addEventListener("DOMContentLoaded", function () {
+    const versionHistory = document.getElementById("version-history");
+    const historyButton = document.getElementById("historyButton");
+    const exitButton = document.getElementById("version-history-exit");
+    
+    // Expand version history on button click
+    if (historyButton) {
+        historyButton.addEventListener("click", function () {
+            versionHistory.classList.add("expanded");
+        });
+    }
+
+    // Collapse version history on exit button click
+    if (exitButton) {
+        exitButton.addEventListener("click", function () {
+            versionHistory.classList.remove("expanded");
+        });
+    }
+
+    // Fetch and display content from version_history.txt
+    fetch("articles/version_history.txt")
+        .then(response => response.text())
+        .then(text => {
+            const contentContainer = document.querySelector("#version-history .version-history-content");
+            contentContainer.innerHTML = marked.parse(text);  // You can use any markdown parser like marked
+        });
+});
+
+
 
 // Intro chapters---------------------------
 document.addEventListener("DOMContentLoaded", function () {
@@ -1394,11 +1364,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Sidebar------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function() {
-    let isSidebarExpanded = false; // Sidebar starts collapsed
+    let isSidebarExpanded = true; // Sidebar starts expanded
 
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("control-toggle");
     const toggleIcon = document.getElementById("toggleIcon");
+
+    // Ensure sidebar starts expanded
+    sidebar.classList.add("expanded"); 
+    toggleIcon.src = "images/panel-collapse.svg"; // Show collapse icon
 
     toggleButton.addEventListener("click", function() {
         if (isSidebarExpanded) {
@@ -1412,65 +1386,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
-// Nav Button-------------------------------------------------------
-// Ensure the DOM is fully loaded before running the script
-document.addEventListener("DOMContentLoaded", function() {
-    const buttons = document.querySelectorAll('.nav-button');
-    const line = document.createElement('div'); // Create line element
-    document.getElementById('sidebar').appendChild(line); // Append to sidebar
-
-    // Position line initially under the explorer button
-    const initialButton = document.getElementById('dataButton');
-    line.style.width = `${initialButton.offsetWidth - 10}px`; // Set width
-    line.style.position = 'absolute';
-    line.style.bottom = '-5px'; // Position it
-    line.style.left = `${initialButton.offsetLeft + 5}px`; // Align with explorer button
-
-    // Mark button as active initially
-    initialButton.classList.add('active');
-
-    buttons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Add active class to the clicked button
-            this.classList.add('active');
-
-            // Move the line under the clicked button with a smooth transition
-            line.style.width = `${this.offsetWidth - 10}px`;
-            line.style.left = `${this.offsetLeft + 5}px`; // Adjust the position to align with the button
-        });
-    });
-});
-
-
-
-
-
-
-// Popup modals--------------------------------------------------------
+// Version History-------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-    // Common elements
-    const materialPopup = document.getElementById('materialPopup');
-    const vizPopup = document.getElementById('visualizationPopup');
-    const versionPopup = document.getElementById('versionPopup'); 
-    const closePopupButtons = document.querySelectorAll('.popupCloseButton'); 
-
-    // Info icons
-    const infoIcon = document.getElementById('materialInfo');
-    const vizInfoIcon = document.getElementById('visualizationArchive');
     const versionHistoryLink = document.getElementById('versionHistoryLink');
-
-    // Version history element
-    const versionHistoryContent = document.getElementById('versionHistoryContent');
 
     // Fetch version history to update link text
     function updateVersionHistory() {
-        fetch('version_history.txt')
+        fetch('articles/version_history.txt')
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Error loading version history file: ${response.statusText}`);
@@ -1501,60 +1423,42 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching version history:', error);
         });
     }
-
     updateVersionHistory();
-
-    // Add listeners to all close buttons
-    closePopupButtons.forEach(closePopup => {
-        closePopup.addEventListener('click', (event) => {
-            console.log("Close button clicked");
-            event.stopPropagation(); // Prevent the click event from bubbling up
-
-            // Close all popups
-            [materialPopup, vizPopup, versionPopup, guidePopup, optionsPopup].forEach(popupElement => {
-                if (popupElement) {
-                    popupElement.classList.add('hidden'); // Trigger slide-up animation
-                    setTimeout(() => {
-                        popupElement.style.display = 'none'; // Hide
-                    }, 500);
-                }
-            });
-        });
-    });
-
-    // Show the material popup
-    infoIcon.addEventListener('click', () => {
-        console.log("Material popup clicked");
-        materialPopup.classList.remove('hidden');
-        materialPopup.style.display = 'flex'; 
-    });
-
-
-
-    // Fetch and display version history when the link is clicked
-    versionHistoryLink.addEventListener('click', () => {
-        fetch('version_history.txt')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                console.log('Fetched response:', response); // Log the raw response
-                return response.text();
-            })
-            .then(data => {
-                console.log('Fetched data:', data); // Log the fetched text
-                versionHistoryContent.innerHTML = data.replace(/\n/g, '<br>');
-                versionPopup.classList.remove('hidden');
-                versionPopup.style.display = 'flex';
-            })
-            .catch(error => {
-                console.error('Fetch operation error:', error);
-            });
-    });
 });
 
+// Nav Button-------------------------------------------------------
+// Ensure the DOM is fully loaded before running the script
+document.addEventListener("DOMContentLoaded", function() {
+    const buttons = document.querySelectorAll('.nav-button');
+    const line = document.createElement('div'); // Create line element
+    document.getElementById('sidebar').appendChild(line); // Append to sidebar
 
+    // Position line initially under the explorer button
+    const initialButton = document.getElementById('referencesButton');
+    line.style.width = `${initialButton.offsetWidth - 10}px`; // Set width
+    line.style.position = 'absolute';
+    line.style.bottom = '-5px'; // Position it
+    line.style.left = `${initialButton.offsetLeft + 5}px`; // Align with explorer button
 
+    // Mark button as active initially
+    initialButton.classList.add('active');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Add active class to the clicked button
+            this.classList.add('active');
+
+            // Move the line under the clicked button with a smooth transition
+            line.style.width = `${this.offsetWidth - 10}px`;
+            line.style.left = `${this.offsetLeft + 5}px`; // Adjust the position to align with the button
+        });
+    });
+});
 
 
 // Content text-----------------------------------------------
@@ -1585,9 +1489,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 break;
             default:
-                dataContent.style.display = 'flex';
+                dataContent.style.display = 'none';
                 mediaContent.style.display = 'none';
-                referencesContent.style.display = 'none';
+                referencesContent.style.display = 'flex';
 
         }
     }
@@ -1606,7 +1510,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Initialize by showing the About content or any default section
-    updatecontentMain('dataButton');
+    updatecontentMain('referencesButton');
 
     // Function to observe display changes using MutationObserver
     function observeDisplayChanges() {
@@ -1634,32 +1538,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-
-
-
-
-// Dark mode------------------------------------------
-// Select the options icon and the body element
-const optionsIcon = document.getElementById('darkModeButton');
-const body = document.body;
-
-// Check if dark mode is already saved in localStorage (if you want to persist the mode between sessions)
-if(localStorage.getItem('darkMode') === 'enabled') {
-    body.classList.add('darkmode');
-}
-
-// Event listener to toggle dark mode when clicking the icon
-optionsIcon.addEventListener('click', function() {
-    body.classList.toggle('darkmode');
-
-    // Save the state of dark mode in localStorage
-    if (body.classList.contains('darkmode')) {
-        localStorage.setItem('darkMode', 'enabled');
-    } else {
-        localStorage.removeItem('darkMode');
-    }
-});
-
+// Fullscreen mode------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
     // Fullscreen button action
     const fullscreenButton = document.getElementById("fullscreenButton");
@@ -1676,26 +1555,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
-// Apply exceptions for dark mode
-document.addEventListener('DOMContentLoaded', () => {
-    const excludedElements = document.querySelectorAll('.no-darkmode');
-    excludedElements.forEach((element) => {
-        // Add an event listener to remove dark mode when it's toggled
-        element.addEventListener('click', () => {
-            if (body.classList.contains('darkmode')) {
-                body.classList.remove('darkmode');
-            }
-        });
-    });
-});
-
-
-
-
-
-
-
 
 
 // Dynamic Scrollable Text Height----------------------------------

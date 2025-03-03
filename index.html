@@ -25,7 +25,7 @@
     <!-- <img src="images/hao-lee.png" alt="Hao Lee" id="hao-lee"> -->
 
     <div id="intro">
-        <div id="intro-button-container">
+        <div class="intro-button-container">
             <button id="intro-exit">
                 <img src="images/panel-collapse.svg" alt="exit">
             </button>
@@ -47,9 +47,14 @@
         </script>
     </div>
 
-    <!-- <div id="welcome-panel">
-        read the story!
-    </div> -->
+    <div id="version-history">
+        <div class="version-history-button-container">
+            <button id="version-history-exit">
+                <img src="images/panel-collapse.svg" alt="exit" title="version history">
+            </button>
+        </div>
+        <div class="version-history-content"></div>
+    </div>
 
     <div id="sidebar">
         <div id="sidebar-background"></div>
@@ -59,13 +64,6 @@
         </div>
 
         <div style="display: flex; align-items: center;">
-            <!-- Version Popup Modal -->
-            <div id="versionPopup" class="popup hidden" style="display: none;">
-                <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup">🞁</button>
-                    <p-popup id="versionHistoryContent"></p-popup>
-                </div>
-            </div>
             <!-- Viz History Popup Modal -->
             <div id="visualizationPopup" class="popup hidden" style="display: none;">
                 <div class="popup-content">
@@ -90,21 +88,51 @@
                     </div>
                 </div>
             </div>
-            
         </div>
         <div id="sidebar-header">
             <div id="nav-container">
+                <div class="nav-button" id="referencesButton">ABOUT</div>
                 <div class="nav-button" id="dataButton">DATA</div>
-                <div class="nav-button" id="mediaButton">MEDIA</div>
-                <div class="nav-button" id="referencesButton">REFERENCES</div>
+                <div class="nav-button" id="mediaButton">ARCHIVE</div>
+                <div id="control-container">
+                    <button class="control-button-small" id="historyButton">
+                        <img src="images/devlog.svg">
+                    </button>
+                    <button class="control-button-small" id="fullscreenButton">
+                        <img src="images/fullscreen.svg">
+                    </button>
+                </div>
             </div>
         </div>
     
         <!-- Content containers -->
-        <div id="dataContentText" class="content-text">
-            <h2>brick by brick</h2>
+        <div id="referencesContentText" class="content-text">
+            <h2>
+                a map about new york city's building materials
+            </h2>
+            <br>
+            <img src="images/guide-diagram-mini.png" class="sidebar-img" alt="Guide Diagram">
+            <br><br>
             <p>
-                urban vein is developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>. the project was guided by (in semester & alphabetical orders) william martin, violet witney, laura kurgan, snoweria zhang, catherine griffith, and seth thompson.</p>
+                urban vein is a dynamic mapping platform that leverages public data, machine learning, and advanced data visualization to map the building materials of new york city. by using these materials as a lens, it explores what exists, what is being lost, and what should be built in the city's future.
+                <br><br>
+                urban vein is developed by <a href="www.linkedin.com/in/hao-lee-arch">hao lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">computational design practices program</a> at <a href="https://www.arch.columbia.edu/">gsapp columbia</a>.</p>
+            </p>
+            <div class="control-doc" id="story-button">
+                <!-- <button class="control-button" id="docButton">
+                    <img src="images/doc.svg" alt="Doc Icon" class="control-icon" id="doc-icon">
+                </button> -->
+                <div class="control-text">READ THE FULL STORY</div>
+            </div>
+            <div class="scrollable-text-references" style="display: none;"></div> 
+        </div>
+
+        <div id="dataContentText" class="content-text">
+            <h2>built on openness</h2>
+            <p>
+                this project relies solely on open-source data for machine learning training and data visualization. no monetized data or subscription services were used in its development. for details on the machine learning data, refer to the full story in the "about" tab.
+            </p>
+            <p>
                 <div class="scrollable-text-data">
                     <h3>▘<a id="materialInfo" class="info-link">material estimate</a> </h3>
                     <p>
@@ -157,149 +185,51 @@
         </div>
     
         <div id="mediaContentText" class="content-text">
-            <h2>of memory & vision</h2>
-            <p>explore new york city through its building materials—their composition, distribution, and transformation. examine what exists, what is being lost, and what should be built. urban vein is a lens into the enw york city's evolving spatial identity.</p>
-            <div class="scrollable-text-media">
-                <h3 id="visualizationArchive" style="cursor: pointer; text-decoration: underline;">▘<a>visualization archive</a></h3>
-                <p>
-                    one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
-                </p>
-                <h3 id="colloquiumPoster" style="cursor: pointer">▘<a href="media/colloquiumPoster.pdf" target="_blank">colloquium ii: review poster</a></h3>
-                <p>
-                    this is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece.
-                </p>
-                <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism</a></h3>
-                <p>
-                    this is colloquium i's project website, which consists of two material-related speculative projects, booleanify and balloonify.
-                </p>
-            </div>
-        </div>
-    
-        <div id="referencesContentText" class="content-text">
-            <h2>machine learning + urban data</h2>
-            <p>this map utilizes machine learning to analyze nyc buliding data from public sources and inferred the building archetypes to create a material dataset. each dot represents a specific building material, like steel, for a grouping of bulidings.
+            <h2>the making of urban vein</h2>
+            <p>
+                this tab serves as an archive for urban vein, collecting visual materials from the entire process. it documents key stages, including data analysis, initial concept explorations, the evolution of the web ui design, and some branching ideas along the way.
             </p>
-            <div class="scrollable-text-references" >
-                <h3>▘visuals/interactivity</h3>
-                <p>
-                    <a href="https://climate-conflict.org/www/data-pages/hazards">climate-conflict-vulnerability index</a>
-                    <br>
-                    by <a href="https://truth-and-beauty.net/">moritz stefaner</a>
-                    <br><br>
-                    <a href="https://www.artic.edu/artworks/204516/atlas-of-the-new-dutch-water-defence-line">atlas of the new dutch water defence line</a>
-                    <br>
-                    by <a href="https://www.joostgrootens.nl/">joost grootens</a>
-                    <br><br>
-                    <a href="https://civilization.2k.com/">sid meier's civilization series</a>
-                    <br>
-                    by <a href="https://firaxis.com/">firaxis games</a>
-                    <br><br>
-                    <a href="https://rimworldgame.com/">rimworld</a>
-                    <br>
-                    by <a href="https://ludeon.com/blog/">ludeon studios</a>
-                    <br><br>
-                    <a href="https://www.marathonthegame.com/y3vmGPNRxH3RNTqLkq5PFXZy">marathon</a>
-                    <br>
-                    by <a href="https://www.bungie.net/7">bungie</a>
-                    <br><br>
-                    <a href="https://www.are.na/mario-giampieri/g4dp-f24-precedent-presentations">g4dp f24 precedent presentations</a>
-                    <br>
-                    are.na channel curated by the fall '24 gis for design practices group at gsapp columbia</a>
-                </p>
-
-                <h3>▘gis/mapping</h3>
-                <p>
-                    <a href="https://designpractices.org/">gis for design practices</a>
-                    <br>
-                    by dare brawley and mario giampieri
-                    <br><br>
-                    <a href="https://mappinghny.com/">mapping historical new york</a>
-                    <br>
-                    by <a href="https://c4sr.columbia.edu/">center for spatial research</a>
-                    <br><br>
-                    <a href="https://centerforspatialresearch.github.io/asianAmericans/">asian american dot density map</a><br>
-                    by jia zhang
-                    <br><br>
-                    <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">nyc construction dashboard 2022</a>
-                    <br>
-                    by dob analytics
-                </p>
-
-                <h3>▘material estimation & circular economy</h3>
-                <p>
-                    <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/jiec.13456">city-scale assessment of the material and environmental footprint of buildings using an advanced building information model: a case study from canberra, australia</a><br>
-                    by natthanij soonsawad, raymundo marcos-martinez, and heinz schandl
-                    <br><br>
-                    <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/bamb_materialspassports_bestpractice.pdf#page=54">materials passports - best practices</a>
-                    <br>
-                    by matthias heinrich and werner lang
-                    <br><br>
-                    <a href="https://www.sciencedirect.com/science/article/abs/pii/S2210670723000665">estimating the recoverable value of in-situ building materials</a><br>
-                    by aida mollaei, chris bachmann, and carl haas
-                    <br><br>
-                    <a href="https://www.rsmeans.com/">rsmeans data</a>
-                    <br>
-                    by <a href="https://www.gordian.com/">gordian</a>
-                    <br><br>
-                    <a href="https://www.circularise.com/industry/construction">circularise</a>
-                    <br>
-                    by <a href="https://www.circularise.com">circularise</a>
-                    <br><br>
-                    <a href="https://www.zillow.com/z/zestimate/">zestimate</a>
-                    <br>
-                    by <a href="https://www.zillow.com">zillow</a>
-                </p>
-
-                <h3>▘speculation</h3>
-                <p>
-                    <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">roadmap 2050</a><br>
-                    by <a href="https://www.oma.com/">oma</a>
-                </p>
-
-                <h3>▘js libraries</h3>
-                <p>
-                    <a href="https://leafletjs.com/">leaflet</a><br>
-                    originally created by <a href="https://agafonkin.com/">volodymyr agafonkin</a>
-                    <br><br>
-                    <a href="https://github.com/Norkart/Leaflet-MiniMap">leaflet-minimap</a><br>
-                    originally created by <a href="https://www.robpvn.net/">robert nordan</a>
-                    <br><br>
-                    <a href="https://github.com/perliedman/leaflet-control-geocoder">leaflet control geocoder</a><br>
-                    originally created by <a href="https://www.liedman.net/">per liedman</a>
-                    <br><br>
-                    <a href="https://d3js.org/">d3</a><br>
-                    by <a href="https://bost.ocks.org/mike/">mike bostock</a> and <a href="https://observablehq.com/">observable, inc.</a>
-                    <br><br>
-                    <a href="https://github.com/mrcagney/geohexgrid">geohexgrid</a><br>
-                    by <a href="https://www.mrcagney.com/team/alex-raichev/">alex raichev</a> at <a href="https://www.mrcagney.com/">mrcagney</a>
-                    <br><br>
-                    <a href="https://www.chartjs.org/">chart</a><br>
-                    by <a href="https://github.com/etimberg">evert timberg</a> and <a href="https://github.com/chartjs/Chart.js/graphs/contributors">github contributors</a>
-                    <br><br>
-                    <a href="https://splidejs.com/">splide</a><br>
-                    by <a href="https://github.com/NaotoshiFujita">naotoshi fujita</a>
-                </p>
-
-                <h3>▘columbia gsapp m.s.cdp</h3>
-                <p>
-                    <a href="https://gsapp-cdp.github.io/archive/">capstone project archive</a>
-                </p>
-            </div> 
+            <div class="scrollable-text-media">
+                <div>
+                    <h3 id="visualizationArchive" style="cursor: pointer;">▘<a href="https://halfward.github.io/carbon-footprint/">carbon quest</a></h3>
+                    <p>
+                        this project was created for gsapp's footprint: carbon & design course in spring 2025. it explores the complex relationship between embodied and operational carbon, highlighting the challenges of selecting buliding materials amid information barriers. it also contributed to the development of the embedded carbon layer within urban vein.
+                    </p>
+                </div>
+                <div>
+                    <h3 id="colloquiumPoster" style="cursor: pointer">▘<a href="media/colloquiumPoster.pdf" target="_blank">colloquium ii: review poster</a></h3>
+                    <p>
+                        this is the poster for the colloquium II end-of-semester review, designed as a 24" x 36" printed piece. Note how the website then still uses rose charts for hover interaction with less emphasis on reflecting the actual dots per tile on the material map.
+                    </p>
+                </div>
+                <div>
+                    <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">colloquium i: guerilla urbanism</a></h3>
+                    <p>
+                        this is colloquium i's project overview website, which consists of two material-related speculative projects, booleanify and balloonify.
+                    </p>
+                </div>
+                <div>
+                    <h3 id="balloonify" style="cursor: pointer">▘<a href="https://halfward.github.io/balloonify/">colloquium i: balloonify</a></h3>
+                    <p>
+                        balloonify explores inflatable interventions as a radical and sarcastic tool for reconfiguring urban landscapes. set in a speculative future where land scarcity renders new construction impossible, this project envisions architects repurposing existing structures through subscribing to inflatable devices—offering a surreal approach to adaptive reuse.
+                    </p>
+                </div>
+            </div>
         </div>
 
         <div class="ticker-wrap">
             <div class="ticker">
                 <span class="item-collection-1">
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
                 </span>
                 <span class="item-collection-2">
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
-                    <span class="item">hao lee 2025    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
+                    <span class="item"><a href="https://halfward.github.io/haoLee/">hao lee 2025</a>    <a href="mailto:haolee.arch@gmail.com">email    </a> <a href="https://www.linkedin.com/in/hao-lee-arch">linkedin    </a> <a href="https://www.behance.net/haoleearch">behance    </a></span>
                 </span>
             </div>
         </div>
@@ -309,27 +239,7 @@
                 <button class="control-button">
                     <img src="images/panel-expand.svg" alt="toggle" class="control-icon" id="toggleIcon">
                 </button>
-                <div class="control-text">database</div>
-            </div>
-            <div class="control-doc">
-                <button class="control-button" id="docButton">
-                    <img src="images/doc.svg" alt="Doc Icon" class="control-icon" id="doc-icon">
-                </button>
-                <div class="control-text">the story of urbanvein</div>
-            </div>
-            <div class="control-options">
-                <button class="control-button" id="optionsButton">
-                    <img src="images/options.png" alt="Options Icon" class="control-icon" id="options-icon">
-                </button>
-                <button class="control-button" id="fullscreenButton">
-                    <img src="images/fullscreen.svg" alt="Fullscreen Icon" class="control-icon"">
-                </button>
-                <button class="control-button" id="darkModeButton">
-                    <img src="images/dark-mode.svg" alt="Dark Mode Icon" class="control-icon">
-                </button>
-                <!-- <button class="control-button" id="guideButton">
-                    <img src="images/guide.svg" alt="Guide Icon" class="control-icon">
-                </button> -->
+                <!-- <div class="control-text">database</div> -->
             </div>
         </div>
     </div>
@@ -402,88 +312,100 @@
             </div>
             <div class="panelContent" id="panelContentMaterial">
                 <div class="panelContentWrapper" style="padding-top: 0;">
-                    <div class="radar-box">
-                        <div class="radar-container">
-                            <div class="radar-base" id="radar-brick"></div>
-                            <div class="radar-ring ring-1"></div>
-                            <div class="radar-ring ring-2"></div>
-                            <div class="radar-ring ring-3"></div>
-                            <div class="radar-ring ring-4"></div>
-                            <div class="radar-ring ring-5"></div>
-                        </div>
-                        <div class="radar-container">
-                            <div class="radar-base" id="radar-concrete"></div>
-                            <div class="radar-ring ring-1"></div>
-                            <div class="radar-ring ring-2"></div>
-                            <div class="radar-ring ring-3"></div>
-                            <div class="radar-ring ring-4"></div>
-                            <div class="radar-ring ring-5"></div>
-                        </div>
-                        <div class="radar-container">
-                            <div class="radar-base" id="radar-glass"></div>
-                            <div class="radar-ring ring-1"></div>
-                            <div class="radar-ring ring-2"></div>
-                            <div class="radar-ring ring-3"></div>
-                            <div class="radar-ring ring-4"></div>
-                            <div class="radar-ring ring-5"></div>
-                        </div>
-                        <div class="radar-container">
-                            <div class="radar-base" id="radar-stone"></div>
-                            <div class="radar-ring ring-1"></div>
-                            <div class="radar-ring ring-2"></div>
-                            <div class="radar-ring ring-3"></div>
-                            <div class="radar-ring ring-4"></div>
-                            <div class="radar-ring ring-5"></div>
-                        </div>
-                        <div class="radar-container">
-                            <div class="radar-base" id="radar-steel"></div>
-                            <div class="radar-ring ring-1"></div>
-                            <div class="radar-ring ring-2"></div>
-                            <div class="radar-ring ring-3"></div>
-                            <div class="radar-ring ring-4"></div>
-                            <div class="radar-ring ring-5"></div>
-                        </div>
-                    </div>
                     <div id="toggle-box">
-                        <div class="toggle-container">
-                            <input type="checkbox" id="toggle1" class="toggle-input" checked>
-                            <label for="toggle1" class="toggle-label toggle-color1"></label>
-                            <!-- <img src="images/material-brick.svg" class="material-icon"> -->
-                            <div id="toggleText1" class="toggle-text">brick</div>
-                            <div class="info-text line"></div>
-                            <div class="toggle-value right" id="value-brick"></div>
-                        </div>
-                        <div class="toggle-container">
-                            <input type="checkbox" id="toggle2" class="toggle-input" checked>
-                            <label for="toggle2" class="toggle-label toggle-color2"></label>
-                            <!-- <img src="images/material-concrete.svg" class="material-icon"> -->
-                            <div id="toggleText2" class="toggle-text">concrete</div>
-                            <div class="info-text line"></div>
-                            <div class="toggle-value right" id="value-concrete"></div>
-                        </div>
-                        <div class="toggle-container">
-                            <input type="checkbox" id="toggle3" class="toggle-input" checked>
-                            <label for="toggle3" class="toggle-label toggle-color3"></label>
-                            <!-- <img src="images/material-glass.svg" class="material-icon"> -->
-                            <div id="toggleText3" class="toggle-text">glass</div>
-                            <div class="info-text line"></div>
-                            <div class="toggle-value right" id="value-glass"></div>
-                        </div>
-                        <div class="toggle-container">
-                            <input type="checkbox" id="toggle4" class="toggle-input" checked>
-                            <label for="toggle4" class="toggle-label toggle-color4"></label>
-                            <!-- <img src="images/material-stone.svg" class="material-icon"> -->
-                            <div id="toggleText4" class="toggle-text">stone</div>
-                            <div class="info-text line"></div>
-                            <div class="toggle-value right" id="value-stone"></div>
-                        </div>
-                        <div class="toggle-container">
-                            <input type="checkbox" id="toggle5" class="toggle-input" checked>
-                            <label for="toggle5" class="toggle-label toggle-color5"></label>
-                            <!-- <img src="images/material-steel.svg" class="material-icon"> -->
-                            <div id="toggleText5" class="toggle-text">steel</div>
-                            <div class="info-text line"></div>
-                            <div class="toggle-value right" id="value-steel"></div>
+                        <!-- <div class="icon-container">
+                            <img src="images/material-brick.svg" class="material-icon">
+                            <img src="images/material-concrete.svg" class="material-icon">
+                            <img src="images/material-glass.svg" class="material-icon">
+                            <img src="images/material-stone.svg" class="material-icon">
+                            <img src="images/material-steel.svg" class="material-icon">
+                        </div> -->
+                        <div class="toggle-container-column">
+                            <div class="toggle-container">
+                                <div class="radar-container">
+                                    <div class="radar-base" id="radar-brick"></div>
+                                    <div class="radar-ring ring-1 brick"></div>
+                                    <div class="radar-ring ring-2"></div>
+                                    <div class="radar-ring ring-3"></div>
+                                    <div class="radar-ring ring-4"></div>
+                                    <div class="radar-ring ring-5"></div>
+                                </div>
+                                <div class="legend-container">
+                                    <input type="checkbox" id="toggle1" class="toggle-input" checked>
+                                    <label for="toggle1" class="toggle-label toggle-color1"></label>
+                                    <div id="toggleText1" class="toggle-text">brick</div>
+                                    <div class="info-text line"></div>
+                                    <div class="toggle-value right right-bold" id="value-brick"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <div class="radar-container">
+                                    <div class="radar-base" id="radar-concrete"></div>
+                                    <div class="radar-ring ring-1 concrete"></div>
+                                    <div class="radar-ring ring-2"></div>
+                                    <div class="radar-ring ring-3"></div>
+                                    <div class="radar-ring ring-4"></div>
+                                    <div class="radar-ring ring-5"></div>
+                                </div>
+                                <div class="legend-container">
+                                    <input type="checkbox" id="toggle2" class="toggle-input" checked>
+                                    <label for="toggle2" class="toggle-label toggle-color2"></label>
+                                    <div id="toggleText2" class="toggle-text">concrete</div>
+                                    <div class="info-text line"></div>
+                                    <div class="toggle-value right right-bold" id="value-concrete"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <div class="radar-container">
+                                    <div class="radar-base" id="radar-glass"></div>
+                                    <div class="radar-ring ring-1 glass"></div>
+                                    <div class="radar-ring ring-2"></div>
+                                    <div class="radar-ring ring-3"></div>
+                                    <div class="radar-ring ring-4"></div>
+                                    <div class="radar-ring ring-5"></div>
+                                </div>
+                                <div class="legend-container">
+                                    <input type="checkbox" id="toggle3" class="toggle-input" checked>
+                                    <label for="toggle3" class="toggle-label toggle-color3"></label>
+                                    <div id="toggleText3" class="toggle-text">glass</div>
+                                    <div class="info-text line"></div>
+                                    <div class="toggle-value right right-bold" id="value-glass"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <div class="radar-container">
+                                    <div class="radar-base" id="radar-stone"></div>
+                                    <div class="radar-ring ring-1 stone"></div>
+                                    <div class="radar-ring ring-2"></div>
+                                    <div class="radar-ring ring-3"></div>
+                                    <div class="radar-ring ring-4"></div>
+                                    <div class="radar-ring ring-5"></div>
+                                </div>
+                                <div class="legend-container">
+                                    <input type="checkbox" id="toggle4" class="toggle-input" checked>
+                                    <label for="toggle4" class="toggle-label toggle-color4"></label>
+                                    <div id="toggleText4" class="toggle-text">stone</div>
+                                    <div class="info-text line"></div>
+                                    <div class="toggle-value right right-bold" id="value-stone"></div>
+                                </div>
+                            </div>
+                            <div class="toggle-container">
+                                <div class="radar-container">
+                                    <div class="radar-base" id="radar-steel"></div>
+                                    <div class="radar-ring ring-1 steel"></div>
+                                    <div class="radar-ring ring-2"></div>
+                                    <div class="radar-ring ring-3"></div>
+                                    <div class="radar-ring ring-4"></div>
+                                    <div class="radar-ring ring-5"></div>
+                                </div>
+                                <div class="legend-container">
+                                    <input type="checkbox" id="toggle5" class="toggle-input" checked>
+                                    <label for="toggle5" class="toggle-label toggle-color5"></label>
+                                    <div id="toggleText5" class="toggle-text">steel</div>
+                                    <div class="info-text line"></div>
+                                    <div class="toggle-value right right-bold" id="value-steel"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -513,40 +435,47 @@
                             <div class="mini-map-line"></div>
                         </div>
                     </div>
-                    <div class="info-text-container">
-                        <div class="info-text left">borough</div>
-                        <div class="info-text line"></div>
-                        <div class="info-text right" id="borough"></div>
-                    </div>                
-                    <div class="info-text-container">
-                        <div class="info-text left">zoning type</div>
-                        <div class="info-text line"></div>
-                        <div class="info-text right" id="zonedist"></div>
-                    </div>  
-                    <div class="info-text-container" style="margin-top: 10px;">
-                        <div class="info-text left">avg./med. FAR</div>
-                        <div class="info-text line"></div>
-                        <div class="info-text right" id="builtfar"></div>
-                    </div>  
-                    <div class="info-text-container">
-                        <div class="info-text left">avg./med. age</div>
-                        <div class="info-text line"></div>
-                        <div class="info-text right" id="yearbuilt"></div>
-                    </div>  
-                    <div class="info-text-container">
-                        <div class="info-text left">avg./med. floors</div>
-                        <div class="info-text line"></div>
-                        <div class="info-text right" id="numfloors"></div>
-                    </div>  
-                    <div class="info-text-container" style="margin-top: 10px;">
-                        <div class="info-text left" title="Above Mean Sea Level">elevation</div>
-                        <div class="info-text line"></div>
-                        <div class="info-text right" id="elev_mean"></div>
-                    </div>  
-                    <div class="info-text-container">
-                        <div class="info-text left">bedrock depth</div>
-                        <div class="info-text line"></div>
-                        <div class="info-text right" id="bedrock_mean"></div>
+                    <div class= "info-text-box">
+                        <div class="info-text-container">
+                            <div class="info-text left">borough</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="borough"></div>
+                        </div>
+                        <div class="info-text-container">
+                            <div class="info-text left">neighborhood</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="neighborhood">(work in progress)</div>
+                        </div>               
+                        <div class="info-text-container">
+                            <div class="info-text left">zoning types</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="zonedist"></div>
+                        </div>  
+                        <div class="info-text-container" style="margin-top: 10px;">
+                            <div class="info-text left">avg./med. floor area ratio</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="builtfar"></div>
+                        </div>  
+                        <div class="info-text-container">
+                            <div class="info-text left">avg./med. building age</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="yearbuilt"></div>
+                        </div>  
+                        <div class="info-text-container">
+                            <div class="info-text left">avg./med. floors</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="numfloors"></div>
+                        </div>  
+                        <div class="info-text-container" style="margin-top: 10px;">
+                            <div class="info-text left" >ground elevation</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="elev_mean"></div>
+                        </div>  
+                        <div class="info-text-container">
+                            <div class="info-text left">bedrock depth</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="bedrock_mean"></div>
+                        </div>
                     </div>
                 </div>  
             </div>
@@ -565,6 +494,8 @@
         </ul>
     </div>
     <div id="mainMap"></div>
+    <div id="custom-geocoder-container" style="position: absolute; top: 10px; right: 10px; z-index: 1000;"></div>
+
 
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

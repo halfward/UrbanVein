@@ -102,7 +102,7 @@ The full data & reference lists can be found in the "database" panel on the top-
     <div class="chapter">
         <p>
             <b>How To Visualize Multiple Layers On A Single Canvas?</b><br>
-            visualization archive. inspos.
+            visualization archive. inspos. one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
         </p>
     </div>
     <div class="chapter">
@@ -197,3 +197,104 @@ mainMap.on("move", function () {
 <div style="display: flex; justify-content: center;">
     <button id=intro-exit-2>ACCESS URBAN VEIN</button>
 </div>
+
+
+<h3>▘visuals/interactivity</h3>
+<p>
+    <a href="https://climate-conflict.org/www/data-pages/hazards">climate-conflict-vulnerability index</a>
+    <br>
+    by <a href="https://truth-and-beauty.net/">moritz stefaner</a>
+    <br><br>
+    <a href="https://www.artic.edu/artworks/204516/atlas-of-the-new-dutch-water-defence-line">atlas of the new dutch water defence line</a>
+    <br>
+    by <a href="https://www.joostgrootens.nl/">joost grootens</a>
+    <br><br>
+    <a href="https://civilization.2k.com/">sid meier's civilization series</a>
+    <br>
+    by <a href="https://firaxis.com/">firaxis games</a>
+    <br><br>
+    <a href="https://rimworldgame.com/">rimworld</a>
+    <br>
+    by <a href="https://ludeon.com/blog/">ludeon studios</a>
+    <br><br>
+    <a href="https://www.marathonthegame.com/y3vmGPNRxH3RNTqLkq5PFXZy">marathon</a>
+    <br>
+    by <a href="https://www.bungie.net/7">bungie</a>
+    <br><br>
+    <a href="https://www.are.na/mario-giampieri/g4dp-f24-precedent-presentations">g4dp f24 precedent presentations</a>
+    <br>
+    are.na channel curated by the fall '24 gis for design practices group at gsapp columbia</a>
+</p>
+<h3>▘gis/mapping</h3>
+<p>
+    <a href="https://designpractices.org/">gis for design practices</a>
+    <br>
+    by dare brawley and mario giampieri
+    <br><br>
+    <a href="https://mappinghny.com/">mapping historical new york</a>
+    <br>
+    by <a href="https://c4sr.columbia.edu/">center for spatial research</a>
+    <br><br>
+    <a href="https://centerforspatialresearch.github.io/asianAmericans/">asian american dot density map</a><br>
+    by jia zhang
+    <br><br>
+    <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">nyc construction dashboard 2022</a>
+    <br>
+    by dob analytics
+</p>
+<h3>▘material estimation & circular economy</h3>
+<p>
+    <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/jiec.13456">city-scale assessment of the material and environmental footprint of buildings using an advanced building information model: a case study from canberra, australia</a><br>
+    by natthanij soonsawad, raymundo marcos-martinez, and heinz schandl
+    <br><br>
+    <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/bamb_materialspassports_bestpractice.pdf#page=54">materials passports - best practices</a>
+    <br>
+    by matthias heinrich and werner lang
+    <br><br>
+    <a href="https://www.sciencedirect.com/science/article/abs/pii/S2210670723000665">estimating the recoverable value of in-situ building materials</a><br>
+    by aida mollaei, chris bachmann, and carl haas
+    <br><br>
+    <a href="https://www.rsmeans.com/">rsmeans data</a>
+    <br>
+    by <a href="https://www.gordian.com/">gordian</a>
+    <br><br>
+    <a href="https://www.circularise.com/industry/construction">circularise</a>
+    <br>
+    by <a href="https://www.circularise.com">circularise</a>
+    <br><br>
+    <a href="https://www.zillow.com/z/zestimate/">zestimate</a>
+    <br>
+    by <a href="https://www.zillow.com">zillow</a>
+</p>
+<h3>▘speculation</h3>
+<p>
+    <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">roadmap 2050</a><br>
+    by <a href="https://www.oma.com/">oma</a>
+</p>
+<h3>▘js libraries</h3>
+<p>
+    <a href="https://leafletjs.com/">leaflet</a><br>
+    originally created by <a href="https://agafonkin.com/">volodymyr agafonkin</a>
+    <br><br>
+    <a href="https://github.com/Norkart/Leaflet-MiniMap">leaflet-minimap</a><br>
+    originally created by <a href="https://www.robpvn.net/">robert nordan</a>
+    <br><br>
+    <a href="https://github.com/perliedman/leaflet-control-geocoder">leaflet control geocoder</a><br>
+    originally created by <a href="https://www.liedman.net/">per liedman</a>
+    <br><br>
+    <a href="https://d3js.org/">d3</a><br>
+    by <a href="https://bost.ocks.org/mike/">mike bostock</a> and <a href="https://observablehq.com/">observable, inc.</a>
+    <br><br>
+    <a href="https://github.com/mrcagney/geohexgrid">geohexgrid</a><br>
+    by <a href="https://www.mrcagney.com/team/alex-raichev/">alex raichev</a> at <a href="https://www.mrcagney.com/">mrcagney</a>
+    <br><br>
+    <a href="https://www.chartjs.org/">chart</a><br>
+    by <a href="https://github.com/etimberg">evert timberg</a> and <a href="https://github.com/chartjs/Chart.js/graphs/contributors">github contributors</a>
+    <br><br>
+    <a href="https://splidejs.com/">splide</a><br>
+    by <a href="https://github.com/NaotoshiFujita">naotoshi fujita</a>
+</p>
+<h3>▘columbia gsapp m.s.cdp</h3>
+<p>
+    <a href="https://gsapp-cdp.github.io/archive/">capstone project archive</a>
+</p>

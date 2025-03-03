@@ -1,7 +1,21 @@
-- put story markers on the map (activate with x-ray masks)
+to-do: 
+- concatenate tile data
+- use binned value for viz data
+
+0.3.5 (2025-02-24 post-playtesting adjustments pt.2)
+- added a neighborhood tile value placeholder.
+- added a scroll funciton to the tile info.
+- tile composition ui overhaul.
+- enlarged the minimaps by 20%.
+- moved the map scale and zoom to the bottom left, along with the viewport minimap.
+- adjusted some acronyms and descriptions to be more user-friendly.
+- the background colors for the material radar charts can be toggled off along with the chart colors.
+- merged the story and option buttons into the side panel.
+- the side panel is now open on default.
+- removed darkmode functions.
 
 0.3.4 (2025-02-24 post-playtesting adjustments)
-- added a viewport mini map via leafalet-minimap.
+- added a viewport minimap via leafalet-minimap.
 - added a visual cue for the hex geojson shape on mouseover.
 - added search function via leaflet control geocoder.
 - added background colors for the material radar charts for better visual identification.

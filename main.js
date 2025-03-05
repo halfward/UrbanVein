@@ -160,11 +160,11 @@ const materialOffsets200 = {
 
 // Mapping materials to column names
 const materialColumns = {
-    steel: 'steel_binned_new_None',
-    brick: 'brick_binned_new_None',
-    concrete: 'concrete_binned_new_None',
-    glass: 'glass_binned_new_None',
-    stone: 'stone_binned_new_None'
+    steel: 'steel',
+    brick: 'brick',
+    concrete: 'concrete',
+    glass: 'glass',
+    stone: 'stone'
 };
 const materialColumns200 = {
     steel: 'steel_binned_200_None',
@@ -183,13 +183,70 @@ const layerState = {
     stone: true
 };
 
-// Function to add material markers to a given layer group (100)
-const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup, offset = null) => {
+
+let geojsonData = null;
+let isUsingDefaultRange = true;
+
+const defaultRange = [0, 0.4, 0.8, 1.2, 1.6, 2, 2.4];
+const alternateRange = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2];
+
+document.getElementById('toggleSize').addEventListener('click', () => {
+    isUsingDefaultRange = !isUsingDefaultRange; // Toggle state
+    updateMarkerSizes(); // Smoothly update sizes instead of redrawing
+});
+
+// Assuming `geojsonData` is already loaded
+const updateMarkerSizes = () => {
+    if (!geojsonData) {
+        console.warn("GeoJSON data not loaded yet.");
+        return;
+    }
+
+    // Determine which range to use
+    const sizeRange = isUsingDefaultRange ? defaultRange : alternateRange;
+
+    mainMap.eachLayer(layer => {
+        // Check if the layer is a CircleMarker
+        if (layer instanceof L.CircleMarker) {
+            const material = layer.options.className.replace("leaflet-circle-", "");
+            const columnName = materialColumns[material];
+
+            // Find the corresponding feature for the material
+            const feature = geojsonData.features.find(f => f.properties[columnName] >= 0);
+            if (!feature) return;
+
+            // Directly map the material value to the size range
+            const materialValue = feature.properties[columnName];
+            const newMultiplier = sizeRange[materialValue]; // Map material value to size range
+
+            const baseRadius = 15;
+            const minRadius = 5;
+            const newRadius = Math.max(baseRadius * newMultiplier, minRadius);
+
+            // Only update the radius if the new size is different
+            if (layer.options.radius !== newRadius) {
+                layer.setRadius(newRadius);
+            }
+        }
+    });
+};
+
+// Call this function when toggling the range, or whenever you need to update the marker sizes
+updateMarkerSizes();
+
+
+
+
+
+
+// Modify `addMaterialMarkers` to accept a range argument
+const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup, offset = null, sizeRange = defaultRange) => {
     const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
     const binnedDataValues = filteredFeatures.map(feature => feature.properties[columnName]);
+
     const quantiles = d3.scaleQuantile()
         .domain(binnedDataValues)
-        .range([0, 0.4, 0.8, 1.2, 1.6, 2, 2.4]);
+        .range(sizeRange); // Use the selected range
 
     filteredFeatures.forEach(feature => {
         const coordinates = feature.geometry.coordinates;
@@ -302,34 +359,43 @@ function toggleLayersByZoom() {
 }
 
 
-// Load GeoJSON data for base 100 layers---------------------------------
-d3.json('data/material_centroid_20250217.geojson').then(geojsonData => {
-    // Loop through each material type and add markers
-    Object.keys(materialColumns).forEach(material => {
-        addMaterialMarkers(
-            geojsonData, 
-            material, 
-            materialColors[material], 
-            materialColumns[material], 
-            (() => {
-                switch (material) {
-                    case 'steel': return steelLayer;
-                    case 'brick': return brickLayer;
-                    case 'glass': return glassLayer;
-                    case 'concrete': return concreteLayer;
-                    case 'stone': return stoneLayer;
-                }
-            })(), 
-            materialOffsets[material]
-        );
+
+// Load gzipped GeoJSON data for base 100 layers---------------------------------
+fetch('data/centroid_data_100m_material.geojson.gz')
+    .then(response => response.arrayBuffer())
+    .then(buffer => {
+        // Decompress the gzipped file using pako
+        const decompressedData = pako.ungzip(new Uint8Array(buffer), { to: 'string' });
+
+        // Parse the decompressed data as JSON
+        const geojsonData = JSON.parse(decompressedData);
+
+        // Process the GeoJSON data
+        Object.keys(materialColumns).forEach(material => {
+            addMaterialMarkers(
+                geojsonData, 
+                material, 
+                materialColors[material], 
+                materialColumns[material], 
+                (() => {
+                    switch (material) {
+                        case 'steel': return steelLayer;
+                        case 'brick': return brickLayer;
+                        case 'glass': return glassLayer;
+                        case 'concrete': return concreteLayer;
+                        case 'stone': return stoneLayer;
+                    }
+                })(), 
+                materialOffsets[material]
+            );
+        });
+
+        toggleLayersByZoom();
+    })
+    .catch(error => {
+        console.error('Error loading and decompressing centroid GeoJSON:', error);
     });
 
-    // Call the function to check the zoom and toggle layers
-    toggleLayersByZoom();
-
-}).catch(error => {
-    console.error('Error loading centroid GeoJSON:', error);
-});
 
 // Load GeoJSON data for 200 layers---------------------------------
 d3.json('data/nycBinnedCentroidsMaterial_200Wgs84.geojson').then(geojsonData => {
@@ -510,9 +576,15 @@ const xrayEsriLayer = L.tileLayer(
 // Define zoning layer (GeoJSON)
 let xrayZoningLayer; // Declare globally for toggle functionality
 
-fetch('data/nyzd.geojson')
-    .then(response => response.json())
+fetch('data/nyzd.geojson.gz')
+    .then(response => response.arrayBuffer()) // Get the binary data as an array buffer
     .then(data => {
+        // Decompress the data using pako
+        const decompressedData = pako.inflate(data, { to: 'string' });
+        
+        // Parse the decompressed JSON into an object
+        const geoJsonData = JSON.parse(decompressedData);
+        
         // Function to determine fill color based on ZONEDIST property
         const getFillColor = (zonedist) => {
             if (!zonedist) return 'transparent'; // Handle undefined values
@@ -525,7 +597,7 @@ fetch('data/nyzd.geojson')
         };
 
         // Initialize the GeoJSON layer (but do not add to map yet)
-        xrayZoningLayer = L.geoJSON(data, {
+        xrayZoningLayer = L.geoJSON(geoJsonData, {
             style: (feature) => {
                 const fillColor = getFillColor(feature.properties.ZONEDIST);
                 return {
@@ -536,9 +608,12 @@ fetch('data/nyzd.geojson')
                 };
             }
         });
+
+        // Optionally add the layer to the map if you wish
         // xrayZoningLayer.addTo(mainMap);
+
     })
-    .catch(error => console.error('Error loading GeoJSON:', error));
+    .catch(error => console.error('Error loading or decompressing GeoJSON:', error));
 
 
 // Define subway layers (GeoJSON)
@@ -603,11 +678,13 @@ fetch('data/subwayLines.geojson')
 // Define bus routes layer (GeoJSON)
 let xrayBusLayer; // Declare globally for toggle functionality
 
-fetch('data/busLines.geojson')
-    .then(response => response.json())
+fetch('data/busLines.geojson.gz') 
+    .then(response => response.arrayBuffer())  // Get the binary data as an ArrayBuffer
     .then(data => {
-        // Initialize the GeoJSON layer
-        xrayBusLayer = L.geoJSON(data, {
+        const decompressedData = pako.inflate(data, { to: 'string' });
+        const geoJsonData = JSON.parse(decompressedData);
+
+        xrayBusLayer = L.geoJSON(geoJsonData, {
             style: (feature) => {
                 const routeColor = feature.properties.color || "#000000"; // Default to black if undefined
                 return {
@@ -617,11 +694,9 @@ fetch('data/busLines.geojson')
                     fillOpacity: 0           // No fill for bus lines
                 };
             }
-        });
+        })
     })
-    .catch(error => console.error('Error loading bus GeoJSON:', error));
-
-
+    .catch(error => console.error('Error loading or decompressing bus GeoJSON:', error));
 
 
 // Define custom markers----------------------------------------
@@ -992,41 +1067,35 @@ mainMap.on("mousemove", function (e) {
 
 
 
-
-
-
 // Geojson background----------------------------------------------
-// Fetch and load the GeoJSON file
-fetch('data/NY+NJ_Shoreline.geojson')
-    .then(response => response.json())
-    .then(data => {
-        // Check if the #mainMap element has the 'darkmode' class
-        const isDarkMode = document.getElementById('mainMap').classList.contains('darkmode');
+fetch('data/NY+NJ_Shoreline.geojson.gz')
+        .then(response => response.arrayBuffer())  // Get the binary data as an ArrayBuffer
+        .then(data => {
+            // Decompress the data using pako
+            const decompressedData = pako.inflate(data, { to: 'string' });
+            
+            // Parse the decompressed JSON into an object
+            const geoJsonData = JSON.parse(decompressedData);
 
-        // Set the fillColor based on the dark mode class
-        const fillColor = isDarkMode ? 'grey' : 'white';
+            // Create a custom pane for the GeoJSON layer
+            const blurPane = mainMap.createPane('blurPane');
+            blurPane.style.zIndex = 10;  // Adjust z-index to place behind interactive layers
+            blurPane.style.pointerEvents = 'none';  // Allow interactions to pass through
 
-        // Create a custom pane for the GeoJSON layer
-        const blurPane = mainMap.createPane('blurPane');
-        blurPane.style.zIndex = 10; // Adjust z-index to place behind interactive layers
-        blurPane.style.pointerEvents = 'none'; // Allow interactions to pass through
+            // Add the GeoJSON layer to the custom pane
+            const coastlineLayer = L.geoJSON(geoJsonData, {
+                style: {
+                    weight: 0,              // No border
+                    fillColor: 'white',     // Use a default color
+                    fillOpacity: 0.5        // Semi-transparent fill
+                },
+                pane: 'blurPane'           // Attach to the custom pane
+            }).addTo(mainMap);
 
-        // Add the GeoJSON layer to the custom pane
-        const coastlineLayer = L.geoJSON(data, {
-            style: {
-                weight: 0,                // No border
-                fillColor: fillColor,     // Dynamically set fillColor
-                fillOpacity: 0.5          // Semi-transparent fill
-            },
-            pane: 'blurPane'             // Attach to the custom pane
-        }).addTo(mainMap);
-
-        // Bring the GeoJSON layer to the back
-        coastlineLayer.bringToBack();
-    })
-    .catch(error => console.error('Error loading GeoJSON:', error));
-
-
+            // Bring the GeoJSON layer to the back
+            coastlineLayer.bringToBack();
+        })
+        .catch(error => console.error('Error loading or decompressing GeoJSON:', error));
 
 
 
@@ -1106,18 +1175,8 @@ handleToggle('toggle5', 'radar-ring', 'steel', 'radar-steel');    // Steel
 
 
 
-// Traffic lights Update, & Tile info update -------------------------------------------
+// Traffic lights Update, & Hex tile info update -------------------------------------------
 var layer1 = L.geoJSON(null, {
-    style: () => ({
-        opacity: 0,
-        fillOpacity: 0,
-        weight: 0,
-        dashArray: '0',
-        color: 'transparent'
-    })
-}).addTo(mainMap);
-
-var layer2 = L.geoJSON(null, {
     style: () => ({
         opacity: 0,
         fillOpacity: 0,
@@ -1130,130 +1189,132 @@ var layer2 = L.geoJSON(null, {
 let quantiles = {};
 let materialTypes = ["brick", "concrete", "glass", "stone", "steel"];
 
-fetch('data/tile_data_100m_refined1.geojson')
-    .then(response => response.json())
-    .then(data1 => fetch('data/tile_data_100m_refined2.geojson')
-        .then(response => response.json())
-        .then(data2 => {
-            let combinedData = [...data1.features, ...data2.features];
+// Throttle function
+function throttle(callback, delay) {
+    let lastTime = 0;
+    return function (...args) {
+        const now = Date.now();
+        if (now - lastTime >= delay) {
+            lastTime = now;
+            callback(...args);
+        }
+    };
+}
 
+fetch('data/tile_data_100m_20250304.geojson.gz')
+    .then(response => response.arrayBuffer())  // Fetch the gzipped file as an array buffer
+    .then(buffer => {
+        const decompressed = pako.ungzip(new Uint8Array(buffer), { to: 'string' });  // Decompress the gzipped data
+        const data = JSON.parse(decompressed);  // Parse the decompressed string as JSON
+
+        // Initialize quantiles based on material types
+        materialTypes.forEach((material, index) => {
+            let values = data.features.map(f => f.properties.material_profile[index]).filter(v => v !== null && v !== undefined);
+            quantiles[material] = [0, 1, 2, 3, 4, 5];  // Define quantiles (example)
+        });
+
+        function getSizeCategory(value, material) {
+            if (value === null || value === 0) return "0%";
+            let breaks = quantiles[material];
+            if (value === breaks[1]) return "20%";
+            if (value === breaks[2]) return "40%";
+            if (value === breaks[3]) return "60%";
+            if (value === breaks[4]) return "80%";
+            return "100%";
+        }
+
+        function formatNumber(num) {
+            if (num === null || num === 0) {
+                return "-";
+            } else {
+                return num.replace("_", " ");  // Replace underscores with spaces
+            }
+        }
+
+        function resetRadarSizes() {
             materialTypes.forEach(material => {
-                let values = combinedData.map(f => f.properties[material]).filter(v => v !== null && v !== undefined);
-                values.sort((a, b) => a - b);
-                quantiles[material] = [
-                    values[0],
-                    getQuantile(values, 0.2),
-                    getQuantile(values, 0.4),
-                    getQuantile(values, 0.6),
-                    getQuantile(values, 0.8),
-                    values[values.length - 1]
-                ];
+                document.getElementById(`radar-${material}`).style.width = "0%";
+            });
+        }
+
+        function updateRadarSizes(feature) {
+            materialTypes.forEach((material, index) => {
+                let value = feature.properties.material_profile[index];
+                let size = value !== null && value !== undefined ? getSizeCategory(value, material) : "0%";
+                document.getElementById(`radar-${material}`).style.width = size;
+            });
+        }
+
+        let lastFeature = null;
+        let animationFrameId = null;
+
+        // Mouseover handler with throttling applied
+        function onEachFeatureHandler(feature, layer) {
+            const handleMouseOver = throttle(function (e) {
+                let targetLayer = e.target;
+                targetLayer.bringToFront(); // Move to top
+
+                targetLayer.setStyle({
+                    color: "black", // Make border black on hover
+                    weight: 2,      
+                    opacity: 1      
+                });
+
+                // Format and display the material values
+                document.getElementById("value-brick").innerHTML = formatNumber(feature.properties.material_value[0]);
+                document.getElementById("value-concrete").innerHTML = formatNumber(feature.properties.material_value[1]);
+                document.getElementById("value-glass").innerHTML = formatNumber(feature.properties.material_value[2]);
+                document.getElementById("value-stone").innerHTML = formatNumber(feature.properties.material_value[3]);
+                document.getElementById("value-steel").innerHTML = formatNumber(feature.properties.material_value[4]);
+
+                document.getElementById("borough").innerHTML = feature.properties.Borough;
+                document.getElementById("zonedist").innerHTML = feature.properties.ZoneDist;
+                document.getElementById("builtfar").innerHTML = `${feature.properties.BuiltFAR_Mean} / ${feature.properties.BuiltFAR_Median}`;
+                document.getElementById("numfloors").innerHTML = `${feature.properties.NumFloors_Mean} / ${feature.properties.NumFloors_Median}`;
+                document.getElementById("yearbuilt").innerHTML = `${feature.properties.YearBuilt_Mean} / ${feature.properties.YearBuilt_Median}`;
+                document.getElementById("elev_mean").innerHTML = `${feature.properties.Elev_Mean}ft / ${(feature.properties.Elev_Mean * 0.3048).toFixed(1)}m`;
+                document.getElementById("bedrock_mean").innerHTML = `${feature.properties.Bedrock_Mean}ft / ${(feature.properties.Bedrock_Mean * 0.3048).toFixed(1)}m`;
+
+                // Trigger a radar size update using requestAnimationFrame
+                lastFeature = feature;
+                cancelAnimationFrame(animationFrameId);  // Cancel any previous requestAnimationFrame
+                animationFrameId = requestAnimationFrame(() => updateRadarSizes(lastFeature));  // Schedule update
+            }, 300); // 300ms throttle interval
+
+            // Mouseover handler with throttled behavior
+            layer.on('mouseover', function (e) {
+                handleMouseOver(e); // Trigger the throttled mouseover function
             });
 
-            function getQuantile(arr, q) {
-                let pos = (arr.length - 1) * q;
-                let base = Math.floor(pos);
-                let rest = pos - base;
-                return arr[base + 1] !== undefined ? arr[base] + rest * (arr[base + 1] - arr[base]) : arr[base];
-            }
-
-            function getSizeCategory(value, material) {
-                if (value === null || value === 0) return "0%";
-            
-                let breaks = quantiles[material];
-                if (value <= breaks[1]) return "20%";
-                if (value <= breaks[2]) return "40%";
-                if (value <= breaks[3]) return "60%";
-                if (value <= breaks[4]) return "80%";
-                return "100%";
-            }
-            
-
-            function resetRadarSizes() {
-                materialTypes.forEach(material => {
-                    document.getElementById(`radar-${material}`).style.width = "0%";
+            // Mouseout handler
+            layer.on('mouseout', function (e) {
+                e.target.bringToBack(); // Move back to original order
+                e.target.setStyle({
+                    color: "transparent",
+                    weight: 1,
+                    opacity: 0
                 });
-            }
+                resetRadarSizes();
+            });
+        }
 
-            function updateRadarSizes(feature) {
-                materialTypes.forEach(material => {
-                    let value = feature.properties[material];
-                    let size = value !== null && value !== undefined ? getSizeCategory(value, material) : "0%";
-                    document.getElementById(`radar-${material}`).style.width = size;
-                });
-            }
+        function addGeoJSONLayer(data, layer) {
+            L.geoJSON(data, {
+                style: () => ({
+                    opacity: 0,
+                    fillOpacity: 0,
+                    weight: 0,
+                    dashArray: '0',
+                    color: 'transparent'
+                }),
+                onEachFeature: onEachFeatureHandler
+            }).addTo(layer);
+        }
 
-            function formatNumber(num) {
-                if (num === null || num === 0) {
-                    return "-";
-                } else if (num >= 1_000_000_000) {
-                    return (num / 1_000_000_000).toFixed(1) + " Gt";
-                } else if (num >= 1_000_000) {
-                    return (num / 1_000_000).toFixed(1) + " Mt";
-                } else if (num >= 1_000) {
-                    return (num / 1_000).toFixed(1) + " kt";
-                } else {
-                    return num.toFixed(0); // Integer format
-                }
-            }
-            
-            function onEachFeatureHandler(feature, layer) {
-                layer.on('mouseover', function (e) {
-                    let targetLayer = e.target;
-                    targetLayer.bringToFront(); // Move to top
-            
-                    targetLayer.setStyle({
-                        color: "black", // Make border black on hover
-                        weight: 2,      
-                        opacity: 1      
-                    });
-            
-                    document.getElementById("value-brick").innerHTML = formatNumber(feature.properties.brick);
-                    document.getElementById("value-concrete").innerHTML = formatNumber(feature.properties.concrete);
-                    document.getElementById("value-glass").innerHTML = formatNumber(feature.properties.glass);
-                    document.getElementById("value-stone").innerHTML = formatNumber(feature.properties.stone);
-                    document.getElementById("value-steel").innerHTML = formatNumber(feature.properties.steel);
-                    document.getElementById("borough").innerHTML = feature.properties.Borough;
-                    document.getElementById("zonedist").innerHTML = feature.properties.ZoneDist;
-                    document.getElementById("builtfar").innerHTML = `${feature.properties.BuiltFAR_Mean} / ${feature.properties.BuiltFAR_Median}`;
-                    document.getElementById("numfloors").innerHTML = `${feature.properties.NumFloors_Mean} / ${feature.properties.NumFloors_Median}`;
-                    document.getElementById("yearbuilt").innerHTML = `${feature.properties.YearBuilt_Mean} / ${feature.properties.YearBuilt_Median}`;
-                    document.getElementById("elev_mean").innerHTML = `${feature.properties.Elev_Mean}ft / ${(feature.properties.Elev_Mean * 0.3048).toFixed(1)}m`;
-                    document.getElementById("bedrock_mean").innerHTML = `${feature.properties.Bedrock_Mean}ft / ${(feature.properties.Bedrock_Mean * 0.3048).toFixed(1)}m`;
-            
-                    updateRadarSizes(feature);
-                });
-            
-                layer.on('mouseout', function (e) {
-                    e.target.bringToBack(); // Move back to original order
-                    e.target.setStyle({
-                        color: "transparent",
-                        weight: 1,
-                        opacity: 0
-                    });
-                    resetRadarSizes();
-                });
-            }
-            
-            
+        addGeoJSONLayer(data, layer1); // Add the GeoJSON layer to the map
+    });
 
-            function addGeoJSONLayer(data, layer) {
-                L.geoJSON(data, {
-                    style: () => ({
-                        opacity: 0,
-                        fillOpacity: 0,
-                        weight: 0,
-                        dashArray: '0',
-                        color: 'transparent'
-                    }),
-                    onEachFeature: onEachFeatureHandler
-                }).addTo(layer);
-            }
 
-            addGeoJSONLayer(data1, layer1);
-            addGeoJSONLayer(data2, layer2);
-        })
-    );
 
 
 

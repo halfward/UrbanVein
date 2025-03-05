@@ -1,6 +1,14 @@
 to-do: 
 - concatenate tile data
 - use binned value for viz data
+- one click to switch visuals between material and footprint (d3 change size)
+
+0.4.0 (2025-03-04 performance update)
+- reduced the centroid data size by 97% to 841 KB.
+- reduced the tile data size by 95% to 7,677 KB.
+- reduced the shoreline data size by 79% to 2,358 KB.
+- reduced the bus route data size by 78% to 2,105 KB.
+- reduced the zoning data size by 68% to 4,132 KB.
 
 0.3.5 (2025-02-24 post-playtesting adjustments pt.2)
 - added a neighborhood tile value placeholder.

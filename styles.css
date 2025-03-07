@@ -728,32 +728,21 @@ pre[class*="language-"], code[class*="language-"] {
 
 #xray-mask {
     position: absolute;
-    width: 350px;
-    height: 350px;
-    border-radius: 6px;
-    border: #bfcdcd 1px solid;
+    width: 100vw;
+    height: 100vh;
     display: none;
     overflow: hidden;
     z-index: 999;
     pointer-events: none !important;
 }
-/* #xray-mask.sml-m {
-    width: 300px; 
-    height: 300px; 
-}
-#xray-mask.sml-l {
-    width: 400px; 
-    height: 400px;
-} */
 #xray-map {
     position: absolute;
-    width: 800px;  
-    height: 800px;
+    width: 100%;  
+    height: 100%;
     top: -410px; 
     left: -410px;
     background-color: rgba(255, 255, 255, 0.3) !important;
     backdrop-filter: blur(3px);
-    /* transform: translate(175px, 175px); */
     pointer-events: none !important;
 }
 .opacity-mask {
@@ -769,7 +758,6 @@ pre[class*="language-"], code[class*="language-"] {
     z-index: 999;
     pointer-events: none;
     width: 352px;
-    transform: translate(10px, -32px);
 }
 #xray-legend ul {
     display: flex;

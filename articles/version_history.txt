@@ -9,6 +9,11 @@ to-do:
 - reduced the shoreline data size by 79% to 2,358 KB.
 - reduced the bus route data size by 78% to 2,105 KB.
 - reduced the zoning data size by 68% to 4,132 KB.
+- added 300ms throttling to the tile info mouseover.
+- added 100ms throttling to the tile black outline.
+- used a different logic for the x-ray maps so that they don't lag as much.
+- batch render the material markers.
+- now geojson x-ray layers don't interfere with basemap interactions.
 
 0.3.5 (2025-02-24 post-playtesting adjustments pt.2)
 - added a neighborhood tile value placeholder.

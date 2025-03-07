@@ -239,47 +239,62 @@ updateMarkerSizes();
 
 
 
-// Modify `addMaterialMarkers` to accept a range argument
+// Function to add material markers to a given layer group (100)
 const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup, offset = null, sizeRange = defaultRange) => {
     const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
     const binnedDataValues = filteredFeatures.map(feature => feature.properties[columnName]);
 
     const quantiles = d3.scaleQuantile()
         .domain(binnedDataValues)
-        .range(sizeRange); // Use the selected range
+        .range(sizeRange);
 
-    filteredFeatures.forEach(feature => {
-        const coordinates = feature.geometry.coordinates;
-        const sizeMultiplier = quantiles(feature.properties[columnName]);
+    let index = 0;
+    const batchSize = 1000; // Number of markers per batch
 
-        let lat = coordinates[1];
-        let lng = coordinates[0];
-        if (offset) {
-            lat += offset.lat;
-            lng += offset.lng;
+    function processBatch() {
+        const batchEnd = Math.min(index + batchSize, filteredFeatures.length);
+
+        for (; index < batchEnd; index++) {
+            const feature = filteredFeatures[index];
+            const coordinates = feature.geometry.coordinates;
+            const sizeMultiplier = quantiles(feature.properties[columnName]);
+
+            let lat = coordinates[1];
+            let lng = coordinates[0];
+            if (offset) {
+                lat += offset.lat;
+                lng += offset.lng;
+            }
+
+            if (sizeMultiplier > 0) {
+                const baseRadius = 15;
+                const minRadius = 5;
+                const circle = L.circle([lat, lng], {
+                    radius: Math.max(baseRadius * sizeMultiplier, minRadius),
+                    color: color,
+                    fillColor: color,
+                    weight: 0,
+                    fillOpacity: 0.65,
+                    opacity: 1,
+                    fillRule: 'evenodd',
+                    className: `leaflet-circle-${material}`,
+                    interactive: false
+                });
+
+                circle.addTo(layerGroup);
+            }
         }
 
-        if (sizeMultiplier > 0) {
-            const baseRadius = 15;
-            const minRadius = 5;
-            const circle = L.circle([lat, lng], {
-                radius: Math.max(baseRadius * sizeMultiplier, minRadius),
-                color: color,
-                fillColor: color,
-                weight: 0,
-                fillOpacity: 0.65,
-                opacity: 1,
-                fillRule: 'evenodd',
-                className: `leaflet-circle-${material}`,
-                interactive: false
-            });
-
-            circle.addTo(layerGroup);
+        if (index < filteredFeatures.length) {
+            requestAnimationFrame(processBatch); // Schedule next batch
+        } else {
+            layerGroup.addTo(mainMap); // Add the layer group to the map after all markers are added
         }
-    });
+    }
 
-    layerGroup.addTo(mainMap);
+    processBatch();
 };
+
 
 // Function to add material markers to a given layer group (200)
 const addMaterialMarkers200 = (geojsonData, material, color, columnName, layerGroup, offset = null) => {
@@ -508,28 +523,16 @@ function enforceLayerOrder() {
     stoneLayer200.bringToFront();
 }
 
-// Set up event listeners for toggles
-document.getElementById('toggle1').addEventListener('change', function() {
-    layerState.brick = this.checked;  // Update state
-    console.log('Brick layer state:', layerState.brick);
-    updateLayerVisibility();  // Apply new layer state
+const layerKeys = ["brick", "concrete", "glass", "stone", "steel"];
+
+// Loop through toggles and attach event listeners
+layerKeys.forEach((key, index) => {
+    document.getElementById(`toggle${index + 1}`).addEventListener("change", function() {
+        layerState[key] = this.checked;  // Update state dynamically
+        updateLayerVisibility();  // Apply new layer state
+    });
 });
-document.getElementById('toggle2').addEventListener('change', function() {
-    layerState.concrete = this.checked;  // Update state
-    updateLayerVisibility();  // Apply new layer state
-});
-document.getElementById('toggle3').addEventListener('change', function() {
-    layerState.glass = this.checked;  // Update state
-    updateLayerVisibility();  // Apply new layer state
-});
-document.getElementById('toggle4').addEventListener('change', function() {
-    layerState.stone = this.checked;  // Update state
-    updateLayerVisibility();  // Apply new layer state
-});
-document.getElementById('toggle5').addEventListener('change', function() {
-    layerState.steel = this.checked;  // Update state
-    updateLayerVisibility();  // Apply new layer state
-});
+
 
 
 // On page load, add layers based on initial state
@@ -555,7 +558,7 @@ let xrayMap = L.map("xray-map", {
     keyboard: false,
     interactive: false,  // Ensures it doesn't interfere with user actions
 });
-let xrayMapElement = document.getElementById("xray-map");
+
 
 
 // Define tile layers
@@ -604,7 +607,8 @@ fetch('data/nyzd.geojson.gz')
                     weight: 1,                  // Border weight
                     color: fillColor,           // Border color
                     fillColor: fillColor,       // Fill color
-                    fillOpacity: 1            // Adjust opacity for visibility
+                    fillOpacity: 0.7,
+                    interactive: false 
                 };
             }
         });
@@ -646,7 +650,8 @@ fetch('data/subwayLines.geojson')
                     color: color,       // Subway line color
                     opacity: 1,         
                     fillOpacity: 0,     
-                    fillColor: 'transparent' 
+                    fillColor: 'transparent',
+                    interactive: false 
                 };
             }
         });
@@ -663,7 +668,8 @@ fetch('data/subwayLines.geojson')
                             color: "#000000",     // Black border
                             weight: 2,      // Border thickness
                             opacity: 1,    
-                            fillOpacity: 1
+                            fillOpacity: 1,
+                            interactive: false 
                         });
                     }
                 });
@@ -691,7 +697,8 @@ fetch('data/busLines.geojson.gz')
                     weight: 2,               // Line thickness
                     color: routeColor,       // Line color from GeoJSON data
                     opacity: 1,              // Full visibility
-                    fillOpacity: 0           // No fill for bus lines
+                    fillOpacity: 0,           // No fill for bus lines
+                    interactive: false 
                 };
             }
         })
@@ -755,82 +762,153 @@ let xrayMarkers = markerLocations.map(location => {
 
 
 
-// X-ray elements
+// Get x-ray elements
 let xrayMask = document.getElementById("xray-mask");
 let xrayLegend = document.getElementById("xray-legend");
 let xrayControl = document.querySelector(".sml-container");
+let xrayMapElement = document.getElementById("xray-map"); 
 
-// Get dropdown elements
-let mapDropdown = document.getElementById("map-dropdown");
-let planningDropdown = document.getElementById("planning-dropdown");
-let transportDropdown = document.getElementById("transport-dropdown");
+// 1. Position the xray map overlay statically on top of the main map
+function positionXrayMapOverlay() {
+    // Get main map container position and dimensions
+    const mainMapContainer = mainMap.getContainer();
+    const mainMapRect = mainMapContainer.getBoundingClientRect();
+    
+    // Position the xray map element to fully cover the main map
+    xrayMapElement.style.position = "absolute";
+    xrayMapElement.style.left = `${mainMapRect.left}px`;
+    xrayMapElement.style.top = `${mainMapRect.top}px`;
+    xrayMapElement.style.width = `${mainMapRect.width}px`;
+    xrayMapElement.style.height = `${mainMapRect.height}px`;
+    xrayMapElement.style.zIndex = "600";
+    
+    // Set the xray map to initially be fully hidden/clipped
+    xrayMapElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
+    xrayMapElement.style.webkitClipPath = "inset(100% 100% 100% 100% round 15px)";
+    
+    // Make sure the maps are synced
+    xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
+}
 
-// Handle cursor movement for X-ray effect
+// 2. Make xray map pass through pointer events when not in active region
+function setupPointerEventHandling() {
+    xrayMapElement.style.pointerEvents = "none";
+
+    // Create a style element to add a new CSS class
+    const styleElement = document.createElement('style');
+    document.head.appendChild(styleElement);
+}
+
+// 3. Sync maps when main map is moved
+mainMap.on('move', function() {
+    xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
+});
+
+// 4. Updated mouse movement handler for rounded square reveal window
 document.addEventListener("mousemove", function (e) {
-    if (xrayMask.style.display === "block") { 
-        xrayMask.style.left = `${e.pageX + 10}px`; 
-        xrayMask.style.top = `${e.pageY + 10}px`;
-
-        // Move the legend along with the cursor when zoning mode is on
+    if (xrayMask.style.display === "block") {
+        // Get mouse position relative to page
+        const mouseX = e.pageX;
+        const mouseY = e.pageY;
+        
+        // Size of the reveal window (adjust as needed)
+        const revealSize = 350;
+        const cornerRadius = 15;
+        
+        // Update the clip path to create a rounded square reveal window
+        xrayMapElement.style.clipPath = `inset(
+            calc(${mouseY}px - ${revealSize / 2}px) 
+            calc(100% - ${mouseX}px - ${revealSize / 2}px) 
+            calc(100% - ${mouseY}px - ${revealSize / 2}px) 
+            calc(${mouseX}px - ${revealSize / 2}px)
+            round ${cornerRadius}px
+        )`;
+        xrayMapElement.style.webkitClipPath = `inset(
+            calc(${mouseY}px - ${revealSize / 2}px) 
+            calc(100% - ${mouseX}px - ${revealSize / 2}px) 
+            calc(100% - ${mouseY}px - ${revealSize / 2}px) 
+            calc(${mouseX}px - ${revealSize / 2}px)
+            round ${cornerRadius}px
+        )`;
+        
+        // Position legend near cursor if visible
         if (xrayLegend.style.display === "block") {
-            xrayLegend.style.left = `${e.pageX}px`;  
-            xrayLegend.style.top = `${e.pageY}px`; 
+            xrayLegend.style.left = `${mouseX - revealSize / 2}px`;
+            xrayLegend.style.top = `${mouseY + revealSize / 2 - 10}px`;
         }
-
-        // Adjust X-ray map position dynamically
-        xrayMap.setView(mainMap.containerPointToLatLng(mainMap.mouseEventToContainerPoint(e)), mainMap.getZoom());
     }
 });
 
-// Function to update X-ray mode based on dropdown selection
+// 5. Updated function to update X-ray mode
 function updateXray(mode) {
     if (mode === "none") {
-        xrayMask.style.display = "none"; // Hide the mask
-        xrayLegend.style.display = "none"; // Hide the legend
-        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Remove all layers
-        xrayMapElement.classList.remove("opacity-mask"); // Remove opacity class
+        xrayMask.style.display = "none";
+        xrayLegend.style.display = "none";
+        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer));
+        // Hide the xray map completely
+        xrayMapElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
+        xrayMapElement.style.webkitClipPath = "inset(100% 100% 100% 100% round 15px)";
         xrayMarkers.forEach(marker => mainMap.removeLayer(marker));
     } else {
-        xrayMask.style.display = "block"; // Show the mask
-        xrayLegend.style.display = "none"; // Hide the legend initially
-        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer)); // Clear layers first
-
+        // Position the overlay map first
+        positionXrayMapOverlay();
+        
+        xrayMask.style.display = "block";
+        xrayLegend.style.display = "none";
+        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer));
+        
+        // Add the appropriate layer based on mode
         if (mode === "satellite") {
             xraySatelliteLayer.addTo(xrayMap);
-            xrayMapElement.classList.remove("opacity-mask");
             xrayMarkers.forEach(marker => marker.addTo(mainMap));
         } else if (mode === "esri-topo") {
             xrayEsriLayer.addTo(xrayMap);
-            xrayMapElement.classList.remove("opacity-mask"); 
             xrayMarkers.forEach(marker => marker.addTo(mainMap));
-
         } else if (mode === "subway") {
             xraySubwayLayer.addTo(xrayMap);
             xraySubwayStationsLayer.addTo(xrayMap);
-            xrayMapElement.classList.remove("opacity-mask"); 
             xrayMarkers.forEach(marker => marker.addTo(mainMap));
-
         } else if (mode === "bus") {
             xrayBusLayer.addTo(xrayMap);
-            xrayMapElement.classList.remove("opacity-mask"); 
             xrayMarkers.forEach(marker => marker.addTo(mainMap));
-
         } else if (mode === "zoning") {
-            if (xrayZoningLayer) {  
+            if (xrayZoningLayer) {
                 xrayZoningLayer.addTo(xrayMap);
-                xrayLegend.style.display = "block";  
-                xrayMapElement.classList.add("opacity-mask"); 
+                xrayLegend.style.display = "block";
                 xrayMarkers.forEach(marker => marker.addTo(mainMap));
-
             }
         }
-
-        // Force Leaflet to redraw tiles to prevent gray areas
+        
+        // Force Leaflet to redraw tiles
         setTimeout(() => {
             xrayMap.invalidateSize();
         }, 100);
     }
 }
+
+// 6. Initialize the overlay on page load
+window.addEventListener('load', function() {
+    // Set up initial state
+    positionXrayMapOverlay();
+    setupPointerEventHandling();
+    
+    // Additionally handle window resize to reposition
+    window.addEventListener('resize', positionXrayMapOverlay);
+    
+    // Sync maps when main map is zoomed
+    mainMap.on('zoom', function() {
+        xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
+    });
+});
+
+
+
+
+
+// Get dropdown elements
+let mapDropdown = document.getElementById("map-dropdown");
+let planningDropdown = document.getElementById("planning-dropdown");
+let transportDropdown = document.getElementById("transport-dropdown");
 
 // Ensure all dropdown texts are initially grey
 document.querySelectorAll(".dropdown-selected").forEach(el => {
@@ -1250,36 +1328,81 @@ fetch('data/tile_data_100m_20250304.geojson.gz')
 
         // Mouseover handler with throttling applied
         function onEachFeatureHandler(feature, layer) {
-            const handleMouseOver = throttle(function (e) {
+            // Mouseover handler
+            layer.on('mouseover', function (e) {
                 let targetLayer = e.target;
                 targetLayer.bringToFront(); // Move to top
-
+                
+                // Throttle the style update separately (100ms)
+                handleStyleUpdate(e);
+                
+                // Throttle data updates separately (300ms)
+                handleMouseOver(e);
+            });
+        
+            // Throttled function for immediate style update (100ms)
+            const handleStyleUpdate = throttle(function (e) {
+                let targetLayer = e.target;
                 targetLayer.setStyle({
-                    color: "black", // Make border black on hover
-                    weight: 2,      
-                    opacity: 1      
+                    color: "black", 
+                    weight: 2,
+                    opacity: 1
                 });
-
-                // Format and display the material values
-                document.getElementById("value-brick").innerHTML = formatNumber(feature.properties.material_value[0]);
-                document.getElementById("value-concrete").innerHTML = formatNumber(feature.properties.material_value[1]);
-                document.getElementById("value-glass").innerHTML = formatNumber(feature.properties.material_value[2]);
-                document.getElementById("value-stone").innerHTML = formatNumber(feature.properties.material_value[3]);
-                document.getElementById("value-steel").innerHTML = formatNumber(feature.properties.material_value[4]);
-
-                document.getElementById("borough").innerHTML = feature.properties.Borough;
-                document.getElementById("zonedist").innerHTML = feature.properties.ZoneDist;
-                document.getElementById("builtfar").innerHTML = `${feature.properties.BuiltFAR_Mean} / ${feature.properties.BuiltFAR_Median}`;
-                document.getElementById("numfloors").innerHTML = `${feature.properties.NumFloors_Mean} / ${feature.properties.NumFloors_Median}`;
-                document.getElementById("yearbuilt").innerHTML = `${feature.properties.YearBuilt_Mean} / ${feature.properties.YearBuilt_Median}`;
-                document.getElementById("elev_mean").innerHTML = `${feature.properties.Elev_Mean}ft / ${(feature.properties.Elev_Mean * 0.3048).toFixed(1)}m`;
-                document.getElementById("bedrock_mean").innerHTML = `${feature.properties.Bedrock_Mean}ft / ${(feature.properties.Bedrock_Mean * 0.3048).toFixed(1)}m`;
-
+            }, 100);
+        
+            // Throttled function for updating values (300ms)
+            const handleMouseOver = throttle(function (e) {
+                let targetLayer = e.target;
+                
+                // Define the materials and their corresponding IDs
+                const materials = {
+                    "value-brick": feature.properties.material_value[0],
+                    "value-concrete": feature.properties.material_value[1],
+                    "value-glass": feature.properties.material_value[2],
+                    "value-stone": feature.properties.material_value[3],
+                    "value-steel": feature.properties.material_value[4]
+                };
+        
+                // Loop through the materials object and update the textContent for each ID
+                Object.entries(materials).forEach(([id, value]) => {
+                    document.getElementById(id).textContent = formatNumber(value);
+                });
+        
+                // Get all relevant properties
+                const props = feature.properties;
+        
+                // Define a mapping of property names to element IDs
+                const fields = {
+                    "borough": props.Borough,
+                    "zonedist": props.ZoneDist,
+                    "builtfar": `${props.BuiltFAR_Mean} / ${props.BuiltFAR_Median}`,
+                    "numfloors": `${props.NumFloors_Mean} / ${props.NumFloors_Median}`,
+                    "yearbuilt": `${props.YearBuilt_Mean} / ${props.YearBuilt_Median}`,
+                    "elev_mean": `${props.Elev_Mean}ft / ${(props.Elev_Mean * 0.3048).toFixed(1)}m`,
+                    "bedrock_mean": `${props.Bedrock_Mean}ft / ${(props.Bedrock_Mean * 0.3048).toFixed(1)}m`
+                };
+        
+                // Update all elements in a single loop
+                Object.entries(fields).forEach(([id, value]) => {
+                    document.getElementById(id).innerHTML = value;
+                });
+        
                 // Trigger a radar size update using requestAnimationFrame
                 lastFeature = feature;
                 cancelAnimationFrame(animationFrameId);  // Cancel any previous requestAnimationFrame
                 animationFrameId = requestAnimationFrame(() => updateRadarSizes(lastFeature));  // Schedule update
             }, 300); // 300ms throttle interval
+        
+            // Mouseout handler
+            layer.on('mouseout', function (e) {
+                e.target.bringToBack(); // Move back to original order
+                e.target.setStyle({
+                    color: "transparent",
+                    weight: 1,
+                    opacity: 0
+                });
+                resetRadarSizes();
+            });        
 
             // Mouseover handler with throttled behavior
             layer.on('mouseover', function (e) {

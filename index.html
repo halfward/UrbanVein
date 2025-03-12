@@ -62,33 +62,6 @@
             <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
             <span id="versionHistoryLink" class="clickable-text"></span>
         </div>
-
-        <div style="display: flex; align-items: center;">
-            <!-- Viz History Popup Modal -->
-            <div id="visualizationPopup" class="popup hidden" style="display: none;">
-                <div class="popup-content">
-                    <button class="popupCloseButton" id="collapsePopup" style="margin-top: 268px;">🞁</button>
-                    <h3 style="margin-top: 0;">▘visualization archive</h3>
-                    <!-- Main Slider -->
-                    <div id="main-slider" class="splide">
-                        <div class="splide__track">
-                            <ul class="splide__list">
-                                <!-- Main slider images will be dynamically inserted -->
-                            </ul>
-                        </div>
-                    </div>
-            
-                    <!-- Thumbnail Slider -->
-                    <div id="thumbnail-slider" class="splide">
-                        <div class="splide__track">
-                            <ul class="splide__list">
-                                <!-- Thumbnails will be dynamically inserted -->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div id="sidebar-header">
             <div id="nav-container">
                 <div class="nav-button" id="referencesButton">ABOUT</div>
@@ -110,11 +83,9 @@
             <h2>
                 a map about new york city's building materials
             </h2>
-            <button id="toggleSize">Toggle Size</button>
-
+            <button id="toggleSize" style="display: none;">Toggle Size</button>
             <br>
             <img src="images/guide-diagram-mini.png" class="sidebar-img" alt="Guide Diagram">
-            <br>
             <div class="scrollable-text-references">
                 <br>
                 <p>
@@ -191,7 +162,7 @@
         <div id="mediaContentText" class="content-text">
             <h2>the making of urban vein</h2>
             <p>
-                this tab serves as an archive for urban vein, collecting visual materials from the entire process. it documents key stages, including data analysis, initial concept explorations, the evolution of the web ui design, and some branching ideas along the way.
+                this archive collects the visual materials during urban vein's development process, including data analysis, initial concept explorations, the evolution of the web ui design, and some branching ideas along the way.
             </p>
             <div class="scrollable-text-media">
                 <div>
@@ -276,8 +247,8 @@
                         <img src="images/layer-map.svg" class="layer-icon">
                         <div class="dropdown-selected">basemap</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option" data-value="satellite">satellite imagery</div>
                             <div class="dropdown-option" data-value="esri-topo">esri topographic</div>
+                            <div class="dropdown-option" data-value="satellite">satellite imagery</div>
                         </div>
                     </div>
                     
@@ -299,19 +270,17 @@
                             <div class="dropdown-option" data-value="bus">bus</div>
                         </div>
                     </div>
-                    
-                    <!-- <div class="sml-container opacity-control">
-                        <button class="sml" id="sml-s">S</button>
-                        <button class="sml" id="sml-m">M</button>
-                        <button class="sml" id="sml-l">L</button>
-                    </div> -->
                 </div>
             </div>
         </div>
-        
+        <div id="tooltip" class="tooltip">
+            each of the five materials is organized into six categories using a method called quantile binning. in this method, the data is divided into equal-sized groups, so each bin contains roughly the same number of data points. for example, brick is divided into six bins, ranging from 0 to 6, with each bin containing an equal portion of the data. the other four materials are also divided into their own six bins. the values for each bin differ because the maximum weight of each material varies.
+        </div>
+
         <div id="panelMaterial">
             <div class="panelTitle" id="panelTitleMaterial">
                 TILE COMPOSITION
+                <img src="images/guide.svg" alt="guide" class="guide-icon">
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleMaterial">
             </div>
             <div class="panelContent" id="panelContentMaterial">
@@ -446,7 +415,7 @@
                             <div class="info-text right" id="borough"></div>
                         </div>
                         <div class="info-text-container">
-                            <div class="info-text left">neighborhood</div>
+                            <div class="info-text left">neighborhood/area</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="neighborhood">(work in progress)</div>
                         </div>               
@@ -485,7 +454,10 @@
             </div>
         </div>
     </div>
-
+    <div id="marker-container" style="position: absolute; top: 0; left: 0; pointer-events: none;">
+        <!-- Marker elements will be appended here -->
+    </div>
+    
     <div id="xray-mask" class="no-darkmode">
         <div id="xray-map"></div>
     </div>
@@ -499,7 +471,6 @@
     </div>
     <div id="mainMap"></div>
     <div id="custom-geocoder-container" style="position: absolute; top: 10px; right: 10px; z-index: 1000;"></div>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

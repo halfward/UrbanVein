@@ -1,9 +1,10 @@
 to-do: 
-- concatenate tile data
-- use binned value for viz data
+- LIRR x-ray
+- a 1925 map and a material change map, both in d3! use the material change map to verify changes.
 - one click to switch visuals between material and footprint (d3 change size)
 
-0.4.0 (2025-03-04 performance update)
+0.4.0 (2025-03-04 performance & marker update)
+- added a few story markers.
 - reduced the centroid data size by 97% to 841 KB.
 - reduced the tile data size by 95% to 7,677 KB.
 - reduced the shoreline data size by 79% to 2,358 KB.
@@ -69,7 +70,7 @@ to-do:
 - changed the font from poppins to inter.
 - expanded the map extents and its background shapefile.
 
-0.3.0 (2025-01-07)
+0.3.0 (2025-01-07 ui update)
 - added three collapsible dashboard panels.
 - migrated the rose chart to the material panel.
 - changed the "explorer" tab to "layers."

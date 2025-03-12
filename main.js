@@ -59,6 +59,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
+// Material panel tooltip
+const guideIcon = document.querySelector(".guide-icon");
+const tooltip = document.getElementById("tooltip");
+
+guideIcon.addEventListener("mouseenter", () => {
+    tooltip.style.display = "block";
+});
+
+guideIcon.addEventListener("mousemove", (e) => {
+    const tooltipWidth = tooltip.offsetWidth;
+    const tooltipHeight = tooltip.offsetHeight;
+
+    // Position so the bottom-right corner sticks to the cursor
+    tooltip.style.left = `${e.clientX - tooltipWidth}px`;
+    tooltip.style.top = `${e.clientY - tooltipHeight}px`;
+});
+
+guideIcon.addEventListener("mouseleave", () => {
+    tooltip.style.display = "none";
+});
+
+
 
 
 
@@ -197,10 +219,10 @@ document.getElementById('toggleSize').addEventListener('click', () => {
 
 // Assuming `geojsonData` is already loaded
 const updateMarkerSizes = () => {
-    if (!geojsonData) {
-        console.warn("GeoJSON data not loaded yet.");
-        return;
-    }
+    // if (!geojsonData) {
+    //     console.warn("GeoJSON data not loaded yet.");
+    //     return;
+    // }
 
     // Determine which range to use
     const sizeRange = isUsingDefaultRange ? defaultRange : alternateRange;
@@ -612,10 +634,6 @@ fetch('data/nyzd.geojson.gz')
                 };
             }
         });
-
-        // Optionally add the layer to the map if you wish
-        // xrayZoningLayer.addTo(mainMap);
-
     })
     .catch(error => console.error('Error loading or decompressing GeoJSON:', error));
 
@@ -706,61 +724,6 @@ fetch('data/busLines.geojson.gz')
     .catch(error => console.error('Error loading or decompressing bus GeoJSON:', error));
 
 
-// Define custom markers----------------------------------------
-// Define marker locations
-const markerLocations = [
-    { lat: 40.785091, lng: -73.968285, id: "central-park", text: "Central Park: A major green space in NYC." },
-    { lat: 40.747994, lng: -73.941901, id: "long-island-city", text: "Long Island City: Rapidly developing area with industrial past." }
-];
-
-// Create markers with non-blocking interactions
-let xrayMarkers = markerLocations.map(location => {
-    let markerHtml = `<div class="xray-marker" id="${location.id}">
-                        <div class="xray-marker-icon"></div>
-                        <div class="xray-marker-info">${location.text}</div>
-                    </div>`;
-
-    let marker = L.marker([location.lat, location.lng], {
-        icon: L.divIcon({
-            className: "custom-xray-marker",
-            html: markerHtml,
-            iconSize: [40, 40],
-            iconAnchor: [20, 20]
-        }),
-        interactive: false // Prevents interference with other layers
-    });
-
-    // Attach hover events to forward to the layer below
-    marker.on("mouseover", function (event) {
-        let belowElement = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
-        if (belowElement && belowElement.classList.contains('leaflet-interactive')) {
-            belowElement.dispatchEvent(new MouseEvent('mouseover', {
-                bubbles: true,
-                clientX: event.originalEvent.clientX,
-                clientY: event.originalEvent.clientY,
-                relatedTarget: marker.getElement()
-            }));
-        }
-    });
-
-    marker.on("mouseout", function (event) {
-        let belowElement = document.elementFromPoint(event.originalEvent.clientX, event.originalEvent.clientY);
-        if (belowElement && belowElement.classList.contains('leaflet-interactive')) {
-            belowElement.dispatchEvent(new MouseEvent('mouseout', {
-                bubbles: true,
-                clientX: event.originalEvent.clientX,
-                clientY: event.originalEvent.clientY,
-                relatedTarget: marker.getElement()
-            }));
-        }
-    });
-
-    return marker;
-});
-
-
-
-
 
 // Get x-ray elements
 let xrayMask = document.getElementById("xray-mask");
@@ -780,7 +743,7 @@ function positionXrayMapOverlay() {
     xrayMapElement.style.top = `${mainMapRect.top}px`;
     xrayMapElement.style.width = `${mainMapRect.width}px`;
     xrayMapElement.style.height = `${mainMapRect.height}px`;
-    xrayMapElement.style.zIndex = "600";
+    xrayMapElement.style.zIndex = "-1";
     
     // Set the xray map to initially be fully hidden/clipped
     xrayMapElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
@@ -860,22 +823,22 @@ function updateXray(mode) {
         // Add the appropriate layer based on mode
         if (mode === "satellite") {
             xraySatelliteLayer.addTo(xrayMap);
-            xrayMarkers.forEach(marker => marker.addTo(mainMap));
+            // xrayMarkers.forEach(marker => marker.addTo(xrayMap));
         } else if (mode === "esri-topo") {
             xrayEsriLayer.addTo(xrayMap);
-            xrayMarkers.forEach(marker => marker.addTo(mainMap));
+            // xrayMarkers.forEach(marker => marker.addTo(xrayMap));
         } else if (mode === "subway") {
             xraySubwayLayer.addTo(xrayMap);
             xraySubwayStationsLayer.addTo(xrayMap);
-            xrayMarkers.forEach(marker => marker.addTo(mainMap));
+            // xrayMarkers.forEach(marker => marker.addTo(mainMap));
         } else if (mode === "bus") {
             xrayBusLayer.addTo(xrayMap);
-            xrayMarkers.forEach(marker => marker.addTo(mainMap));
+            // xrayMarkers.forEach(marker => marker.addTo(mainMap));
         } else if (mode === "zoning") {
             if (xrayZoningLayer) {
                 xrayZoningLayer.addTo(xrayMap);
                 xrayLegend.style.display = "block";
-                xrayMarkers.forEach(marker => marker.addTo(mainMap));
+                // xrayMarkers.forEach(marker => marker.addTo(mainMap));
             }
         }
         
@@ -1087,6 +1050,139 @@ document.querySelectorAll('input[name="options"]').forEach(radio => {
         document.getElementById("transport-dropdown").value = this.value;
     });
 });
+
+
+
+
+
+// Marker layer--------------------------------------------------------
+// Create an empty layer group for markers
+let markerMap = L.layerGroup();
+
+// Load GeoJSON data
+fetch('data/marker-data-20250311-a.geojson')
+    .then(response => response.json())
+    .then(data => {
+        data.features.forEach(feature => {
+            let properties = feature.properties;
+            
+            // Check if 'marker-latlon' exists and is correctly formatted
+            if (!properties['marker-latlon'] || !properties['marker-latlon'].includes(',')) {
+                return; // Skip this feature
+            }
+            
+            let [lng, lat] = properties['marker-latlon'].split(',').map(coord => parseFloat(coord.trim()));
+            
+            // Ensure parsed lat/lng are valid numbers
+            if (isNaN(lat) || isNaN(lng)) {
+                console.warn('Invalid lat/lng values for feature:', properties);
+                return;
+            }
+
+            // Function to get background color based on material
+            function getMaterialColor(material) {
+                const colors = {
+                    brick: '#ff785a',
+                    concrete: '#ccef07',
+                    glass: '#49fcd7',
+                    stone: '#60bdff',
+                    steel: '#ec49fd'
+                };
+                return colors[material.toLowerCase()] || '#fff'; // Default to white if not found
+            }
+
+            // Split materials by commas and create a flex row
+            let materialsArray = properties.materials ? properties.materials.split(',').map(material => material.trim()) : [];
+            let materialsHtml = materialsArray.map(material => {
+                let backgroundColor = getMaterialColor(material);
+                return `<div class="material" style="background-color: ${backgroundColor};">${material}</div>`;
+            }).join('');
+
+            // Create marker info HTML
+            let markerHtml = ` 
+                <div class="xray-marker" id="marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}">
+                    <div class="xray-marker-icon"></div>
+                    <div class="xray-marker-info">
+                        <div class="marker-header">
+                            <div class="marker-name">${properties.Name}</div>
+                            <div class="marker-spacing"></div>
+                            <div class="marker-materials" style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                ${materialsHtml}
+                            </div>
+                        </div>
+                        <div class="marker-story">${properties.story}</div>
+                        <div class="marker-references">
+                            See: 
+                            <a href="${properties['refA-link']}" target="_blank">${properties['refA-name']}</a>`;
+
+            // Check if the second reference link exists before adding it
+            if (properties['refB-link']) {
+                markerHtml += `, <a href="${properties['refB-link']}" target="_blank">${properties['refB-name']}</a>`;
+            }
+            
+            markerHtml += `</div></div></div>`;
+
+            // Create the marker
+            let marker = L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: "custom-xray-marker",
+                    html: markerHtml,
+                    iconSize: [30, 30],
+                    iconAnchor: [30, 30],
+                    zIndexOffset: 1001
+                }),
+                interactive: true 
+            });
+
+            // Store reference to the GeoJSON shape associated with the marker
+            let shapeLayer = L.geoJSON(feature.geometry, {
+                style: {
+                    color: 'transparent',  // Initially no border color
+                    fillOpacity: 0,        // No fill color
+                    weight: 2              // Border width (but it's transparent initially)
+                }
+            }).addTo(markerMap);
+
+            // Hover event to highlight the shape's border on marker hover
+            marker.on("mouseover", function () {
+                // Change the border color of the shape to black on hover
+                shapeLayer.setStyle({ color: 'black', weight: 2, fillOpacity: 1, fill: 'black' });
+
+            });
+
+            marker.on("mouseout", function () {
+                // Reset the border color of the shape back to transparent on mouse out
+                shapeLayer.setStyle({ color: 'transparent', weight: 2 });
+
+            });
+
+            markerMap.addLayer(marker);
+        });
+    })
+    .catch(error => console.error('Error loading GeoJSON:', error));
+
+
+
+// Ensure markerMap is rendered on top
+markerMap.getPane = function () {
+    let pane = mainMap.getPane('markerPane');
+    if (!pane) {
+        pane = mainMap.createPane('markerPane');
+        pane.style.zIndex = '9999';
+    }
+    return pane;
+};
+
+mainMap.addLayer(markerMap);
+
+
+
+
+
+
+
+
+
 
 
 

@@ -298,3 +298,7 @@ mainMap.on("move", function () {
 <p>
     <a href="https://gsapp-cdp.github.io/archive/">capstone project archive</a>
 </p>
+
+<p>
+Most, if not all, of this project is built on open data. Without the availability of pre-existing data and online documentation, at least 95% of my development time would have been spent on field research alone. While field research is invaluable, relying solely on it would limit the possibilities of creating a comprehensive computational project within just three semesters at Columbia. To me, one of the greatest strengths of America’s scientific community is its commitment to transparency and the willingness to investigate and document data. This openness to sharing information has not only fueled scientific and creative breakthroughs but also played a crucial role in uncovering and combating social injustices and inequalities. With Urban Vein, I aim to honor the government bodies, non-profits, academics, and individuals who contribute to this vital data-sharing ecosystem. It is through their dedication to open data that we can drive progress and stability.
+</p>

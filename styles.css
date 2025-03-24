@@ -251,8 +251,8 @@ a {
     background-color: black;
     color: white;
     padding: 10px;
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 80px;
+    padding-right: 80px;
 }
 #story-button:hover {
     background-color: #8f9a9a;
@@ -506,9 +506,11 @@ pre[class*="language-"], code[class*="language-"] {
     padding: 7px;
     padding-left: 15px;
     font-size: 0.8rem;
-    color: black;
-    background-color: rgba(220, 225, 230, 0.9);
-    font-weight: 500;
+    font-weight: 600;
+    color: white;
+    background-color: black;
+    border-radius: 6px;
+    border: none;
     margin-bottom: 0.5rem;
     border-bottom: 1px #bfcdcd solid;
     border-top-left-radius: 6px;
@@ -516,10 +518,12 @@ pre[class*="language-"], code[class*="language-"] {
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-.panelTitle.collapsed {
-    /* background-color: transparent; */
-    border-radius: 6px;
-    border: none;
+.panelTitle.expanded {
+    color: black;
+    background-color: rgba(220, 225, 230, 0.9);
+
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 .guide-icon {
     position: relative;
@@ -531,22 +535,12 @@ pre[class*="language-"], code[class*="language-"] {
 .guide-icon:hover {
     opacity: 0.3;
 }
-.tooltip {
-    position: fixed;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    color: white;
-    padding: 15px;
-    border-radius: 6px;
-    width: 300px;
-    font-size: 0.9rem;
-    line-height: 1.2rem;
-    white-space: normal; 
-    display: none;
-    z-index: 10000;
-    pointer-events: none; 
+.panelTitle .guide-icon, .panelTitle img {
+    filter: invert(1);
 }
-
+.panelTitle.expanded .guide-icon, .panelTitle.expanded img {
+    filter: invert(0);
+}
 
 
 .panelContent {
@@ -556,9 +550,10 @@ pre[class*="language-"], code[class*="language-"] {
     position:relative;
     transition: max-height 0.3s ease-out;
     overflow: hidden;
+    max-height: 0;
 }
-.panelContent.hidden {
-    max-height: 0; 
+.panelContent.expanded {
+    max-height: 1000px;
 }
 .panelContentWrapper {
     padding: 15px;
@@ -571,10 +566,27 @@ pre[class*="language-"], code[class*="language-"] {
     right: 15px;
     top: 11px;
     cursor: pointer;
-    /* transition: transform 0.3s ease; */
+    transform: rotate(180deg);
 }
 .panelToggle.rotated {
-    transform: rotate(180deg);
+    transform: none;
+}
+
+
+.tooltip {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    color: white;
+    padding: 20px;
+    border-radius: 6px;
+    width: 300px;
+    font-size: 0.85rem;
+    line-height: 1.1rem;
+    white-space: normal; 
+    display: none;
+    z-index: 10000;
+    pointer-events: none; 
 }
 
 
@@ -582,10 +594,10 @@ pre[class*="language-"], code[class*="language-"] {
 #panelContentBuilding {
     display: flex;
     flex-direction: column;
-    overflow: visible;
-}
-#panelContentBuilding.panelContent.hidden {
     overflow: hidden;
+}
+#panelContentBuilding.panelContent.expanded {
+    overflow: visible;
 }
 
 
@@ -893,6 +905,10 @@ pre[class*="language-"], code[class*="language-"] {
 
 
 /* Panel: tile composition---------------------------------- */
+#panelContentMaterial {
+    max-height: fit-content;
+}
+
 .radar-box {
     display: flex;
     flex-direction: row;
@@ -923,49 +939,63 @@ pre[class*="language-"], code[class*="language-"] {
     border: 1px solid white; 
     border-radius: 50%;
     opacity: 0.5;
-    z-index: 1;
+    z-index: 100;
 }
-.radar-ring.ring-1.brick {
-    background-color: rgba(255, 120, 90, 0.25);
-}
-.radar-ring.ring-1.concrete {
-    background-color: rgba(204, 239, 7, 0.25);
+.radar-ring.ring-1.wood {
+    background-color: rgba(96, 189, 255, 0.25);
 }
 .radar-ring.ring-1.glass {
     background-color: rgba(73, 252, 215, 0.25);
 }
-.radar-ring.ring-1.stone {
-    background-color: rgba(96, 189, 255, 0.25);
+.radar-ring.ring-1.concrete {
+    background-color: rgba(204, 239, 7, 0.25);
+}
+.radar-ring.ring-1.brick {
+    background-color: rgba(255, 120, 90, 0.25);
 }
 .radar-ring.ring-1.steel {
     background-color: rgba(236, 73, 253, 0.25);
+    z-index: 1;
 }
 .inactive {
     background-color: transparent !important;
     border: none !important;
 }
 
-.ring-1 { width: 100%; height: 100%; opacity: 0.5; }
-.ring-2 { width: 80%; height: 80%; }
-.ring-3 { width: 60%; height: 60%; }
-.ring-4 { width: 40%; height: 40%; }
-.ring-5 { width: 20%; height: 20%; }
+.ring-1 { width: 100%; height: 100%; }
+.ring-2 { width: 83.33%; height: 83.33%; }
+.ring-3 { width: 66.67%; height: 66.67%; }
+.ring-4 { width: 50%; height: 50%; }
+.ring-5 { width: 33.33%; height: 33.33%; }
+.ring-6 { width: 16.67%; height: 16.67%; }
 
 
-#radar-brick {
-    background-color: #ff785a;
+#radar-wood, 
+#radar-glass, 
+#radar-concrete, 
+#radar-brick, 
+#radar-steel {
+    opacity: 0.65;
 }
-#radar-concrete {
-    background-color: #ccef07;
+#radar-wood {
+    background-color: #337eff;
+    z-index: 10;
 }
 #radar-glass {
-    background-color: #49fcd7; 
+    background-color: #33ff4e; 
+    z-index: 8;
 }
-#radar-stone {
-    background-color: #60bdff;
+#radar-concrete {
+    background-color: #ffea00;
+    z-index: 6;
+}
+#radar-brick {
+    background-color: #ff6000;
+    z-index: 4;
 }
 #radar-steel {
-    background-color: #ec49fd;
+    background-color: #bf00ff;
+    z-index: 2;
 }
 
 
@@ -973,7 +1003,7 @@ pre[class*="language-"], code[class*="language-"] {
 #toggle-box {
     display: flex;
     flex-direction: row;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 .icon-container {
     display: flex;
@@ -988,7 +1018,6 @@ pre[class*="language-"], code[class*="language-"] {
     display: flex;
     flex-direction: column;
     width: 100%;
-    /* gap: 3px; */
 }
 .toggle-container {
     position: relative;
@@ -998,6 +1027,7 @@ pre[class*="language-"], code[class*="language-"] {
     align-items: center;
     padding-left: 5px;
     padding-right: 10px;
+    margin-top: -10px;
 }
 .legend-container {
     position: relative;
@@ -1006,10 +1036,10 @@ pre[class*="language-"], code[class*="language-"] {
     justify-content: space-between;
     align-items: center;
     width: 220px;
-    padding: 5px;
-    background-color: white;
-    border-radius: 22px;
-    border: 1px solid #e1e4e4; 
+
+    /* background-color: white; */
+    /* border-radius: 22px; */
+    /* border: 1px solid #e1e4e4;  */
     transform: translateX(10px);
 }
 .toggle-input {
@@ -1473,8 +1503,46 @@ sup {
 
 
 
-/* Geocoder------------------------------------- */
+/* mainMap Layers------------------------------------- */
+#mainMap-layers-container {
+    display: flex;
+    justify-content: center;
+}
+#mainMap-layers {
+    display: flex;
+    position: absolute;
+    gap: 5px;
+    z-index: 3000;
+    bottom: 20px;
+    background-color: white;
+    padding: 5px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
+}
+.mainMap-layers-button {
+    font-family: Inter, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 7px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 16px;
+    color: black;
+    background-color: #e1e4e4;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+.mainMap-layers-button:hover {
+    background-color: #bfcdcd;
+}
+.mainMap-layers-button.active {
+    color: white;
+    background-color: black;
+}
 
+
+/* Geocoder------------------------------------- */
 #custom-geocoder-container {
     position: absolute;
     left: 27px;
@@ -1542,7 +1610,12 @@ input[type="search"]::placeholder {
 .leaflet-popup-content {
     font-family: Inter, sans-serif;
 }
-
+.leaflet-pane.leaflet-marker-pane {
+    z-index: 1000 !important;  /* Lower than the GeoJSON pane */
+}
+.leaflet-marker-pane {
+    pointer-events: none;
+}
 
 /* Minimap-------------------------------------- */
 .leaflet-control-minimap {

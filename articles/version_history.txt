@@ -1,7 +1,20 @@
 to-do: 
 - LIRR x-ray
-- a 1925 map and a material change map, both in d3! use the material change map to verify changes.
+- add landmarks
+- add building height
 - one click to switch visuals between material and footprint (d3 change size)
+
+0.5.1 (2025-03-23 dataset update)
+- added four material datasets: <=2 floors, >2 floors, <=1940 built year, and >1940 bulit year.
+- changed the material names from wood and brick to timber and masonry.
+
+0.5.0 (2025-03-20 map data update)
+- major change: reworked the material data.
+- merged the brick and stone datasets and added a wood dataset.
+- adjusted the tile composition panel's material order so that it reflects the map's layer order.
+- adjusted the viewport minimap's zoom level to make the viewport rectangle larger.
+- adjusted the rendering method from l.circles to l.circlemarkers that maintain consistent sizes on different zoom levels.
+- removed the centroid200 layer.
 
 0.4.0 (2025-03-04 performance & marker update)
 - added a few story markers.
@@ -18,7 +31,7 @@ to-do:
 
 0.3.5 (2025-02-24 post-playtesting adjustments pt.2)
 - added a neighborhood tile value placeholder.
-- added a scroll funciton to the tile info.
+- added a scroll function to the tile info.
 - tile composition ui overhaul.
 - enlarged the minimaps by 20%.
 - moved the map scale and zoom to the bottom left, along with the viewport minimap.

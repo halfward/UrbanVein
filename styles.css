@@ -1511,11 +1511,11 @@ sup {
 #mainMap-layers {
     display: flex;
     position: absolute;
-    gap: 5px;
+    gap: 0px;
     z-index: 3000;
     bottom: 20px;
     background-color: white;
-    padding: 5px;
+    padding: 3px;
     border-radius: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
 }
@@ -1527,11 +1527,10 @@ sup {
     padding-left: 15px;
     padding-right: 15px;
     border-radius: 16px;
-    color: black;
+    color: #555;
     background-color: #e1e4e4;
     border: none;
     cursor: pointer;
-    transition: background-color 0.1s ease;
 }
 .mainMap-layers-button:hover {
     background-color: #bfcdcd;
@@ -1540,6 +1539,17 @@ sup {
     color: white;
     background-color: black;
 }
+#mainMap-2a, #mainMap-1940a {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    margin-left: 3px;
+}
+#mainMap-2b, #mainMap-1940b {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    margin-left: 2px;
+}
+
 
 
 /* Geocoder------------------------------------- */

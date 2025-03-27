@@ -96,8 +96,8 @@ const materialColors = {
     steel: '#bf00ff',    // Purple for steel 
     brick: '#ff6000',    // Orange for brick 
     concrete: '#ffff00', // Yellow for concrete
-    glass: '#33ff4e',    // Green for glass
-    wood: '#337eff'      // Blue for wood 
+    glass: '#1aff1a',    // Green for glass
+    wood: '#3366ff'      // Blue for wood 
 };
 
 const materialOffsets = {

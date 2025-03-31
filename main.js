@@ -1884,7 +1884,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Also requires mutation observers in the tab logics--------------
 function adjustHeight() {
     const elements = document.querySelectorAll('.scrollable-text-data, .scrollable-text-media, .scrollable-text-references');
-    const tenVH = 30; // ticker height
+    const tenVH = 60; // ticker height
 
     elements.forEach(element => {
         // Calculate the distance from the top of the element to the bottom of the viewport

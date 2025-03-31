@@ -1415,7 +1415,7 @@ function sanitizeJson(data) {
     return data.replace(/NaN/g, "null");  // Replace NaN with null (or other appropriate value)
 }
 
-fetch('data/tile_data_100m_20250323.geojson.gz')  // Changed URL
+fetch('data/tile_data_100m_20250323.geojson.gz')
     .then(response => response.arrayBuffer())
     .then(buffer => {
         const decompressed = pako.ungzip(new Uint8Array(buffer), { to: 'string' });
@@ -1444,36 +1444,57 @@ fetch('data/tile_data_100m_20250323.geojson.gz')  // Changed URL
             if (value === 6) return "100%";  // Return 100% for value 6
             return "0%";  // Default case if no match
         }
+        // Function to determine the correct materials column based on the active button
+        function getActiveMaterialsColumn() {
+            if (document.getElementById('mainMap-2a')?.classList.contains('active')) {
+                return "materials<=2-lvl";
+            } else if (document.getElementById('mainMap-2b')?.classList.contains('active')) {
+                return "materials>2-lvl";
+            } else if (document.getElementById('mainMap-1940a')?.classList.contains('active')) {
+                return "materials<=1940-lvl";
+            } else if (document.getElementById('mainMap-1940b')?.classList.contains('active')) {
+                return "materials>1940-lvl";
+            } else {
+                return "materials-lvl"; // Default to "materials-lvl" if no specific filter is active
+            }
+        }
+
+        // Function to reset all radar sizes
         function resetRadarSizes() {
             materialTypes.forEach(material => {
                 document.getElementById(`radar-${material}`).style.width = "0%";
             });
         }
 
+        // Function to update radar sizes based on the selected column
         function updateRadarSizes(feature) {
-            // Access the materials-lvl value as a string to easily extract each digit
-            let materialsLvl = feature.properties["materials-lvl"]?.toString();
-        
-            // Ensure materials-lvl exists and is a valid number
+            let activeColumn = getActiveMaterialsColumn(); // Get the current materials column
+            let materialsLvl = feature.properties[activeColumn]?.toString();
+
             if (materialsLvl && !isNaN(materialsLvl)) {
                 materialTypes.forEach((material, index) => {
-                    // Extract the corresponding digit for each material
                     let value = parseInt(materialsLvl.charAt(index), 10);
-        
-                    // If value is NaN or 0, set radar size to 0
-                    if (isNaN(value) || value === 0) {
-                        value = 0;
-                    }
-        
-                    // Get the size category for the radar based on the value
-                    let size = getSizeCategory(value);
-        
-                    // Update the radar size with the calculated size
+                    let size = isNaN(value) || value === 0 ? "0%" : getSizeCategory(value);
                     document.getElementById(`radar-${material}`).style.width = size;
                 });
-            } else {
             }
         }
+
+        // Add event listeners to update the active button state and refresh data
+        document.querySelectorAll('.mainMap-layers-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.mainMap-layers-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                console.log(`Active button: ${button.id}, Active column: ${getActiveMaterialsColumn()}`);
+                
+                // If lastFeature exists, reapply the radar size update with the new column
+                if (lastFeature) {
+                    updateRadarSizes(lastFeature);
+                }
+            });
+        });
+
         
 
         let lastFeature = null;
@@ -1906,3 +1927,44 @@ function adjustHeight() {
 window.addEventListener('load', adjustHeight);
 window.addEventListener('resize', adjustHeight);
 window.addEventListener('scroll', adjustHeight);
+
+
+
+
+// Change Panel Title based on diff. Layers
+function updatePanelTitle() {
+    const panelTitle = document.getElementById('panelTitleMaterial-dynamic');
+
+    if (!panelTitle) {
+        console.error('panelTitleMaterial-dynamic not found!');
+        return;
+    }
+
+    if (document.getElementById('mainMap-2a')?.classList.contains('active')) {
+        panelTitle.innerHTML = 'TILE COMPOSITION: ≤ 2F';
+    } else if (document.getElementById('mainMap-2b')?.classList.contains('active')) {
+        panelTitle.innerHTML = 'TILE COMPOSITION: > 2F';
+    } else if (document.getElementById('mainMap-1940a')?.classList.contains('active')) {
+        panelTitle.innerHTML = 'TILE COMPOSITION: PRE-1940';
+    } else if (document.getElementById('mainMap-1940b')?.classList.contains('active')) {
+        panelTitle.innerHTML = 'TILE COMPOSITION: POST-1940';
+    } else {
+        panelTitle.innerHTML = 'TILE COMPOSITION'; // Default for 'ALL'
+    }
+
+    console.log('Updated title:', panelTitle.innerHTML);
+}
+
+// Attach event listeners to each button
+document.querySelectorAll('.mainMap-layers-button').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.mainMap-layers-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        console.log(`Active button: ${button.id}`);
+        updatePanelTitle();
+    });
+});
+
+// Initial check
+updatePanelTitle();
+

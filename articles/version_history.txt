@@ -1,14 +1,13 @@
 to-do:
 - vector tiles!
-- change tile data according to map layers 
 - add description to the map layer toggles
-- tile composition panel: need to add what data it's currently reading.
 - LIRR & arterials x-ray
 - add landmarks
 
 0.5.1 (2025-03-23 dataset update)
 - added four material datasets and their respective layer toggles: <=2 floors, >2 floors, <=1940 built year, and >1940 bulit year.
 - changed the material names from wood and brick to timber and masonry.
+- the material composition panel's title and data visualization now updates with the layer toggles.
 - removed the contact info animation to improve web performance.
 
 0.5.0 (2025-03-20 map data update)

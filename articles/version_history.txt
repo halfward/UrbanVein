@@ -1,8 +1,27 @@
 to-do:
-- vector tiles!
-- add description to the map layer toggles
-- LIRR & arterials x-ray
-- add landmarks
+- carbon footprint: total amount and per person
+- print out brooklyn for laura next week
+- x-rays should be below the marker layer + x-ray on load
+- zoomed-in view on load / case study on load?
+- add yearbuilt chart
+- add markers (& link images) (& tours?)
+- add ML diagrams (loop diagram, etc.) and write the story
+- refine tones.js
+- bug: layer toggle first time wont work
+- bug: material weight values under 1,000 are still floats
+
+0.5.2 (2025-04-04 refinements)
+- added a railway layer (LIRR, Metro-North, and PATH) with station names to the x-ray.
+- added an arterial & major road layer.
+- added description & charts to the map filter toggles.
+- re-added the text "tonnes" to the tile composition panel.
+- changed the project title from urban vein to nyc building materials.
+- adjusted the x-ray panel's ui so that the x-ray can now be cleared even when the panel is collapsed.
+- adjusted the sidebar nav to accommodate the new logo.
+- adjusted the marker info panel logic (updateTooltipDirection) so that they will always be inside the client window.
+- replaced the "archive" tab with the "patterns" tab.
+- the three panels are now expanded on page load.
+- bug fix: after deactivating an x-ray layer, the layer name will now revert back to the default category name and color.
 
 0.5.1 (2025-03-23 dataset update)
 - added four material datasets and their respective layer toggles: <=2 floors, >2 floors, <=1940 built year, and >1940 bulit year.

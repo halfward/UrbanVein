@@ -114,7 +114,7 @@ The full data & reference lists can be found in the "database" panel on the top-
     <div class="chapter">
         <p>
             <b>Interactivity</b><br>
-            Civilization and Rimworld. get some quotes from the creator (Tynan)? cahrt funciton. x-ray function. <br>
+            Civilization and RimWorld. get some quotes from the creator (Tynan)? cahrt funciton. x-ray function. <br>
             <b>Hover details</b><br>
             I started Urban Vein wanting to make a map space with minimal ui. In the earlier phases, ... Always view the tile info on hover.
             <br>
@@ -213,7 +213,7 @@ mainMap.on("move", function () {
     <br>
     by <a href="https://firaxis.com/">firaxis games</a>
     <br><br>
-    <a href="https://rimworldgame.com/">rimworld</a>
+    <a href="https://rimworldgame.com/">RimWorld</a>
     <br>
     by <a href="https://ludeon.com/blog/">ludeon studios</a>
     <br><br>

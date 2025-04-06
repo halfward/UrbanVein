@@ -570,10 +570,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Panel collapse
 function togglePanel(panelToggleId, panelContentId, panelTitleId) {
-    document.getElementById(panelTitleId).addEventListener("click", function () {
-        const panelContent = document.getElementById(panelContentId);
-        const panelToggle = document.getElementById(panelToggleId);
-        
+    const panelTitle = document.getElementById(panelTitleId);
+    const panelContent = document.getElementById(panelContentId);
+    const panelToggle = document.getElementById(panelToggleId);
+
+    panelTitle.addEventListener("click", function () {
         if (panelContent.classList.contains("expanded")) {
             panelContent.style.maxHeight = "0px";
             setTimeout(() => panelContent.classList.remove("expanded"), 300); // Delay removing class after transition
@@ -581,41 +582,25 @@ function togglePanel(panelToggleId, panelContentId, panelTitleId) {
             panelContent.classList.add("expanded");
             panelContent.style.maxHeight = panelContent.scrollHeight + "px";
         }
-        
+
         panelToggle.classList.toggle("rotated");
         this.classList.toggle("expanded");
     });
+
+    // Auto-expand on load
+    panelContent.classList.add("expanded");
+    panelContent.style.maxHeight = panelContent.scrollHeight + "px";
+    panelToggle.classList.add("rotated");
+    panelTitle.classList.add("expanded");
 }
 
-// Apply the toggle logic for each panel
-togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding");
-togglePanel("panelToggleMaterial", "panelContentMaterial", "panelTitleMaterial");
-togglePanel("panelToggleInfo", "panelContentInfo", "panelTitleInfo");
-
-// Ensure all panels start collapsed properly
+// Apply the toggle logic for each panel and auto-expand
 document.addEventListener("DOMContentLoaded", function () {
-    ["panelContentBuilding", "panelContentMaterial", "panelContentInfo"].forEach((panelId) => {
-        const panel = document.getElementById(panelId);
-        if (panel) {
-            panel.classList.remove("expanded");
-            panel.style.maxHeight = "0px";
-        }
-    });
-
-    ["panelTitleBuilding", "panelTitleMaterial", "panelTitleInfo"].forEach((titleId) => {
-        const title = document.getElementById(titleId);
-        if (title) {
-            title.classList.remove("expanded");
-        }
-    });
-
-    ["panelToggleBuilding", "panelToggleMaterial", "panelToggleInfo"].forEach((toggleId) => {
-        const toggle = document.getElementById(toggleId);
-        if (toggle) {
-            toggle.classList.remove("rotated");
-        }
-    });
+    togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding");
+    togglePanel("panelToggleMaterial", "panelContentMaterial", "panelTitleMaterial");
+    togglePanel("panelToggleInfo", "panelContentInfo", "panelTitleInfo");
 });
+
 
 
 
@@ -720,7 +705,7 @@ fetch('data/nyzd.geojson.gz')
 // Define subway layers (GeoJSON)
 let xraySubwayLayer, xraySubwayStationsLayer; // Declare globally for toggle functionality
 
-fetch('data/subwayLines.geojson')
+fetch('data/transportation_subway_routes.geojson')
     .then(response => response.json())
     .then(data => {
         // NYC Subway Colors by MTA Line Symbols
@@ -743,8 +728,8 @@ fetch('data/subwayLines.geojson')
                 const lineSymbol = feature.properties.rt_symbol;
                 const color = subwayColors[lineSymbol] || "#000000"; // Default black if undefined
                 return {
-                    weight: 3,          // Line thickness
-                    color: color,       // Subway line color
+                    weight: 3, 
+                    color: color, 
                     opacity: 1,         
                     fillOpacity: 0,     
                     fillColor: 'transparent',
@@ -754,16 +739,16 @@ fetch('data/subwayLines.geojson')
         });
 
         // Load and add subway stations
-        fetch('data/subwayStations.geojson')
+        fetch('data/transportation_subway_stops.geojson')
             .then(response => response.json())
             .then(stationData => {
                 xraySubwayStationsLayer = L.geoJSON(stationData, {
                     pointToLayer: (feature, latlng) => {
                         return L.circleMarker(latlng, {
-                            radius: 5,       // Circle size
-                            fillColor: "#FFFFFF", // White fill
-                            color: "#000000",     // Black border
-                            weight: 2,      // Border thickness
+                            radius: 5,
+                            fillColor: "#FFFFFF", 
+                            color: "#000000", 
+                            weight: 2,
                             opacity: 1,    
                             fillOpacity: 1,
                             interactive: false 
@@ -776,12 +761,151 @@ fetch('data/subwayLines.geojson')
     .catch(error => console.error('Error loading subway lines:', error));
 
 
+// Define railway layers (GeoJSON)
+let xrayRailwayLayer, xrayRailwayStationsLayer, xrayRailwayStationLabelsLayer;
+
+// Load railway lines
+fetch('data/transportation_railway_routes.geojson')
+    .then(response => response.json())
+    .then(data => {
+        xrayRailwayLayer = L.geoJSON(data, {
+            style: (feature) => {
+                const color = feature.properties.color || "#000000";
+                return {
+                    weight: 3,
+                    color: color,
+                    opacity: 1,
+                    fillOpacity: 0,
+                    fillColor: 'transparent',
+                    interactive: false
+                };
+            }
+        });
+
+        // Load railway stations
+        fetch('data/transportation_railway_stops.geojson')
+            .then(response => response.json())
+            .then(stationData => {
+                // Stations as circle markers
+                xrayRailwayStationsLayer = L.geoJSON(stationData, {
+                    pointToLayer: (feature, latlng) => {
+                        return L.circleMarker(latlng, {
+                            radius: 5,
+                            fillColor: "#FFFFFF",
+                            color: "#000000",
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 1,
+                            interactive: false
+                        });
+                    }
+                });
+
+                // Station name labels
+                xrayRailwayStationLabelsLayer = L.layerGroup();
+                stationData.features.forEach(feature => {
+                    const latlng = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
+                    const stationName = feature.properties.station;
+
+                    const label = L.marker(latlng, {
+                        icon: L.divIcon({
+                            html: `
+                                <div style="
+                                    font-family: Inter, sans-serif;
+                                    font-weight: 500;
+                                    font-size: 0.7rem;
+                                    color: black;
+                                    background-color: rgba(255, 255, 255, 0.9);
+                                    border-radius: 10px;
+                                    padding-left: 6px;
+                                    padding-right: 6px;
+                                    white-space: nowrap;
+                                    text-align: center;
+                                    position: absolute;
+                                    left: 50%;
+                                    bottom: 100%;
+                                    transform: translate(-50%, -8px);
+                                ">
+                                    ${stationName}
+                                </div>
+                            `,
+                            iconSize: [0, 0],
+                            iconAnchor: [0, 0],
+                        }),
+                        interactive: false
+                    });
+                    
+
+                    xrayRailwayStationLabelsLayer.addLayer(label);
+                });
+            })
+            .catch(error => console.error('Error loading railway stations:', error));
+    })
+    .catch(error => console.error('Error loading railway lines:', error));
+
+
+
+// Define road layer (GeoJSON)
+let xrayRoadsLayer;
+let currentRoadPopup = null; // Track currently open popup
+
+fetch('data/transportation_roads.geojson')
+    .then(response => response.json())
+    .then(data => {
+        const visibleLayer = L.geoJSON(data, {
+            style: (feature) => {
+                const type = feature.properties.Route_Type;
+                const status = feature.properties.Route_Status;
+                return {
+                    color: type === 1 ? '#FF0000' : '#0000FF',
+                    weight: 3,
+                    dashArray: status === 1 ? null : '4,6',
+                    opacity: 1
+                };
+            }
+        });
+
+        const bufferLayer = L.geoJSON(data, {
+            style: {
+                color: '#000000',
+                weight: 15,
+                opacity: 0
+            },
+            onEachFeature: (feature, layer) => {
+                const name = feature.properties.Route_Name || 'Unnamed Route';
+
+                layer.on('click', function (e) {
+                    // Close existing popup if it exists and isn't the same
+                    if (currentRoadPopup && xrayMap.hasLayer(currentRoadPopup)) {
+                        currentRoadPopup.remove();
+                    }
+
+                    currentRoadPopup = L.popup({
+                        closeButton: false,
+                        autoClose: false,
+                        closeOnClick: false
+                    })
+                        .setLatLng(e.latlng)
+                        .setContent(`<strong>${name}</strong>`)
+                        .openOn(xrayMap);
+                });
+            }
+        });
+
+        xrayRoadsLayer = L.layerGroup([visibleLayer, bufferLayer]);
+
+    })
+    .catch(error => console.error('Error loading roads data:', error));
+
+
+
+
 
 
 // Define bus routes layer (GeoJSON)
 let xrayBusLayer; // Declare globally for toggle functionality
 
-fetch('data/busLines.geojson.gz') 
+fetch('data/transportation_bus_routes.geojson.gz') 
     .then(response => response.arrayBuffer())  // Get the binary data as an ArrayBuffer
     .then(data => {
         const decompressedData = pako.inflate(data, { to: 'string' });
@@ -806,6 +930,7 @@ fetch('data/busLines.geojson.gz')
 
 // Get x-ray elements
 let xrayMask = document.getElementById("xray-mask");
+let xrayRoadsLegend = document.getElementById("xray-roads-legend");
 let xrayLegend = document.getElementById("xray-legend");
 let xrayControl = document.querySelector(".sml-container");
 let xrayMapElement = document.getElementById("xray-map"); 
@@ -878,6 +1003,10 @@ document.addEventListener("mousemove", function (e) {
             xrayLegend.style.left = `${mouseX - revealSize / 2}px`;
             xrayLegend.style.top = `${mouseY + revealSize / 2 - 10}px`;
         }
+        if (xrayRoadsLegend.style.display === "block") {
+            xrayRoadsLegend.style.left = `${mouseX - revealSize / 2}px`;
+            xrayRoadsLegend.style.top = `${mouseY + revealSize / 2 - 10}px`;
+        }
     }
 });
 
@@ -885,17 +1014,19 @@ document.addEventListener("mousemove", function (e) {
 function updateXray(mode) {
     if (mode === "none") {
         xrayMask.style.display = "none";
+        xrayRoadsLegend.style.display = "none";
         xrayLegend.style.display = "none";
         xrayMap.eachLayer(layer => xrayMap.removeLayer(layer));
         // Hide the xray map completely
         xrayMapElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
         xrayMapElement.style.webkitClipPath = "inset(100% 100% 100% 100% round 15px)";
-        xrayMarkers.forEach(marker => mainMap.removeLayer(marker));
+        // xrayMarkers.forEach(marker => mainMap.removeLayer(marker));
     } else {
         // Position the overlay map first
         positionXrayMapOverlay();
         
         xrayMask.style.display = "block";
+        xrayRoadsLegend.style.display = "none";
         xrayLegend.style.display = "none";
         xrayMap.eachLayer(layer => xrayMap.removeLayer(layer));
         
@@ -910,6 +1041,28 @@ function updateXray(mode) {
             xraySubwayLayer.addTo(xrayMap);
             xraySubwayStationsLayer.addTo(xrayMap);
             // xrayMarkers.forEach(marker => marker.addTo(mainMap));
+        } else if (mode === "railway") {
+            xrayRailwayLayer.addTo(xrayMap);
+            xrayRailwayStationsLayer.addTo(xrayMap);
+        
+            // Add label layer only if zoom level is ≤ 13
+            if (xrayMap.getZoom() > 12) {
+                xrayRailwayStationLabelsLayer.addTo(xrayMap);
+            }
+        
+            // Listen for zoom changes and show/hide label layer accordingly
+            xrayMap.on("zoomend", () => {
+                const zoom = xrayMap.getZoom();
+                const hasLabels = xrayMap.hasLayer(xrayRailwayStationLabelsLayer);
+                if (zoom > 12 && !hasLabels) {
+                    xrayRailwayStationLabelsLayer.addTo(xrayMap);
+                } else if (zoom <= 12 && hasLabels) {
+                    xrayRailwayStationLabelsLayer.removeFrom(xrayMap);
+                }
+            });
+        } else if (mode === "road") {
+            xrayRoadsLayer.addTo(xrayMap);
+            xrayRoadsLegend.style.display = "block";
         } else if (mode === "bus") {
             xrayBusLayer.addTo(xrayMap);
             // xrayMarkers.forEach(marker => marker.addTo(mainMap));
@@ -1034,12 +1187,12 @@ document.querySelectorAll(".dropdown-option").forEach(option => {
 
 // Reset function should remove active class from icons too
 function resetDropdowns(except = null) {
-    // Select all dropdowns and reset their content
+    // Reset all dropdowns except the one currently being interacted with
     document.querySelectorAll(".custom-dropdown").forEach(dropdown => {
         if (dropdown !== except) {
             let selectedText = dropdown.querySelector(".dropdown-selected");
-            selectedText.textContent = selectedText.dataset.default;
-            selectedText.style.color = "grey";  // Set text color back to grey
+            selectedText.textContent = selectedText.dataset.default; // Reset to category
+            selectedText.style.color = "grey"; // Reset to grey
 
             let layerIcon = dropdown.querySelector(".layer-icon");
             if (layerIcon) {
@@ -1050,18 +1203,42 @@ function resetDropdowns(except = null) {
         }
     });
 
-    // Select all elements with class "label-xray"
-    let noneButton = document.querySelectorAll(".label-xray");
-
-    // Loop through all "noneButtons" and update their state
-    noneButton.forEach((button) => {
+    // Always reset "none" buttons, no matter what
+    let noneButtons = document.querySelectorAll(".label-xray");
+    noneButtons.forEach((button) => {
+        // If a dropdown is *not* being interacted with, "none" should be active
         if (!except) {
-            button.classList.add("active"); // Add "active" class if no dropdown is excepted
+            button.classList.add("active");
         } else {
-            button.classList.remove("active"); // Remove "active" class if one dropdown is excepted
+            button.classList.remove("active");
         }
     });
 }
+
+
+
+
+
+// X-ray clear button inverted state---------
+const panelTitle = document.getElementById("panelTitleBuilding");
+const clearButton = document.getElementById("xray-none-title");
+
+const observer = new MutationObserver(() => {
+    if (!panelTitle.classList.contains("expanded")) {
+        clearButton.classList.add("invert-style");
+    } else {
+        clearButton.classList.remove("invert-style");
+    }
+});
+
+observer.observe(panelTitle, { attributes: true });
+
+
+
+
+
+
+
 
 
 
@@ -1143,9 +1320,30 @@ mainMap.getPane('markerPane').style.zIndex = '1001'; // Higher than other layers
 let markerMap = L.layerGroup([], { pane: 'markerPane' }).addTo(mainMap);
 
 
+// Updating the tooltip direction based on marker position
+function updateTooltipDirection(marker, tooltipEl) {
+    const projected = mainMap.latLngToContainerPoint(marker.getLatLng());
+    const mapContainer = mainMap.getContainer().getBoundingClientRect();
+    const verticalBuffer = 250; 
+    const horizontalBuffer = 450; 
+
+    // Remove previous directional classes
+    tooltipEl.classList.remove("tooltip-top", "tooltip-right");
+
+    if (projected.y < verticalBuffer) {
+        tooltipEl.classList.add("tooltip-top");
+    }
+
+    if ((mapContainer.width - projected.x) < horizontalBuffer) {
+        tooltipEl.classList.add("tooltip-right");
+    }
+}
 
 
-// Load GeoJSON data
+
+
+
+// Load marker GeoJSON data
 fetch('data/marker-data-20250311-a.geojson')
     .then(response => response.json())
     .then(data => {
@@ -1234,19 +1432,31 @@ fetch('data/marker-data-20250311-a.geojson')
 
             // Hover event to highlight the shape's border on marker hover
             marker.on("mouseover", function () {
-                shapeLayer.setStyle({ 
-                    color: 'black',
-                    weight: 2,
-                });
+                shapeLayer.setStyle({ color: 'black', weight: 2 });
+            
+                // Find the tooltip within this marker
+                const markerEl = document.getElementById(`marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}`);
+                const tooltipEl = markerEl?.querySelector(".xray-marker-info");
+            
+                if (tooltipEl) {
+                    updateTooltipDirection(marker, tooltipEl);
+                    tooltipEl.style.opacity = "1";
+                    tooltipEl.style.zIndex = "-1";
+                }
             });
-
+            
             marker.on("mouseout", function () {
-                // Reset the border color of the shape back to transparent on mouse out
-                shapeLayer.setStyle({ 
-                    color: 'transparent', 
-                    weight: 2 
-                });
+                shapeLayer.setStyle({ color: 'transparent', weight: 2 });
+            
+                const markerEl = document.getElementById(`marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}`);
+                const tooltipEl = markerEl?.querySelector(".xray-marker-info");
+            
+                if (tooltipEl) {
+                    tooltipEl.style.opacity = "0";
+                    tooltipEl.style.zIndex = "-1";
+                }
             });
+            
 
             markerMap.addLayer(marker);
         });
@@ -1530,13 +1740,12 @@ fetch('data/tile_data_100m_20250323.geojson.gz')
                 
                 // Define the materials and their corresponding IDs
                 const materials = {
-                    "value-steel": feature.properties["steel-txt"],
-                    "value-brick": feature.properties["brick-txt"], 
-                    "value-concrete": feature.properties["concrete-txt"],  
-                    "value-glass": feature.properties["glass-txt"], 
-                    "value-wood": feature.properties["wood-txt"], 
+                    "value-steel": `${feature.properties["steel-txt"]} tonnes`,
+                    "value-brick": `${feature.properties["brick-txt"]} tonnes`, 
+                    "value-concrete": `${feature.properties["concrete-txt"]} tonnes`,  
+                    "value-glass": `${feature.properties["glass-txt"]} tonnes`, 
+                    "value-wood": `${feature.properties["wood-txt"]} tonnes`, 
                 };
-        
                 // Loop through the materials object and update the textContent for each ID
                 Object.entries(materials).forEach(([id, value]) => {
                     const element = document.getElementById(id);
@@ -1603,7 +1812,167 @@ fetch('data/tile_data_100m_20250323.geojson.gz')
 
 
 
-// ---------------------------------------------------------------
+
+
+
+
+
+
+// Layer Info Expansion---------------------------------------------------------------
+const layerGuideIcon = document.querySelector('.mainMap-guide-icon');
+const layersContainer = document.querySelector('#mainMap-layers');
+
+// Toggle the expanded class on click
+layerGuideIcon.addEventListener('click', function() {
+    layersContainer.classList.toggle('expanded');
+});
+
+
+
+
+
+// Layer Info Charts------------------------------------
+const ctx = document.getElementById('numFloorsChart');
+
+const labels = ['1F', '2F', '3F', '4F', '5F', '6F', '7F', '8F', '9F', '10F', '11–19F', '20F+'];
+
+const occurrenceData = [13.74, 62.95, 14.25, 3.50, 1.92, 1.85, 0.39, 0.22, 0.13, 0.09, 0.62, 0.34];
+
+const stackedData = {
+  concrete: [3.48, 19.90, 8.27, 3.12, 2.35, 2.29, 0.53, 0.33, 0.22, 0.19, 1.54, 1.18],
+  brick:    [3.53, 19.73, 11.51, 4.52, 3.14, 3.12, 0.46, 0.24, 0.14, 0.10, 0.66, 0.32],
+  wood:     [0.54, 3.40, 1.17, 0.36, 0.24, 0.24, 0.04, 0.03, 0.01, 0.01, 0.08, 0.04],
+  steel:    [0.15, 0.84, 0.47, 0.22, 0.19, 0.15, 0.04, 0.02, 0.02, 0.02, 0.15, 0.25],
+  glass:    [0.04, 0.23, 0.07, 0.02, 0.01, 0.02, 0.00, 0.00, 0.00, 0.00, 0.01, 0.00]
+};
+
+// Build datasets
+const datasets = [
+    {
+      label: 'Building Count',
+      data: occurrenceData,
+      backgroundColor: '#8f9a9a',
+      stack: 'group1',
+    },
+    {
+      label: 'Concrete',
+      data: stackedData.concrete,
+      backgroundColor: 'rgba(255, 234, 0, 0.65)', // #ffea00
+      stack: 'group2',
+    },
+    {
+      label: 'Masonry',
+      data: stackedData.brick,
+      backgroundColor: 'rgba(255, 96, 0, 0.65)', // #ff6000
+      stack: 'group2',
+    },
+    {
+      label: 'Timber',
+      data: stackedData.wood,
+      backgroundColor: 'rgba(51, 126, 255, 0.65)', // #337eff
+      stack: 'group2',
+    },
+    {
+      label: 'Steel',
+      data: stackedData.steel,
+      backgroundColor: 'rgba(191, 0, 255, 0.65)', // #bf00ff
+      stack: 'group2',
+    },
+    {
+      label: 'Glass',
+      data: stackedData.glass,
+      backgroundColor: 'rgba(51, 255, 78, 0.65)', // #33ff4e
+      stack: 'group2',
+    },
+  ];
+  
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: datasets
+  },
+  options: {
+    responsive: true,
+    interaction: {
+      mode: 'index',
+      intersect: false
+    },
+    plugins: {
+      title: {
+        display: false,
+        text: 'Material Usage & Floor Occurrence by NumFloors',
+        font: {
+          family: 'Inter',
+          size: 18
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(2)}%`
+        },
+        bodyFont: {
+          family: 'Inter'
+        },
+        titleFont: {
+          family: 'Inter'
+        }
+      },
+      legend: {
+        display: false,
+        labels: {
+          font: {
+            family: 'Inter'
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        title: {
+          display: false,
+          text: 'Number of Floors',
+          font: {
+            family: 'Inter'
+          }
+        },
+        ticks: {
+          font: {
+            family: 'Inter'
+          }
+        }
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        title: {
+          display: false,
+          text: 'Total Percentage',
+          font: {
+            family: 'Inter'
+          }
+        },
+        ticks: {
+            font: {
+              family: 'Inter'
+            },
+            callback: function(value) {
+              return value + '%';
+            }
+        }
+      }
+    }
+  }
+  
+});
+
+
+
+
+
+
 
 // Intro------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function () {

@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
@@ -59,14 +61,14 @@
     <div id="sidebar">
         <div id="sidebar-background"></div>
         <div id="logo-container">
-            <img src="https://raw.githubusercontent.com/halfward/UrbanVein/main/images/logo.svg" alt="Logo" id="logo">
+            <img src="images/logo-long.svg" alt="NYC Building Materials" id="logo">
             <span id="versionHistoryLink" class="clickable-text"></span>
         </div>
         <div id="sidebar-header">
             <div id="nav-container">
                 <div class="nav-button" id="referencesButton">ABOUT</div>
+                <div class="nav-button" id="mediaButton">PATTERNS</div>
                 <div class="nav-button" id="dataButton">DATA</div>
-                <div class="nav-button" id="mediaButton">ARCHIVE</div>
                 <div id="control-container">
                     <button class="control-button-small" id="historyButton">
                         <img src="images/devlog.svg">
@@ -81,7 +83,7 @@
         <!-- Content containers -->
         <div id="referencesContentText" class="content-text">
             <h2>
-                A Map About New York City's Building Materials
+                A Map About Building Materials
             </h2>
             <button id="toggleSize" style="display: none;">Toggle Size</button>
             <br>
@@ -102,6 +104,109 @@
             </div> 
         </div>
 
+        <div id="mediaContentText" class="content-text">
+            <h2>Colors, Cuts, and Clusters</h2>
+            <p>
+                By overlaying five distinct colors, we can uncover hidden urban patterns throughout NYC. Each hue and stroke on the map reflects a unique historical context and design logic that shaped the city’s built environment. Here are a few patterns to look out for!
+            </p>
+            <div class="scrollable-text-media">
+                <div>
+                    <h3>▘Colors</h3>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Cash Green</div>
+                            <div>Central business districts with lots of glass facades.<br>Ex. Midtown, FiDi</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Kaleidoscope</div>
+                            <div>Dense mixed residential areas. Usually gentrified neighborhoods.<br>Ex. Sunset Park</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Purple-ish</div>
+                            <div>Less-gentrified neighborhoods with lower skylines.<br>Ex. Corona</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Tomato</div>
+                            <div>Areas with industrial roots. Lots of brick & steel buildings.<br>Ex. Maspeth, Red Hook</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Dotty</div>
+                            <div>Urban outskirts populated by single-family housings.<br>Ex. Whitestone</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>▘Cuts</h3>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Valley</div>
+                            <div>Arterials or railways wide enough to carve a path on the map.<br>Ex. Jamaica Ave</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Ridge</div>
+                            <div>Rapid development along major roads with lots of tall buildings.<br>Ex. Queens Blvd</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Stripes</div>
+                            <div>Historic road networks among quieter residential areas.<br>Ex. Liberty Ave</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Thread</div>
+                            <div>Roads or railways in urban outskirts.<br>Ex. Queens Village</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>▘Clusters</h3>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Mono-Cluster</div>
+                            <div>NYCHA buildings and housing projects that occupy large areas.<br>Ex. Starrett City</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Poly-Cluster</div>
+                            <div>Neighborhoods with newer buildings and older centers.<br>Ex. Far Rockaway</div>
+                        </div>
+                    </div>
+                    <div class="pattern-legend-container">
+                        <div class="pattern-legend"></div>
+                        <div class="pattern-text">
+                            <div class="pattern-title">Anti-Cluster</div>
+                            <div>Areas with significantly lower buildings than their neighbors.<br>Ex. Fieldston, Sea Gate</div>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+
         <div id="dataContentText" class="content-text">
             <h2>Built on Openness</h2>
             <p>
@@ -113,24 +218,14 @@
                     <p>
                         NYC buliding material estimate data<br>
                         by Hao Lee
-                    <br><br>
-                    <a href="https://doi.org/10.5281/zenodo.10124952">The Regional Assessment of buildings’ Material Intensities (RASMI)</a><br>
+                        <br><br>
+                        <a href="https://doi.org/10.5281/zenodo.10124952">The Regional Assessment of buildings’ Material Intensities (RASMI)</a><br>
                         by <a href="https://doi.org/10.1038/s41597-024-03190-7">Tomer Fishman, Alessio Mastrucci, Yoav Peled, Shoshanna Saxe, Bas van Ruijven</a>
-
-                    </p>
-                    
-                    <h3>▘Basemap</h3>
-                    <p>
+                        <br><br>
                         <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC MapPLUTO data</a><br>
                         by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
-                        <br><br>
-                        <a href="https://github.com/CityOfNewYork/nyc-geo-metadata/blob/main/Metadata/Metadata_BuildingFootprints.md">NYC Building Footprints</a><br>
-                        by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
-                        <br><br>
-                        <a href="https://data.cityofnewyork.us/Housing-Development/Individual-Landmark-and-Historic-District-Building/7mgd-s57w">Individual Landmark and Historic District Building Database</a><br>
-                        by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
                     </p>
-    
+
                     <h3>▘Basemap Background</h3>
                     <p>
                         <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">New York State civil boundaries</a><br>
@@ -142,20 +237,26 @@
     
                     <h3>▘X-Ray Layers</h3>
                     <p>
-                        <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-gis-zoning.page">nyc gis zoning features</a><br>
-                        by <a href="https://www.nyc.gov/site/planning/index.page">the department of city planning (dcp)</a>
+                        <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-gis-zoning.page">NYC GIS Zoning Features</a><br>
+                        by <a href="https://www.nyc.gov/site/planning/index.page">The Department of City Planning (DCP)</a>
                         <br><br>
-                        <a href="https://data.cityofnewyork.us/Transportation/Subway-Lines/3qz8-muuu">nyc subway lines</a><br>
-                        by <a href="https://new.mta.info/">the metropolitan transportation authority (mta)</a>
+                        <a href="https://data.cityofnewyork.us/Transportation/Subway-Lines/3qz8-muuu">NYC Subway Lines</a><br>
+                        by <a href="https://new.mta.info/">The Metropolitan Transportation Authority (MTA)</a>
                         <br><br>
-                        <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">construction demolition registrants</a><br>
-                        by <a href="https://opendata.cityofnewyork.us/">nyc opendata</a>
+                        <a href="https://geodata.lib.utexas.edu/?f%5Bdct_isPartOf_sm%5D%5B%5D=NYC+Mass+Transit+Spatial+Layers&page=2">2019 LIRR Routes & Stops; <br>2019 Metro-North Routes & Stops; and <br>2017 PATH Train Routes & Stops </a><br>
+                        by <a href="https://geodata.lib.utexas.edu/">The Texas GeoData Portal at UT Austin</a>
                         <br><br>
-                        <a href="https://www.sciencebase.gov/catalog/item/62154ed5d34e4465d409099f">Geospatial data for bedrock elevation and overburden thickness maps of the five boroughs, new york city, new york</a><br>
-                        by laura m.demott, frederick stumm, and jason s. finkelstein, in cooperation with the new york city department of design and construction
+                        <a href="https://data.cityofnewyork.us/City-Government/Construction-Demolition-Registrants/cspg-yi7g/about_data">Construction Demolition Registrants</a><br>
+                        by <a href="https://opendata.cityofnewyork.us/">NYC OpenData</a>
                         <br><br>
-                        <a href="https://archive.nyu.edu/jspui/handle/2451/60058">New York City bus routes, Dec 2019</a><br>
+                        <a href="https://www.sciencebase.gov/catalog/item/62154ed5d34e4465d409099f">Geospatial Data for Bedrock Elevation and Overburden Thickness Maps of the Five Boroughs, New York City, New York</a><br>
+                        By Laura M. DeMott, Frederick Stumm, and Jason S. Finkelstein, in cooperation with the New York City Department of Design and Construction
+                        <br><br>
+                        <a href="https://archive.nyu.edu/jspui/handle/2451/60058">New York City Bus Routes, December 2019</a><br>
                         by <a href="https://guides.newman.baruch.cuny.edu/gis/lab">GIS Lab, Newman Library, Baruch CUNY</a>
+                        <br><br>
+                        <a href="https://hub.arcgis.com/datasets/DCP::dcm-arterials-and-major-streets/about">DCM Arterials and Major Streets, March 2025</a><br>
+                        by <a href="https://www.nyc.gov/content/planning/pages/">NYC Department of City Planning</a>
                         <br><br>
                         <a href="https://github.com/kevin-brown/nyc-open-geojson/blob/master/transportation/bus-stops.geojson">New York City bus stops</a><br>
                         by <a href="https://devpost.com/software/49012">New York Startup Index</a>
@@ -163,38 +264,6 @@
             </div>
         </div>
     
-        <div id="mediaContentText" class="content-text">
-            <h2>The Making of Urban Vein</h2>
-            <p>
-                This archive collects the visual materials during urban vein's development process, including data analysis, initial concept explorations, the evolution of the web ui design, and some branching ideas along the way.
-            </p>
-            <div class="scrollable-text-media">
-                <div>
-                    <h3 id="visualizationArchive" style="cursor: pointer;">▘<a href="https://halfward.github.io/carbon-footprint/">Carbon Quest</a></h3>
-                    <p>
-                        This project was created for GSAPP's Footprint: Carbon & Design course in spring 2025. It explores the complex relationship between embodied and operational carbon, highlighting the challenges of selecting buliding materials amid information barriers. It also contributed to the development of the embedded carbon layer within Urban Vein.
-                    </p>
-                </div>
-                <div>
-                    <h3 id="colloquiumPoster" style="cursor: pointer">▘<a href="media/colloquiumPoster.pdf" target="_blank">Colloquium II: review poster</a></h3>
-                    <p>
-                        This is the poster for the Colloquium II end-of-semester review, designed as a 24" x 36" printed piece. Note how the website then still uses rose charts for hover interaction with less emphasis on reflecting the actual dots per tile on the material map.
-                    </p>
-                </div>
-                <div>
-                    <h3 id="guerillaUrbanism" style="cursor: pointer">▘<a href="https://gsapp-cdp.github.io/colloquium-1-2024/work/hao-lee/">Colloquium I: Guerilla Urbanism</a></h3>
-                    <p>
-                        This is colloquium I's project overview website, which consists of two material-related speculative projects, Booleanify and Balloonify.
-                    </p>
-                </div>
-                <div>
-                    <h3 id="balloonify" style="cursor: pointer">▘<a href="https://halfward.github.io/balloonify/">Colloquium I: Balloonify</a></h3>
-                    <p>
-                        Balloonify explores inflatable interventions as a radical and sarcastic tool for reconfiguring urban landscapes. Set in a speculative future where land scarcity renders new construction impossible, this project envisions architects repurposing existing structures through subscribing to inflatable devices—offering a surreal approach to adaptive reuse.
-                    </p>
-                </div>
-            </div>
-        </div>
 
         <div class="ticker-wrap">
             <a href="https://halfward.github.io/haoLee/">
@@ -245,13 +314,16 @@
 
     <div id="panelContainer">
         <div id="panelBuilding">
+            <button class="label-xray" id="xray-none-title">
+                CLEAR
+            </button>
             <div class="panelTitle" id="panelTitleBuilding">
                 MAP X-RAY
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleBuilding">
             </div>
             <div class="panelContent" id="panelContentBuilding">
                 <div class="panelContentWrapper" id="dropdown-container" style="display: flex; flex-direction: column;">
-                    <div class="close-container">
+                    <!-- <div class="close-container">
                         <button class="label-xray" id="xray-none">
                             <img src="images/panel-collapse.svg" alt="exit">
                         </button>
@@ -262,33 +334,35 @@
                             <img src="images/panel-collapse.svg" alt="exit">
                         </button>
                     </div>
-                    
+                     -->
                     <div class="custom-dropdown" id="map-dropdown">
                         <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
                         <img src="images/layer-map.svg" class="layer-icon">
-                        <div class="dropdown-selected">basemap</div>
+                        <div class="dropdown-selected">Basemap</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option" data-value="esri-topo">esri topographic</div>
-                            <div class="dropdown-option" data-value="satellite">satellite imagery</div>
-                        </div>
-                    </div>
-                    
-                    <div class="custom-dropdown" id="planning-dropdown">
-                        <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
-                        <img src="images/layer-planning.svg" class="layer-icon">
-                        <div class="dropdown-selected">planning</div>
-                        <div class="dropdown-options">
-                            <div class="dropdown-option" data-value="zoning">zoning & landuse</div>
+                            <div class="dropdown-option" data-value="esri-topo">ESRI Topographic</div>
+                            <div class="dropdown-option" data-value="satellite">Satellite Imagery</div>
                         </div>
                     </div>
                     
                     <div class="custom-dropdown" id="transport-dropdown">
                         <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
                         <img src="images/layer-transport.svg" class="layer-icon">
-                        <div class="dropdown-selected">transportation</div>
+                        <div class="dropdown-selected">Transportation</div>
                         <div class="dropdown-options">
-                            <div class="dropdown-option" data-value="subway">subway</div>
-                            <div class="dropdown-option" data-value="bus">bus</div>
+                            <div class="dropdown-option" data-value="subway">MTA Subway</div>
+                            <div class="dropdown-option" data-value="railway">MTA Railroads + PATH</div>
+                            <div class="dropdown-option" data-value="road">Arterials + Major Roads</div>
+                            <div class="dropdown-option" data-value="bus">Bus Routes</div>
+                        </div>
+                    </div>
+
+                    <div class="custom-dropdown" id="planning-dropdown">
+                        <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
+                        <img src="images/layer-planning.svg" class="layer-icon">
+                        <div class="dropdown-selected">Planning</div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option" data-value="zoning">Zoning & Landuse</div>
                         </div>
                     </div>
                 </div>
@@ -436,32 +510,32 @@
                     </div>
                     <div class= "info-text-box">
                         <div class="info-text-container">
-                            <div class="info-text left">borough</div>
+                            <div class="info-text left">Borough</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="borough"></div>
                         </div>
                         <div class="info-text-container">
-                            <div class="info-text left">neighborhood/area</div>
+                            <div class="info-text left">Neighborhood</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="neighborhood">(work in progress)</div>
                         </div>               
                         <div class="info-text-container">
-                            <div class="info-text left">zoning types</div>
+                            <div class="info-text left">Zoning types</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="zonedist"></div>
                         </div>  
                         <div class="info-text-container" style="margin-top: 10px;">
-                            <div class="info-text left">avg./med. floor area ratio</div>
+                            <div class="info-text left">Avg./Med. Floor Area Ratio</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="builtfar"></div>
                         </div>  
                         <div class="info-text-container">
-                            <div class="info-text left">avg./med. building age</div>
+                            <div class="info-text left">Avg./Med. Building Age</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="yearbuilt"></div>
                         </div>  
                         <div class="info-text-container">
-                            <div class="info-text left">avg./med. floors</div>
+                            <div class="info-text left">Avg./Med. Floors</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="numfloors"></div>
                         </div>  
@@ -487,23 +561,72 @@
     <div id="xray-mask" class="no-darkmode">
         <div id="xray-map"></div>
     </div>
+    <div id="xray-roads-legend">
+        <div id="xray-roads-legend-guide">Click to show road names</div>
+        <ul>
+            <div class="xray-roads-legend-li">
+                <span class="xray-road-line" id="xray-road-legendA"></span>
+                Highway
+            </div>            
+            <div class="xray-roads-legend-li">
+                <span class="xray-road-line" id="xray-road-legendB"></span>
+                Major Road
+            </div>  
+            <div class="xray-roads-legend-li">
+                <span class="xray-road-line" id="xray-road-legendC"></span>
+                Existing
+            </div>            
+            <div class="xray-roads-legend-li">
+                <span class="xray-road-line" id="xray-road-legendD"></span>
+                Proposed
+            </div>  
+        </ul>
+    </div>
     <div id="xray-legend">
         <ul>
-            <div class="xray-legend-li">residential</div>
-            <div class="xray-legend-li">commercial</div>
-            <div class="xray-legend-li">manufacturing</div>
-            <div class="xray-legend-li">park</div>
+            <div class="xray-legend-li">Residential</div>
+            <div class="xray-legend-li">Commercial</div>
+            <div class="xray-legend-li">Manufacturing</div>
+            <div class="xray-legend-li">Park</div>
         </ul>
     </div>
     
     <div id="mainMap-layers-container">
         <div id="mainMap-layers">
-            <button class="mainMap-layers-button" id="mainMap-all">ALL</button>
-            <button class="mainMap-layers-button" id="mainMap-2a">≤2F</button>
-            <button class="mainMap-layers-button" id="mainMap-2b">>2F</button>
-            <button class="mainMap-layers-button" id="mainMap-1940a">PRE-1940</button>
-            <button class="mainMap-layers-button" id="mainMap-1940b">POST-1940</button>
-            <img src="images/guide.svg" alt="guide" class="mainMap-guide-icon">
+            <div id="mainMap-layers-diagram">
+                <div id="mainMap-layers-diagram-text">
+                    <div style="font-size: 0.9rem; margin-bottom: 10px; font-weight: 600;">NYC Buildings Are Short and Old.
+                    </div>
+                    <p>
+                        Over <b>75%</b> of the city's buildings are <b>two stories or less</b>, and more than <b>50%</b> were built <b>before 1940</b>. 
+                    </p>
+                    <p>
+                        In terms of materials, over <b>50%</b> of the building materials come from <b>two or fewer story structures</b>, nearly <b>70%</b> of which are from buildings built <b>before 1940</b>. 
+                    </p>
+                    <p>
+                        (Source: PLUTO via NYC OpenData)
+                    </p>
+                </div>
+                <div id="mainMap-layers-diagram-legend">
+                    <div id="mainMap-layers-diagram-legendA"></div>
+                    Building Count
+                    <div id="mainMap-layers-diagram-legendB"></div>
+                    <div id="mainMap-layers-diagram-legendC"></div>
+                    <div id="mainMap-layers-diagram-legendD"></div>
+                    <div id="mainMap-layers-diagram-legendE"></div>
+                    <div id="mainMap-layers-diagram-legendF"></div>
+                    Material Weight
+                </div>
+                <canvas id="numFloorsChart" height="240"></canvas>
+            </div>
+            <div>
+                <button class="mainMap-layers-button" id="mainMap-all">ALL</button>
+                <button class="mainMap-layers-button" id="mainMap-2a">≤2F</button>
+                <button class="mainMap-layers-button" id="mainMap-2b">>2F</button>
+                <button class="mainMap-layers-button" id="mainMap-1940a">PRE-1940</button>
+                <button class="mainMap-layers-button" id="mainMap-1940b">POST-1940</button>
+                <img src="images/guide.svg" alt="guide" class="mainMap-guide-icon">
+            </div>
         </div>
     </div>
 

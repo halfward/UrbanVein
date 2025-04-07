@@ -1641,12 +1641,77 @@ sup {
     margin: 0;
     margin-bottom: 5px;
 }
+
+
+.mainMap-toggle-container {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    right: 45px;
+    font-size: 0.70rem;
+    font-weight: 700;
+    color: black;
+    background-color: #e1e4e4;
+    border: #bfcdcd solid 1px;
+    padding-top: 1px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 20px;
+    gap: 5px;
+    transform: translate(65px, 210px);
+}
+.mainMap-toggle {
+    position: relative;
+    width: 25px;
+    height: 13px;
+    margin-left: 9px;
+    margin-right: 9px;
+    /* transform: translateY(-1px); */
+}
+
+
+#mainMap-toggle-short,
+#mainMap-toggle-old {
+  color: inherit; /* default color */
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+/* When checked — SHORT becomes #bfcdcd, OLD becomes default */
+.mainMap-toggle-input:checked ~ #mainMap-toggle-short {
+  color: #8f9a9a;
+}
+.mainMap-toggle-input:checked ~ #mainMap-toggle-old {
+  color: inherit;
+}
+/* When unchecked — OLD becomes #bfcdcd, SHORT stays default */
+.mainMap-toggle-input:not(:checked) ~ #mainMap-toggle-old {
+  color: #8f9a9a;
+}
+
+.mainMap-toggle-input {
+    display: none; 
+}
+  .mainMap-toggle-label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+  }
+
+
+
+
+
 #mainMap-layers-diagram-legend {
     display: flex;
     align-items: center;
-    margin-top: 25px;
-    padding-left: 15px;
-    padding-right: 15px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 600;
 }
 #mainMap-layers-diagram-legendA,
 #mainMap-layers-diagram-legendB,
@@ -1666,7 +1731,7 @@ sup {
 }
 #mainMap-layers-diagram-legendA,
 #mainMap-layers-diagram-legendF {
-    margin-right: 5px;
+    margin-right: 10px;
 }
 #mainMap-layers-diagram-legendA {
     width: 35px;
@@ -1674,7 +1739,6 @@ sup {
 }
 #mainMap-layers-diagram-legendB {
     background-color: #ffea00;
-    margin-left: 15px;
 }
 #mainMap-layers-diagram-legendC {
     background-color: #ff6000;
@@ -1688,7 +1752,13 @@ sup {
 #mainMap-layers-diagram-legendF {
     background-color: #33ff4e;
 }
-
+canvas {
+    width: 100%;
+    padding-right: 10px;
+    margin-top: 15px;
+    height: 400px;
+    display: block;
+}
 
 .mainMap-layers-button {
     font-family: Inter, sans-serif;
@@ -1732,14 +1802,6 @@ sup {
 }
 
 
-
-canvas {
-    width: 100%;
-    padding-right: 10px;
-    margin-top: 5px;
-    height: 400px;
-    display: block;
-  }
 
 
 

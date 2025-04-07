@@ -3,10 +3,10 @@ to-do:
 - print out brooklyn for laura next week
 - x-rays should be below the marker layer + x-ray on load
 - zoomed-in view on load / case study on load?
-- add yearbuilt chart
 - add markers (& link images) (& tours?)
 - add ML diagrams (loop diagram, etc.) and write the story
 - refine tones.js
+- add neighborhoods tile data?
 - bug: layer toggle first time wont work
 - bug: material weight values under 1,000 are still floats
 

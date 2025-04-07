@@ -1834,11 +1834,10 @@ layerGuideIcon.addEventListener('click', function() {
 // Layer Info Charts------------------------------------
 const ctx = document.getElementById('numFloorsChart');
 
-const labels = ['1F', '2F', '3F', '4F', '5F', '6F', '7F', '8F', '9F', '10F', '11–19F', '20F+'];
-
-const occurrenceData = [13.74, 62.95, 14.25, 3.50, 1.92, 1.85, 0.39, 0.22, 0.13, 0.09, 0.62, 0.34];
-
-const stackedData = {
+// Floor dataset
+const floorLabels = ['1F', '2F', '3F', '4F', '5F', '6F', '7F', '8F', '9F', '10F', '11–19F', '20F+'];
+const floorOccurrenceData = [13.74, 62.95, 14.25, 3.50, 1.92, 1.85, 0.39, 0.22, 0.13, 0.09, 0.62, 0.34];
+const floorStackedData = {
   concrete: [3.48, 19.90, 8.27, 3.12, 2.35, 2.29, 0.53, 0.33, 0.22, 0.19, 1.54, 1.18],
   brick:    [3.53, 19.73, 11.51, 4.52, 3.14, 3.12, 0.46, 0.24, 0.14, 0.10, 0.66, 0.32],
   wood:     [0.54, 3.40, 1.17, 0.36, 0.24, 0.24, 0.04, 0.03, 0.01, 0.01, 0.08, 0.04],
@@ -1846,8 +1845,27 @@ const stackedData = {
   glass:    [0.04, 0.23, 0.07, 0.02, 0.01, 0.02, 0.00, 0.00, 0.00, 0.00, 0.01, 0.00]
 };
 
-// Build datasets
-const datasets = [
+// Decade-based dataset
+const decadeLabels = [
+  '1800s', '1810s', '1820s', '1830s', '1840s', '1850s', '1860s', '1870s', '1880s',
+  '1890s', '1900s', '1910s', '1920s', '1930s', '1940s', '1950s', '1960s', '1970s',
+  '1980s', '1990s', '2000s', '2010s', '2020s'
+];
+const decadeOccurrence = [0.01, 0.00, 0.03, 0.05, 0.13, 0.19, 0.17, 0.30, 0.54, 2.98, 4.72, 7.21, 20.74, 16.02, 7.86, 9.88, 8.12, 4.79, 3.97, 3.99, 5.57, 2.14, 0.60];
+const decadeStacked = {
+  concrete: [0.01, 0.00, 0.04, 0.07, 0.16, 0.21, 0.18, 0.28, 0.52, 1.93, 3.32, 4.39, 8.98, 6.69, 2.30, 2.80, 2.85, 1.64, 1.48, 1.52, 2.44, 1.24, 0.35],
+  brick:    [0.01, 0.01, 0.04, 0.08, 0.18, 0.26, 0.22, 0.36, 0.71, 2.62, 4.19, 5.37, 10.03, 8.32, 2.02, 2.45, 2.52, 1.33, 1.13, 1.38, 2.66, 1.22, 0.38],
+  wood:     [0.00, 0.00, 0.00, 0.01, 0.02, 0.02, 0.02, 0.03, 0.06, 0.27, 0.42, 0.57, 1.29, 0.97, 0.37, 0.44, 0.42, 0.26, 0.23, 0.24, 0.34, 0.14, 0.04],
+  steel:    [0.00, 0.00, 0.00, 0.00, 0.01, 0.01, 0.01, 0.02, 0.03, 0.11, 0.22, 0.29, 0.54, 0.37, 0.09, 0.13, 0.16, 0.09, 0.09, 0.07, 0.14, 0.09, 0.02],
+  glass:    [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.02, 0.03, 0.04, 0.09, 0.06, 0.03, 0.03, 0.03, 0.02, 0.02, 0.02, 0.02, 0.01, 0.00]
+};
+
+// Function to create datasets based on which view is active
+function createDatasets(isDecadeView) {
+  const occurrenceData = isDecadeView ? decadeOccurrence : floorOccurrenceData;
+  const stackedData = isDecadeView ? decadeStacked : floorStackedData;
+  
+  return [
     {
       label: 'Building Count',
       data: occurrenceData,
@@ -1885,13 +1903,14 @@ const datasets = [
       stack: 'group2',
     },
   ];
-  
+}
 
-new Chart(ctx, {
+// Initialize chart with floor dataset
+let myChart = new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: labels,
-    datasets: datasets
+    labels: floorLabels,
+    datasets: createDatasets(false)
   },
   options: {
     responsive: true,
@@ -1900,14 +1919,6 @@ new Chart(ctx, {
       intersect: false
     },
     plugins: {
-      title: {
-        display: false,
-        text: 'Material Usage & Floor Occurrence by NumFloors',
-        font: {
-          family: 'Inter',
-          size: 18
-        }
-      },
       tooltip: {
         callbacks: {
           label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(2)}%`
@@ -1931,13 +1942,6 @@ new Chart(ctx, {
     scales: {
       x: {
         stacked: true,
-        title: {
-          display: false,
-          text: 'Number of Floors',
-          font: {
-            family: 'Inter'
-          }
-        },
         ticks: {
           font: {
             family: 'Inter'
@@ -1947,25 +1951,35 @@ new Chart(ctx, {
       y: {
         stacked: true,
         beginAtZero: true,
-        title: {
-          display: false,
-          text: 'Total Percentage',
+        ticks: {
           font: {
             family: 'Inter'
+          },
+          callback: function(value) {
+            return value + '%';
           }
-        },
-        ticks: {
-            font: {
-              family: 'Inter'
-            },
-            callback: function(value) {
-              return value + '%';
-            }
         }
       }
     }
   }
+});
+
+// Add event listener for toggle
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleInput = document.querySelector('.mainMap-toggle-input');
   
+  if (toggleInput) {
+    toggleInput.addEventListener('change', function() {
+      const isDecadeView = this.checked;
+      
+      // Update chart data
+      myChart.data.labels = isDecadeView ? decadeLabels : floorLabels;
+      myChart.data.datasets = createDatasets(isDecadeView);
+      
+      // Update chart
+      myChart.update();
+    });
+  }
 });
 
 

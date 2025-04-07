@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URBAN VEIN</title>
+    <title>NYC Building Materials</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,7 +83,7 @@
         <!-- Content containers -->
         <div id="referencesContentText" class="content-text">
             <h2>
-                A Map About Building Materials
+                Machine Learning + Data Analysis
             </h2>
             <button id="toggleSize" style="display: none;">Toggle Size</button>
             <br>
@@ -91,9 +91,9 @@
             <div class="scrollable-text-references">
                 <br>
                 <p>
-                    Urban Vein is a dynamic mapping platform that leverages public data, machine learning, and advanced data visualization to map the building materials of New York City. By using these materials as a lens, it explores what exists, what is being lost, and what should be built in the city's future.
+                    NYC Building Materials is a dynamic mapping platform that leverages public data, machine learning, and advanced data visualization to map the building materials of New York City. By using these materials as a lens, it explores what exists, what is being lost, and what should be built in the city's future.
                     <br><br>
-                    Urban Vein is developed by <a href="www.linkedin.com/in/hao-lee-arch">Hao Lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">Computational Design Practices program</a> at <a href="https://www.arch.columbia.edu/">GSAPP Columbia</a>.</p>
+                    NYC Building Materials is developed by <a href="www.linkedin.com/in/hao-lee-arch">Hao Lee</a> for the <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">Computational Design Practices program</a> at <a href="https://www.arch.columbia.edu/">GSAPP Columbia</a>.</p>
                 </p>
                 <div class="control-doc" id="story-button">
                     <!-- <button class="control-button" id="docButton">
@@ -595,29 +595,35 @@
         <div id="mainMap-layers">
             <div id="mainMap-layers-diagram">
                 <div id="mainMap-layers-diagram-text">
-                    <div style="font-size: 0.9rem; margin-bottom: 10px; font-weight: 600;">NYC Buildings Are Short and Old.
+                    <div style="font-size: 0.9rem; margin-bottom: 10px; font-weight: 600; display: flex; flex-direction: row; align-items: center;">
+                        NYC Buildings Are Short and Old.
+                        <div class="mainMap-toggle-container">
+                            <input type="checkbox" id="toggleMap" class="mainMap-toggle-input">
+                            <label id="mainMap-toggle-short" for="toggleMap">SHORT</label>
+                            <label for="toggleMap" class="mainMap-toggle-label"></label>
+                            <label id="mainMap-toggle-old" for="toggleMap">OLD</label>
+                          </div>
+                    </div>
+                    <div id="mainMap-layers-diagram-legend">
+                        <div id="mainMap-layers-diagram-legendA"></div>
+                        Building Count
                     </div>
                     <p>
-                        Over <b>75%</b> of the city's buildings are <b>two stories or less</b>, and more than <b>50%</b> were built <b>before 1940</b>. 
+                        Over <b>75%</b> of the city's buildings are <b>two stories or less</b>,<br> and more than <b>50%</b> were built <b>before 1940</b>. 
                     </p>
+                    <div id="mainMap-layers-diagram-legend">
+                        <div id="mainMap-layers-diagram-legendB"></div>
+                        <div id="mainMap-layers-diagram-legendC"></div>
+                        <div id="mainMap-layers-diagram-legendD"></div>
+                        <div id="mainMap-layers-diagram-legendE"></div>
+                        <div id="mainMap-layers-diagram-legendF"></div>
+                        Building Material Weight
+                    </div>
                     <p>
-                        In terms of materials, over <b>50%</b> of the building materials come from <b>two or fewer story structures</b>, nearly <b>70%</b> of which are from buildings built <b>before 1940</b>. 
-                    </p>
-                    <p>
-                        (Source: PLUTO via NYC OpenData)
+                        Over <b>50%</b> of the materials come from <b>two or fewer story buildings</b>, nearly <b>70%</b> of which are from buildings built <b>before 1940</b>. 
                     </p>
                 </div>
-                <div id="mainMap-layers-diagram-legend">
-                    <div id="mainMap-layers-diagram-legendA"></div>
-                    Building Count
-                    <div id="mainMap-layers-diagram-legendB"></div>
-                    <div id="mainMap-layers-diagram-legendC"></div>
-                    <div id="mainMap-layers-diagram-legendD"></div>
-                    <div id="mainMap-layers-diagram-legendE"></div>
-                    <div id="mainMap-layers-diagram-legendF"></div>
-                    Material Weight
-                </div>
-                <canvas id="numFloorsChart" height="240"></canvas>
+                <canvas id="numFloorsChart" height="250"></canvas>
             </div>
             <div>
                 <button class="mainMap-layers-button" id="mainMap-all">ALL</button>

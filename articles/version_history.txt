@@ -1,27 +1,32 @@
 to-do:
 - carbon footprint: total amount and per person
 - print out brooklyn for laura next week
-- x-rays should be below the marker layer + x-ray on load
-- zoomed-in view on load / case study on load?
+
+- zoomed-in case study on load?
 - add markers (& link images) (& tours?)
-- add ML diagrams (loop diagram, etc.) and write the story
+- add diagrams, write the story
 - refine tones.js
-- add neighborhoods tile data?
 - bug: layer toggle first time wont work
-- bug: material weight values under 1,000 are still floats
+- bug: need to merge the route and station layers for the subway and the railway layers
+- bug: the road name tooltip stays even after switching the x-ray off
 
 0.5.2 (2025-04-04 refinements)
 - added a railway layer (LIRR, Metro-North, and PATH) with station names to the x-ray.
 - added an arterial & major road layer.
 - added description & charts to the map filter toggles.
+- added neighborhood & population tile data.
 - re-added the text "tonnes" to the tile composition panel.
 - changed the project title from urban vein to nyc building materials.
 - adjusted the x-ray panel's ui so that the x-ray can now be cleared even when the panel is collapsed.
 - adjusted the sidebar nav to accommodate the new logo.
 - adjusted the marker info panel logic (updateTooltipDirection) so that they will always be inside the client window.
+- the esri x-ray is now on by default.
+- the x-ray function now operates within mainMap as a pane instead of a standalone x-ray map.
 - replaced the "archive" tab with the "patterns" tab.
 - the three panels are now expanded on page load.
 - bug fix: after deactivating an x-ray layer, the layer name will now revert back to the default category name and color.
+- bug fix: now the hovered marker icon and its info panel will not be obstructed by other markers.
+- bug fix: sub-1,000 material values are now integers instead of floats.
 
 0.5.1 (2025-03-23 dataset update)
 - added four material datasets and their respective layer toggles: <=2 floors, >2 floors, <=1940 built year, and >1940 bulit year.

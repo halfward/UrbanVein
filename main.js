@@ -631,53 +631,41 @@ guideIcon.addEventListener("mouseleave", () => {
 // ----------------------------------------------------------------------
 
 // X-ray mask div-----------------------------------------------------
-// Initialize the X-ray map inside the mask
-let xrayMap = L.map("xray-map", {
-    center: mainMap.getCenter(),
-    zoom: mainMap.getZoom(),
-    zoomControl: false,
-    attributionControl: false,
-    dragging: false,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    boxZoom: false,
-    keyboard: false,
-    interactive: false,  // Ensures it doesn't interfere with user actions
-});
+// Create custom pane for xray layers first (add this at the beginning of your script)
+mainMap.createPane('xrayPane');
+mainMap.getPane('xrayPane').style.zIndex = 400; // Above base map, below controls
+mainMap.getPane('xrayPane').style.pointerEvents = 'none'; // Prevent interaction with xray layers by default
+let xrayLegend = document.getElementById("xray-legend");
+let xrayRoadsLegend = document.getElementById("xray-roads-legend");
 
 
-
-// Define tile layers
 const xraySatelliteLayer = L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
     {
         attribution: 'Tiles &copy; Esri',
+        pane: 'xrayPane'
     }
 );
+
 const xrayEsriLayer = L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', 
     {
         attribution: 'Tiles &copy; Esri',
+        pane: 'xrayPane'
     }
 );
-
-
 // Define zoning layer (GeoJSON)
 let xrayZoningLayer; // Declare globally for toggle functionality
 
 fetch('data/nyzd.geojson.gz')
-    .then(response => response.arrayBuffer()) // Get the binary data as an array buffer
+    .then(response => response.arrayBuffer())
     .then(data => {
-        // Decompress the data using pako
         const decompressedData = pako.inflate(data, { to: 'string' });
-        
-        // Parse the decompressed JSON into an object
         const geoJsonData = JSON.parse(decompressedData);
         
-        // Function to determine fill color based on ZONEDIST property
         const getFillColor = (zonedist) => {
-            if (!zonedist) return 'transparent'; // Handle undefined values
-            zonedist = zonedist.trim(); // Remove extra spaces
+            if (!zonedist) return 'transparent';
+            zonedist = zonedist.trim();
             if (zonedist.startsWith('R')) return 'gold';
             if (zonedist.startsWith('C')) return 'tomato';
             if (zonedist.startsWith('M')) return 'violet';
@@ -685,14 +673,14 @@ fetch('data/nyzd.geojson.gz')
             return 'transparent';
         };
 
-        // Initialize the GeoJSON layer (but do not add to map yet)
         xrayZoningLayer = L.geoJSON(geoJsonData, {
+            pane: 'xrayPane', // Use the custom pane
             style: (feature) => {
                 const fillColor = getFillColor(feature.properties.ZONEDIST);
                 return {
-                    weight: 1,                  // Border weight
-                    color: fillColor,           // Border color
-                    fillColor: fillColor,       // Fill color
+                    weight: 1,
+                    color: fillColor,
+                    fillColor: fillColor,
                     fillOpacity: 0.7,
                     interactive: false 
                 };
@@ -701,32 +689,30 @@ fetch('data/nyzd.geojson.gz')
     })
     .catch(error => console.error('Error loading or decompressing GeoJSON:', error));
 
-
 // Define subway layers (GeoJSON)
-let xraySubwayLayer, xraySubwayStationsLayer; // Declare globally for toggle functionality
+let xraySubwayLayer, xraySubwayStationsLayer;
 
 fetch('data/transportation_subway_routes.geojson')
     .then(response => response.json())
     .then(data => {
-        // NYC Subway Colors by MTA Line Symbols
         const subwayColors = {
-            "1": "#EE352E", "2": "#EE352E", "3": "#EE352E", // Red
-            "4": "#00933C", "5": "#00933C", "6": "#00933C", // Green
-            "7": "#B933AD", // Purple
-            "A": "#0039A6", "C": "#0039A6", "E": "#0039A6", // Blue
-            "B": "#FF6319", "D": "#FF6319", "F": "#FF6319", "M": "#FF6319", // Orange
-            "G": "#6CBE45", // Light Green
-            "J": "#996633", "Z": "#996633", // Brown
-            "L": "#A7A9AC", // Gray
-            "N": "#FCCC0A", "Q": "#FCCC0A", "R": "#FCCC0A", // Yellow
-            "S": "#808183"  // Dark Gray (Shuttle)
+            "1": "#EE352E", "2": "#EE352E", "3": "#EE352E",
+            "4": "#00933C", "5": "#00933C", "6": "#00933C",
+            "7": "#B933AD",
+            "A": "#0039A6", "C": "#0039A6", "E": "#0039A6",
+            "B": "#FF6319", "D": "#FF6319", "F": "#FF6319", "M": "#FF6319",
+            "G": "#6CBE45",
+            "J": "#996633", "Z": "#996633",
+            "L": "#A7A9AC",
+            "N": "#FCCC0A", "Q": "#FCCC0A", "R": "#FCCC0A",
+            "S": "#808183"
         };
 
-        // Initialize the Subway Lines Layer
         xraySubwayLayer = L.geoJSON(data, {
+            pane: 'xrayPane', // Use the custom pane
             style: (feature) => {
                 const lineSymbol = feature.properties.rt_symbol;
-                const color = subwayColors[lineSymbol] || "#000000"; // Default black if undefined
+                const color = subwayColors[lineSymbol] || "#000000";
                 return {
                     weight: 3, 
                     color: color, 
@@ -738,11 +724,11 @@ fetch('data/transportation_subway_routes.geojson')
             }
         });
 
-        // Load and add subway stations
         fetch('data/transportation_subway_stops.geojson')
             .then(response => response.json())
             .then(stationData => {
                 xraySubwayStationsLayer = L.geoJSON(stationData, {
+                    pane: 'xrayPane', // Use the custom pane
                     pointToLayer: (feature, latlng) => {
                         return L.circleMarker(latlng, {
                             radius: 5,
@@ -760,15 +746,14 @@ fetch('data/transportation_subway_routes.geojson')
     })
     .catch(error => console.error('Error loading subway lines:', error));
 
-
 // Define railway layers (GeoJSON)
 let xrayRailwayLayer, xrayRailwayStationsLayer, xrayRailwayStationLabelsLayer;
 
-// Load railway lines
 fetch('data/transportation_railway_routes.geojson')
     .then(response => response.json())
     .then(data => {
         xrayRailwayLayer = L.geoJSON(data, {
+            pane: 'xrayPane', // Use the custom pane
             style: (feature) => {
                 const color = feature.properties.color || "#000000";
                 return {
@@ -782,12 +767,11 @@ fetch('data/transportation_railway_routes.geojson')
             }
         });
 
-        // Load railway stations
         fetch('data/transportation_railway_stops.geojson')
             .then(response => response.json())
             .then(stationData => {
-                // Stations as circle markers
                 xrayRailwayStationsLayer = L.geoJSON(stationData, {
+                    pane: 'xrayPane', // Use the custom pane
                     pointToLayer: (feature, latlng) => {
                         return L.circleMarker(latlng, {
                             radius: 5,
@@ -801,13 +785,18 @@ fetch('data/transportation_railway_routes.geojson')
                     }
                 });
 
-                // Station name labels
+                // Create a separate pane for labels if needed
+                mainMap.createPane('xrayLabelsPane');
+                mainMap.getPane('xrayLabelsPane').style.zIndex = 401; // Above xrayPane
+                mainMap.getPane('xrayLabelsPane').style.pointerEvents = 'none';
+
                 xrayRailwayStationLabelsLayer = L.layerGroup();
                 stationData.features.forEach(feature => {
                     const latlng = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]];
                     const stationName = feature.properties.station;
 
                     const label = L.marker(latlng, {
+                        pane: 'xrayLabelsPane', // Use labels pane
                         icon: L.divIcon({
                             html: `
                                 <div style="
@@ -835,7 +824,6 @@ fetch('data/transportation_railway_routes.geojson')
                         interactive: false
                     });
                     
-
                     xrayRailwayStationLabelsLayer.addLayer(label);
                 });
             })
@@ -843,16 +831,20 @@ fetch('data/transportation_railway_routes.geojson')
     })
     .catch(error => console.error('Error loading railway lines:', error));
 
-
-
 // Define road layer (GeoJSON)
 let xrayRoadsLayer;
-let currentRoadPopup = null; // Track currently open popup
+let currentRoadPopup = null;
+
+// Create a new pane for interactive road elements
+mainMap.createPane('xrayRoadsPane');
+mainMap.getPane('xrayRoadsPane').style.zIndex = 402; // Above other xray panes
+mainMap.getPane('xrayRoadsPane').style.pointerEvents = 'auto'; // Allow interaction
 
 fetch('data/transportation_roads.geojson')
     .then(response => response.json())
     .then(data => {
         const visibleLayer = L.geoJSON(data, {
+            pane: 'xrayPane', // Use xray pane for visible roads
             style: (feature) => {
                 const type = feature.properties.Route_Type;
                 const status = feature.properties.Route_Status;
@@ -866,6 +858,7 @@ fetch('data/transportation_roads.geojson')
         });
 
         const bufferLayer = L.geoJSON(data, {
+            pane: 'xrayRoadsPane', // Use interactive pane for the buffers
             style: {
                 color: '#000000',
                 weight: 15,
@@ -875,129 +868,106 @@ fetch('data/transportation_roads.geojson')
                 const name = feature.properties.Route_Name || 'Unnamed Route';
 
                 layer.on('click', function (e) {
-                    // Close existing popup if it exists and isn't the same
-                    if (currentRoadPopup && xrayMap.hasLayer(currentRoadPopup)) {
+                    // Close existing popup if it exists
+                    if (currentRoadPopup && mainMap.hasLayer(currentRoadPopup)) {
                         currentRoadPopup.remove();
                     }
 
                     currentRoadPopup = L.popup({
+                        pane: 'xrayRoadsPane', // Use interactive pane for popups
                         closeButton: false,
                         autoClose: false,
                         closeOnClick: false
                     })
                         .setLatLng(e.latlng)
                         .setContent(`<strong>${name}</strong>`)
-                        .openOn(xrayMap);
+                        .openOn(mainMap); // Open on mainMap instead of xrayMap
                 });
             }
         });
 
         xrayRoadsLayer = L.layerGroup([visibleLayer, bufferLayer]);
-
     })
     .catch(error => console.error('Error loading roads data:', error));
 
-
-
-
-
-
 // Define bus routes layer (GeoJSON)
-let xrayBusLayer; // Declare globally for toggle functionality
+let xrayBusLayer;
 
 fetch('data/transportation_bus_routes.geojson.gz') 
-    .then(response => response.arrayBuffer())  // Get the binary data as an ArrayBuffer
+    .then(response => response.arrayBuffer())
     .then(data => {
         const decompressedData = pako.inflate(data, { to: 'string' });
         const geoJsonData = JSON.parse(decompressedData);
 
         xrayBusLayer = L.geoJSON(geoJsonData, {
+            pane: 'xrayPane', // Use the custom pane
             style: (feature) => {
-                const routeColor = feature.properties.color || "#000000"; // Default to black if undefined
+                const routeColor = feature.properties.color || "#000000";
                 return {
-                    weight: 2,               // Line thickness
-                    color: routeColor,       // Line color from GeoJSON data
-                    opacity: 1,              // Full visibility
-                    fillOpacity: 0,           // No fill for bus lines
+                    weight: 2,
+                    color: routeColor,
+                    opacity: 1,
+                    fillOpacity: 0,
                     interactive: false 
                 };
             }
-        })
+        });
     })
     .catch(error => console.error('Error loading or decompressing bus GeoJSON:', error));
 
 
+// 3. Create a mask element to clip the pane
+const xrayMaskElement = document.createElement('div');
+xrayMaskElement.id = 'xray-mask-element';
+document.body.appendChild(xrayMaskElement);
 
-// Get x-ray elements
-let xrayMask = document.getElementById("xray-mask");
-let xrayRoadsLegend = document.getElementById("xray-roads-legend");
-let xrayLegend = document.getElementById("xray-legend");
-let xrayControl = document.querySelector(".sml-container");
-let xrayMapElement = document.getElementById("xray-map"); 
+// Set initial style for the mask
+xrayMaskElement.style.position = 'absolute';
+xrayMaskElement.style.pointerEvents = 'none';
+xrayMaskElement.style.display = 'none';
+xrayMaskElement.style.zIndex = 401; // Just above the xrayPane
 
-// 1. Position the xray map overlay statically on top of the main map
-function positionXrayMapOverlay() {
-    // Get main map container position and dimensions
-    const mainMapContainer = mainMap.getContainer();
-    const mainMapRect = mainMapContainer.getBoundingClientRect();
-    
-    // Position the xray map element to fully cover the main map
-    xrayMapElement.style.position = "absolute";
-    xrayMapElement.style.left = `${mainMapRect.left}px`;
-    xrayMapElement.style.top = `${mainMapRect.top}px`;
-    xrayMapElement.style.width = `${mainMapRect.width}px`;
-    xrayMapElement.style.height = `${mainMapRect.height}px`;
-    xrayMapElement.style.zIndex = "-1";
-    
-    // Set the xray map to initially be fully hidden/clipped
-    xrayMapElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
-    xrayMapElement.style.webkitClipPath = "inset(100% 100% 100% 100% round 15px)";
-    
-    // Make sure the maps are synced
-    xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
-}
-
-// 2. Make xray map pass through pointer events when not in active region
-function setupPointerEventHandling() {
-    xrayMapElement.style.pointerEvents = "none";
-
-    // Create a style element to add a new CSS class
-    const styleElement = document.createElement('style');
-    document.head.appendChild(styleElement);
-}
-
-// 3. Sync maps when main map is moved
-mainMap.on('move', function() {
-    xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
-});
-
-// 4. Updated mouse movement handler for rounded square reveal window
+// 4. Updated mouse movement handler for clipping
 document.addEventListener("mousemove", function (e) {
-    if (xrayMask.style.display === "block") {
-        // Get mouse position relative to page
+    if (xrayMaskElement.style.display === "block") {
         const mouseX = e.pageX;
         const mouseY = e.pageY;
-        
-        // Size of the reveal window (adjust as needed)
         const revealSize = 350;
         const cornerRadius = 15;
         
-        // Update the clip path to create a rounded square reveal window
-        xrayMapElement.style.clipPath = `inset(
-            calc(${mouseY}px - ${revealSize / 2}px) 
-            calc(100% - ${mouseX}px - ${revealSize / 2}px) 
-            calc(100% - ${mouseY}px - ${revealSize / 2}px) 
-            calc(${mouseX}px - ${revealSize / 2}px)
-            round ${cornerRadius}px
-        )`;
-        xrayMapElement.style.webkitClipPath = `inset(
-            calc(${mouseY}px - ${revealSize / 2}px) 
-            calc(100% - ${mouseX}px - ${revealSize / 2}px) 
-            calc(100% - ${mouseY}px - ${revealSize / 2}px) 
-            calc(${mouseX}px - ${revealSize / 2}px)
+        // Get the pane element
+        const paneElement = mainMap.getPane('xrayPane');
+
+        // Convert page coordinates to map container coordinates
+        const mapContainer = mainMap.getContainer();
+        const rect = mapContainer.getBoundingClientRect();
+        const containerPoint = L.point(
+            mouseX - rect.left - window.pageXOffset,
+            mouseY - rect.top - window.pageYOffset
+        );
+
+        // Convert container coordinates to map layer point
+        const layerPoint = mainMap.containerPointToLayerPoint(containerPoint);
+        
+        // Apply clip-path to the pane element
+        const clipPathValue = `inset(
+            calc(${layerPoint.y}px - ${revealSize / 2}px) 
+            calc(100% - ${layerPoint.x}px - ${revealSize / 2}px) 
+            calc(100% - ${layerPoint.y}px - ${revealSize / 2}px) 
+            calc(${layerPoint.x}px - ${revealSize / 2}px)
             round ${cornerRadius}px
         )`;
         
+        paneElement.style.clipPath = clipPathValue;
+        paneElement.style.webkitClipPath = clipPathValue;
+        
+        // Also apply the clip path to all SVG and shape elements within the pane
+        const clipTargets = paneElement.querySelectorAll('svg, g, path, circle, rect, line, polyline, polygon');
+        clipTargets.forEach(el => {
+            el.style.clipPath = clipPathValue;
+            el.style.webkitClipPath = clipPathValue;
+        });
+
         // Position legend near cursor if visible
         if (xrayLegend.style.display === "block") {
             xrayLegend.style.left = `${mouseX - revealSize / 2}px`;
@@ -1012,89 +982,90 @@ document.addEventListener("mousemove", function (e) {
 
 // 5. Updated function to update X-ray mode
 function updateXray(mode) {
+    const paneElement = mainMap.getPane('xrayPane');
+    
+    // Helper function to safely check and remove a layer
+    function removeLayerIfExists(layer) {
+        if (layer && mainMap.hasLayer(layer)) {
+            mainMap.removeLayer(layer);
+        }
+    }
+    
     if (mode === "none") {
-        xrayMask.style.display = "none";
+        xrayMaskElement.style.display = "none";
         xrayRoadsLegend.style.display = "none";
         xrayLegend.style.display = "none";
-        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer));
-        // Hide the xray map completely
-        xrayMapElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
-        xrayMapElement.style.webkitClipPath = "inset(100% 100% 100% 100% round 15px)";
-        // xrayMarkers.forEach(marker => mainMap.removeLayer(marker));
-    } else {
-        // Position the overlay map first
-        positionXrayMapOverlay();
         
-        xrayMask.style.display = "block";
+        // Remove all x-ray layers from the map
+        removeLayerIfExists(xraySatelliteLayer);
+        removeLayerIfExists(xrayEsriLayer);
+        removeLayerIfExists(xrayZoningLayer);
+        removeLayerIfExists(xraySubwayLayer);
+        removeLayerIfExists(xraySubwayStationsLayer);
+        removeLayerIfExists(xrayRailwayLayer);
+        removeLayerIfExists(xrayRailwayStationsLayer);
+        removeLayerIfExists(xrayRailwayStationLabelsLayer);
+        removeLayerIfExists(xrayRoadsLayer);
+        removeLayerIfExists(xrayBusLayer);
+        
+        // Hide the pane with clip path
+        paneElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
+        paneElement.style.webkitClipPath = "inset(100% 100% 100% 100% round 15px)";
+    } else {
+        xrayMaskElement.style.display = "block";
         xrayRoadsLegend.style.display = "none";
         xrayLegend.style.display = "none";
-        xrayMap.eachLayer(layer => xrayMap.removeLayer(layer));
+        
+        // Remove all x-ray layers first
+        removeLayerIfExists(xraySatelliteLayer);
+        removeLayerIfExists(xrayEsriLayer);
+        removeLayerIfExists(xrayZoningLayer);
+        removeLayerIfExists(xraySubwayLayer);
+        removeLayerIfExists(xraySubwayStationsLayer);
+        removeLayerIfExists(xrayRailwayLayer);
+        removeLayerIfExists(xrayRailwayStationsLayer);
+        removeLayerIfExists(xrayRailwayStationLabelsLayer);
+        removeLayerIfExists(xrayRoadsLayer);
+        removeLayerIfExists(xrayBusLayer);
         
         // Add the appropriate layer based on mode
-        if (mode === "satellite") {
-            xraySatelliteLayer.addTo(xrayMap);
-            // xrayMarkers.forEach(marker => marker.addTo(xrayMap));
-        } else if (mode === "esri-topo") {
-            xrayEsriLayer.addTo(xrayMap);
-            // xrayMarkers.forEach(marker => marker.addTo(xrayMap));
+        if (mode === "satellite" && xraySatelliteLayer) {
+            xraySatelliteLayer.addTo(mainMap);
+        } else if (mode === "esri-topo" && xrayEsriLayer) {
+            xrayEsriLayer.addTo(mainMap);
         } else if (mode === "subway") {
-            xraySubwayLayer.addTo(xrayMap);
-            xraySubwayStationsLayer.addTo(xrayMap);
-            // xrayMarkers.forEach(marker => marker.addTo(mainMap));
+            if (xraySubwayLayer) xraySubwayLayer.addTo(mainMap);
+            if (xraySubwayStationsLayer) xraySubwayStationsLayer.addTo(mainMap);
         } else if (mode === "railway") {
-            xrayRailwayLayer.addTo(xrayMap);
-            xrayRailwayStationsLayer.addTo(xrayMap);
-        
+            if (xrayRailwayLayer) xrayRailwayLayer.addTo(mainMap);
+            if (xrayRailwayStationsLayer) xrayRailwayStationsLayer.addTo(mainMap);
+            
             // Add label layer only if zoom level is ≤ 13
-            if (xrayMap.getZoom() > 12) {
-                xrayRailwayStationLabelsLayer.addTo(xrayMap);
+            if (mainMap.getZoom() > 12 && xrayRailwayStationLabelsLayer) {
+                xrayRailwayStationLabelsLayer.addTo(mainMap);
             }
-        
+            
             // Listen for zoom changes and show/hide label layer accordingly
-            xrayMap.on("zoomend", () => {
-                const zoom = xrayMap.getZoom();
-                const hasLabels = xrayMap.hasLayer(xrayRailwayStationLabelsLayer);
-                if (zoom > 12 && !hasLabels) {
-                    xrayRailwayStationLabelsLayer.addTo(xrayMap);
+            mainMap.on("zoomend", () => {
+                const zoom = mainMap.getZoom();
+                const hasLabels = mainMap.hasLayer(xrayRailwayStationLabelsLayer);
+                if (zoom > 12 && !hasLabels && xrayRailwayStationLabelsLayer) {
+                    xrayRailwayStationLabelsLayer.addTo(mainMap);
                 } else if (zoom <= 12 && hasLabels) {
-                    xrayRailwayStationLabelsLayer.removeFrom(xrayMap);
+                    xrayRailwayStationLabelsLayer.removeFrom(mainMap);
                 }
             });
-        } else if (mode === "road") {
-            xrayRoadsLayer.addTo(xrayMap);
+        } else if (mode === "road" && xrayRoadsLayer) {
+            xrayRoadsLayer.addTo(mainMap);
             xrayRoadsLegend.style.display = "block";
-        } else if (mode === "bus") {
-            xrayBusLayer.addTo(xrayMap);
-            // xrayMarkers.forEach(marker => marker.addTo(mainMap));
-        } else if (mode === "zoning") {
-            if (xrayZoningLayer) {
-                xrayZoningLayer.addTo(xrayMap);
-                xrayLegend.style.display = "block";
-                // xrayMarkers.forEach(marker => marker.addTo(mainMap));
-            }
+        } else if (mode === "bus" && xrayBusLayer) {
+            xrayBusLayer.addTo(mainMap);
+        } else if (mode === "zoning" && xrayZoningLayer) {
+            xrayZoningLayer.addTo(mainMap);
+            xrayLegend.style.display = "block";
         }
-        
-        // Force Leaflet to redraw tiles
-        setTimeout(() => {
-            xrayMap.invalidateSize();
-        }, 100);
     }
 }
-
-// 6. Initialize the overlay on page load
-window.addEventListener('load', function() {
-    // Set up initial state
-    positionXrayMapOverlay();
-    setupPointerEventHandling();
-    
-    // Additionally handle window resize to reposition
-    window.addEventListener('resize', positionXrayMapOverlay);
-    
-    // Sync maps when main map is zoomed
-    mainMap.on('zoom', function() {
-        xrayMap.setView(mainMap.getCenter(), mainMap.getZoom());
-    });
-});
 
 
 
@@ -1110,29 +1081,41 @@ document.querySelectorAll(".dropdown-selected").forEach(el => {
     el.style.color = "grey"; // Set default grey color
 });
 
+// Define the "none" buttons
+let noneButtons = document.querySelectorAll(".label-xray");
+
 // Set "none" button as active by default
-let noneButton = document.querySelectorAll(".label-xray");
-noneButton.forEach((button) => {
+noneButtons.forEach((button) => {
     button.classList.add("active"); 
 });
 
 // Function to reset all dropdowns
 function resetDropdowns(except = null) {
+    // Reset all dropdowns except the one currently being interacted with
     document.querySelectorAll(".custom-dropdown").forEach(dropdown => {
         if (dropdown !== except) {
             let selectedText = dropdown.querySelector(".dropdown-selected");
-            selectedText.textContent = selectedText.dataset.default; // Reset text to default
-            selectedText.style.color = "grey"; // Reset text color to grey
-            dropdown.dataset.value = ""; // Clear stored value
+            selectedText.textContent = selectedText.dataset.default; // Reset to category
+            selectedText.style.color = "grey"; // Reset to grey
+
+            let layerIcon = dropdown.querySelector(".layer-icon");
+            if (layerIcon) {
+                layerIcon.classList.remove("active");
+            }
+
+            dropdown.dataset.value = "";
         }
     });
 
-    // Reset "none" button state
-    if (!except) {
-        noneButton.classList.add("active");
-    } else {
-        noneButton.classList.remove("active");
-    }
+    // Always reset "none" buttons, no matter what
+    noneButtons.forEach((button) => {
+        // If a dropdown is *not* being interacted with, "none" should be active
+        if (!except) {
+            button.classList.add("active");
+        } else {
+            button.classList.remove("active");
+        }
+    });
 }
 
 // Function to reset X-ray and dropdown selections
@@ -1141,13 +1124,13 @@ function resetXray() {
     resetDropdowns(); // Reset all dropdowns
 }
 
-// Add event listener to 'none' button
-noneButton.forEach((button) => {
+// Add event listener to 'none' buttons
+noneButtons.forEach((button) => {
     button.addEventListener("click", function () {
         resetXray();
 
-        // Remove "active" from all buttons first (optional, if you want only one to be active at a time)
-        noneButton.forEach((btn) => btn.classList.remove("active"));
+        // Remove "active" from all buttons first
+        noneButtons.forEach((btn) => btn.classList.remove("active"));
 
         // Ensure the clicked button stays active
         button.classList.add("active");
@@ -1174,52 +1157,16 @@ document.querySelectorAll(".dropdown-option").forEach(option => {
             layerIcon.classList.add("active");
         }
 
-        updateXray(this.dataset.value); // Trigger X-ray update
+        updateXray(this.dataset.value); // Trigger X-ray update with the pane-based implementation
 
         // Remove "none" active state for all noneButtons
-        let noneButton = document.querySelectorAll(".label-xray");
-        noneButton.forEach((button) => {
+        noneButtons.forEach((button) => {
             button.classList.remove("active");
         });
     });
 });
 
-
-// Reset function should remove active class from icons too
-function resetDropdowns(except = null) {
-    // Reset all dropdowns except the one currently being interacted with
-    document.querySelectorAll(".custom-dropdown").forEach(dropdown => {
-        if (dropdown !== except) {
-            let selectedText = dropdown.querySelector(".dropdown-selected");
-            selectedText.textContent = selectedText.dataset.default; // Reset to category
-            selectedText.style.color = "grey"; // Reset to grey
-
-            let layerIcon = dropdown.querySelector(".layer-icon");
-            if (layerIcon) {
-                layerIcon.classList.remove("active");
-            }
-
-            dropdown.dataset.value = "";
-        }
-    });
-
-    // Always reset "none" buttons, no matter what
-    let noneButtons = document.querySelectorAll(".label-xray");
-    noneButtons.forEach((button) => {
-        // If a dropdown is *not* being interacted with, "none" should be active
-        if (!except) {
-            button.classList.add("active");
-        } else {
-            button.classList.remove("active");
-        }
-    });
-}
-
-
-
-
-
-// X-ray clear button inverted state---------
+// X-ray clear button inverted state
 const panelTitle = document.getElementById("panelTitleBuilding");
 const clearButton = document.getElementById("xray-none-title");
 
@@ -1232,6 +1179,16 @@ const observer = new MutationObserver(() => {
 });
 
 observer.observe(panelTitle, { attributes: true });
+
+// Set the "ESRI Topographic" option as active by default
+document.addEventListener("DOMContentLoaded", () => {
+    const esriOption = document.querySelector(".dropdown-option[data-value='esri-topo']");
+    if (esriOption) {
+        esriOption.click(); // Simulate a click on the ESRI Topographic option
+    }
+});
+
+
 
 
 
@@ -1432,31 +1389,28 @@ fetch('data/marker-data-20250311-a.geojson')
 
             // Hover event to highlight the shape's border on marker hover
             marker.on("mouseover", function () {
+                // Highlight the shape's border
                 shapeLayer.setStyle({ color: 'black', weight: 2 });
-            
-                // Find the tooltip within this marker
-                const markerEl = document.getElementById(`marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}`);
+                
+                // Raise this marker above others
+                marker.getElement().style.zIndex = '10000'; // Higher than the pane's z-index
+                
+                const markerId = `marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}`;
+                const markerEl = document.getElementById(markerId);
                 const tooltipEl = markerEl?.querySelector(".xray-marker-info");
             
                 if (tooltipEl) {
                     updateTooltipDirection(marker, tooltipEl);
-                    tooltipEl.style.opacity = "1";
-                    tooltipEl.style.zIndex = "-1";
                 }
             });
             
             marker.on("mouseout", function () {
+                // Reset the shape's border color
                 shapeLayer.setStyle({ color: 'transparent', weight: 2 });
-            
-                const markerEl = document.getElementById(`marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}`);
-                const tooltipEl = markerEl?.querySelector(".xray-marker-info");
-            
-                if (tooltipEl) {
-                    tooltipEl.style.opacity = "0";
-                    tooltipEl.style.zIndex = "-1";
-                }
-            });
-            
+                
+                // Reset this marker's z-index to default
+                marker.getElement().style.zIndex = ''; // This will revert to the pane's z-index
+            });  
 
             markerMap.addLayer(marker);
         });
@@ -1625,7 +1579,7 @@ function sanitizeJson(data) {
     return data.replace(/NaN/g, "null");  // Replace NaN with null (or other appropriate value)
 }
 
-fetch('data/tile_data_100m_20250323.geojson.gz')
+fetch('data/tile_data_100m_20250408.geojson.gz')
     .then(response => response.arrayBuffer())
     .then(buffer => {
         const decompressed = pako.ungzip(new Uint8Array(buffer), { to: 'string' });
@@ -1762,6 +1716,8 @@ fetch('data/tile_data_100m_20250323.geojson.gz')
                 // Define a mapping of property names to element IDs
                 const fields = {
                     "borough": props.Borough,
+                    "neighborhood": props.Neighborhood,
+                    "population": props.Population,
                     "zonedist": props.ZoneDist,
                     "builtfar": `${props.BuiltFAR_Mean} / ${props.BuiltFAR_Median}`,
                     "numfloors": `${props.NumFloors_Mean} / ${props.NumFloors_Median}`,

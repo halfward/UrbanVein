@@ -4,30 +4,10 @@
     <h2>What is NYC Building Materials?</h2>
     <br>
     <h3>A platform that looks at New York City’s buildings as layers of material history.</h3>
-    <div class="chapter">
-        <!-- <img src="images/guide-diagram.png" alt="Guide Diagram"> -->
-        <p>
-            <b>Old Buildings, Strategy Games, Shower Thoughts</b>
-            <br>
-            I’ve always been fascinated by old buildings. Watching them get torn down and replaced by glass towers made me wonder: how many materials are packed into these structures, and how can we begin to grasp the scale of it all through visualization? That curiosity led me to the idea of building a platform where people could explore this question through interactive layers. As someone who’s spent a lot of time playing strategy games like RimWorld and the Civilization series, I kept thinking about how those games communicate complex systems through intuitive tile-based layouts. That became a key influence for how I approached the data structure, visualization methods, and UI. This project is about creating a holistic, interactive map of New York City’s material footprint—something that makes visible what’s often overlooked, and invites everyone to think critically about what we’re building, and what we’re losing. 
-        </p>
-    </div>
     <p>
-        <b></b>
-        I like to think the project started all the way back from 2019, when I was doing field research for my undergrad thesis project. It was about an abandoned theater complex that sat in the old entertainment district (Central District) of Taichung. It was a ten-story high empty building with only its basement level still functioning, leasing out parking spots for the neighborhood. 
-    </p>
-    <p>
-        <b>Creating A Local Building Material Platform</b>
+        <b>Old Buildings, Strategy Games, Shower Thoughts</b>
         <br>
-        In my Colloquium design class, there’s a reading I keep coming back to—mainly because of how the author frames local data as something shaped by dynamic, ongoing societal participation. Out of all the great readings in that class, that one really stuck with me:
-        <blockquote>
-            All data are local. Indeed, data are cultural artifacts created by people, and their dutiful machines, at a time, in a place, and with the instruments at hand for audiences that are conditioned to receive them. -Yanni Loukissas, “From Data Sets to Data Settings,” in All Data are Local
-        </blockquote>
-        This got me thinking: how can I take an instrument I know how to play and write a song that resonates—not just with an audience, but with myself? How can I create a platform that reveals how building materials shape the identity of our local environments? The challenge is, I don’t know the instrument yet. I’m an architect, and web development and coding are still very new to me. So the real question is: how do I even begin?
-    </p>
-    <p>
-        During my first semester in the Computational Design Practices Program, 
-        There were three directions I wanted to go in: balloonify, ..., and logistics. (images on the left.)
+        I’ve always been fascinated by old buildings. Watching them get torn down and replaced by glass towers made me wonder: how many materials are packed into these structures, and how can we begin to grasp the scale of it all through visualization? That curiosity led me to the idea of building a platform where people could explore this question through interactive layers. As someone who’s spent a lot of time playing strategy games like RimWorld and the Civilization series, I kept thinking about how those games communicate complex systems through intuitive tile-based layouts. That became a key influence for how I approached the data structure, visualization methods, and UI. This project is about creating a holistic, interactive map of New York City’s material footprint—something that makes visible what’s often overlooked, and invites everyone to think critically about what we’re building, and what we’re losing. 
     </p>
     <blockquote>
         The basic proposition employed is that any place is the sum of historical, physical and biological processes, that these are dynamic, that they constitute social values, that each area has an intrinsic suitability for certain land uses and finally, that certain areas lend themselves to multiple coexisting land uses. - McHarg, I., 1970. Processes as Values, in Design with Nature. Wiley, New York, pp. 102–115.
@@ -37,17 +17,35 @@
 <section id="chapter-why" class="chapter-section">
     <h2>Why Is This Important?</h2>
     <br>
-    <h3>A computational "census" for NYC bulidings.</h3>
+    <h3>A computational "census" for bulidings.</h3>
+    <p>
+        <b>Urbex in Taichung</b>
+        <br>
+        I like to think NYC Building Materials actually started back in 2019, when I was doing field research for my undergrad thesis. It focused on an abandoned theater complex in Taichung’s old entertainment hub—the Central District. It was bulit in 1954 and was abandoned in 2003 during the Taiwan SARS pandemic. The building was ten stories tall, now completely empty except for the basement, which had been converted into a parking rental for the neighborhood. I ended up talking my way in—playing my student card with the security guard to get 30 minutes inside. I wandered the whole building, floor by floor, from the basement to the rooftop.
+    </p>
+    <img class="image-narrow" src="articles/images/taichung-diagram.png" alt="Building diagram" style="margin-bottom: 15px;">
+    <div class="image-figure">A section of Tunghai Theater, or 東海戲院 in Mandarin.</div>
+    <p>
+        Urban exploration—or Urbex, as some of us call it—is an emotionlly intense experience. Your senses sharpen because of the secrecy (or semi-secrecy, in my case), and you notice so much more than you would in a normal setting. It feels like stepping into an alternate reality where everything is still and silent, and you’re the only thing moving—slipping through layers of forgotten slices of life. The furniture was gone or trashed, fixtures torn out, and what remained were surfaces—tiles, textures, the bare bones of the hustle that once was. These were materials that couldn’t be salvaged, so they just sat there for a decade.
+    </p>
+    <img class="image-full" src="articles/images/taichung.png" alt="Building Interior">
+    <div class="image-figure">The now emptied-out complex.</div>
+    <p>
+        Now that the building has been demolished, taken apart and hauled away (in 2020, just one year after I graduated,) I feel an urge to tell a story. One about the identity of a city and how it’s shaped by its parts—its buildings. People come and go, interiors shift, and memories change, but the materials that linger hold a kind of silent presence. I think that deserves to be celebrated.
+    </p>
     <blockquote>
         We need more pluralism in design, not of style but of ideology and values. - Anthony Dunne and Fiona Raby: Speculate Everything, Chapter 1-3, pp.1-47.
     </blockquote>
     <p>
-        At its core, the project is about rethinking how we interact with the city—acknowledging the environmental cost of demolition and construction, and encouraging more thoughtful, sustainable choices. Through mapping and data visualization, it invites users to explore the materials that make up NYC, and to see the city as something dynamic, always in flux. By visualizing what these structures are made of, it reveals what’s disappearing, what still stands, and what might shape how we build in the future.
-        Of course, to build this kind of visualization, I needed data—but there isn’t a ready-made dataset that maps NYC’s building materials at the lot* level. So I decided to create my own using machine learning. I’m combining the Regional Assessment of buildings’ Material Intensities (RASMI) by Tomer Fishman et al. with my own clustering of NYC buildings using the PLUTO dataset from NYC OpenData. The result is a custom dataset that assigns material profiles to every land lot in the city—essentially creating BIM-like information for the entire built environment of NYC. To bring this data to life, I’m using d3.js to visualize it in a hex-tile format. The platform focuses on five key materials—timber, concrete, glass, masonry, and steel—allowing users to explore and compare their presence across different parts of the city.
-        *Building lot: a plot of land designated for constructing a building, often a house or other structure.
-        Earlier, I mentioned how strategy games influenced this project—especially their intuitive UI design. Two features that really stood out to me were X-ray views and info panels. These tools make it easy to compare different layers and tiles, and I wanted to bring that same clarity and interactivity into this platform. 
-        During playtesting, one piece of feedback stood out: users weren’t always sure what the platform was trying to communicate. It lacked enough context to guide them, or a clear statement of purpose. That led me to develop a system of “story markers”—small, material-themed monikers that only reveal their names and histories when clicked. They add a layer of narrative and discovery, helping users not just explore material distributions, but also uncover the why and how behind them: essentially a way of telling NYC’s story through the lens of what it’s made of.
-        It all started with a lack of data.
+        <b>Creating A Local Building Material Platform</b>
+        <br>
+        Fast foward six years later, I'm in New York studying computational design in GSAPP Columbia. In my Colloquium design class, there’s a reading I keep coming back to—mainly because of how the author frames local data as something shaped by dynamic, ongoing societal participation. Out of all the great readings in that class, that one really stuck with me:
+        <blockquote>
+            All data are local. Indeed, data are cultural artifacts created by people, and their dutiful machines, at a time, in a place, and with the instruments at hand for audiences that are conditioned to receive them. -Yanni Loukissas, “From Data Sets to Data Settings,” in All Data are Local
+        </blockquote>
+        This got me thinking: how can I take an instrument I know how to play and write a song that resonates—not just with an audience, but with myself? How can I create a platform that reveals how building materials shape the identity of our local environments? The challenge is, I don’t know the instrument yet. I’m an architect, and web development and coding are still very new to me. So the real question is: how do I even begin?
+    </p>
+    <p>
         <br>
         Life cycle assessments, limited land, and soaring material prices due to raw material shortage and political stress. Inspired by urban miners, who are city-scavenging... cycle economy, there's never been a better time to reassess our built environment from a material standpoint.
     </p>
@@ -75,6 +73,16 @@
     <h2>How Does It Work?</h2>
     <br>
     <h3>It just works.</h3>
+    <p>
+        <b></b>
+        <br>
+        At its core, the project is about rethinking how we interact with the city—acknowledging the environmental cost of demolition and construction, and encouraging more thoughtful, sustainable choices. Through mapping and data visualization, it invites users to explore the materials that make up NYC, and to see the city as something dynamic, always in flux. By visualizing what these structures are made of, it reveals what’s disappearing, what still stands, and what might shape how we build in the future.
+        Of course, to build this kind of visualization, I needed data—but there isn’t a ready-made dataset that maps NYC’s building materials at the lot* level. So I decided to create my own using machine learning. I’m combining the Regional Assessment of buildings’ Material Intensities (RASMI) by Tomer Fishman et al. with my own clustering of NYC buildings using the PLUTO dataset from NYC OpenData. The result is a custom dataset that assigns material profiles to every land lot in the city—essentially creating BIM-like information for the entire built environment of NYC. To bring this data to life, I’m using d3.js to visualize it in a hex-tile format. The platform focuses on five key materials—timber, concrete, glass, masonry, and steel—allowing users to explore and compare their presence across different parts of the city.
+        *Building lot: a plot of land designated for constructing a building, often a house or other structure.
+        Earlier, I mentioned how strategy games influenced this project—especially their intuitive UI design. Two features that really stood out to me were X-ray views and info panels. These tools make it easy to compare different layers and tiles, and I wanted to bring that same clarity and interactivity into this platform. 
+        During playtesting, one piece of feedback stood out: users weren’t always sure what the platform was trying to communicate. It lacked enough context to guide them, or a clear statement of purpose. That led me to develop a system of “story markers”—small, material-themed monikers that only reveal their names and histories when clicked. They add a layer of narrative and discovery, helping users not just explore material distributions, but also uncover the why and how behind them: essentially a way of telling NYC’s story through the lens of what it’s made of.
+        It all started with a lack of data.
+    </p>
     <div class="chapter">
         <img src="images/data-diagram.webp" alt="Data Diagram">
         <p>

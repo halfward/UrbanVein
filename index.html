@@ -214,9 +214,9 @@
             </p>
             <p>
                 <div class="scrollable-text-data">
-                    <h3>▘Material Estimate</a> </h3>
+                    <h3>▘Material Estimate & Tile Data</a> </h3>
                     <p>
-                        NYC buliding material estimate data<br>
+                        NYC Building Material Estimate<br>
                         by Hao Lee
                         <br><br>
                         <a href="https://doi.org/10.5281/zenodo.10124952">The Regional Assessment of buildings’ Material Intensities (RASMI)</a><br>
@@ -224,6 +224,15 @@
                         <br><br>
                         <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC MapPLUTO data</a><br>
                         by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
+                        <br><br>
+                        <a href="https://data2.nhgis.org/">NYC Census data 2020</a><br>
+                        by <a href="https://www.nhgis.org/">The National Historical Geographic Information System (NHGIS)</a>
+                        <br><br>
+                        <a href="https://data.cityofnewyork.us/City-Government/2020-Census-Tracts-Mapped/weqx-t5xr">NYC Census Tracts 2020</a><br>
+                        by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
+                        <br><br>
+                        <a href="https://www.google.com/maps/d/u/0/viewer?mid=1c8sYYoYTy-_b7ml3O5Y5ArkS3eRM1W0&ll=40.73677714231287%2C-73.8026375970926&z=14">NYC Neighborhoods Map</a><br>
+                        originally uploaded by Sam Lerner Dreamer</a>
                     </p>
 
                     <h3>▘Basemap Background</h3>
@@ -517,14 +526,19 @@
                         <div class="info-text-container">
                             <div class="info-text left">Neighborhood</div>
                             <div class="info-text line"></div>
-                            <div class="info-text right" id="neighborhood">(work in progress)</div>
-                        </div>               
+                            <div class="info-text right" id="neighborhood"></div>
+                        </div>
                         <div class="info-text-container">
+                            <div class="info-text left">Population (census avg.)</div>
+                            <div class="info-text line"></div>
+                            <div class="info-text right" id="population"></div>
+                        </div>                  
+                        <div class="info-text-container" style="margin-top: 10px;">
                             <div class="info-text left">Zoning types</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="zonedist"></div>
                         </div>  
-                        <div class="info-text-container" style="margin-top: 10px;">
+                        <div class="info-text-container">
                             <div class="info-text left">Avg./Med. Floor Area Ratio</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="builtfar"></div>
@@ -558,10 +572,10 @@
         <!-- Marker elements will be appended here -->
     </div>
     
-    <div id="xray-mask" class="no-darkmode">
+    <!-- <div id="xray-mask" class="no-darkmode">
         <div id="xray-map"></div>
-    </div>
-    <div id="xray-roads-legend">
+    </div> -->
+    <div id="xray-roads-legend" class="xray-legend">
         <div id="xray-roads-legend-guide">Click to show road names</div>
         <ul>
             <div class="xray-roads-legend-li">
@@ -582,7 +596,7 @@
             </div>  
         </ul>
     </div>
-    <div id="xray-legend">
+    <div id="xray-legend" class="xray-legend">
         <ul>
             <div class="xray-legend-li">Residential</div>
             <div class="xray-legend-li">Commercial</div>

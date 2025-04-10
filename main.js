@@ -639,6 +639,8 @@ let xrayLegend = document.getElementById("xray-legend");
 let xrayRoadsLegend = document.getElementById("xray-roads-legend");
 
 
+
+
 const xraySatelliteLayer = L.tileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
     {
@@ -927,6 +929,7 @@ xrayMaskElement.style.pointerEvents = 'none';
 xrayMaskElement.style.display = 'none';
 xrayMaskElement.style.zIndex = 401; // Just above the xrayPane
 
+
 // 4. Updated mouse movement handler for clipping
 document.addEventListener("mousemove", function (e) {
     if (xrayMaskElement.style.display === "block") {
@@ -1011,7 +1014,7 @@ function updateXray(mode) {
         // Hide the pane with clip path
         paneElement.style.clipPath = "inset(100% 100% 100% 100% round 15px)";
         paneElement.style.webkitClipPath = "inset(100% 100% 100% 100% round 15px)";
-    } else {
+        } else {
         xrayMaskElement.style.display = "block";
         xrayRoadsLegend.style.display = "none";
         xrayLegend.style.display = "none";

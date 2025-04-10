@@ -2,6 +2,8 @@ to-do:
 - carbon footprint: total amount and per person
 - print out brooklyn for laura next week
 
+- bug: the x-ray maps now shift upwards a bit
+- data refinement for NYCHA buildings
 - zoomed-in case study on load?
 - add markers (& link images) (& tours?)
 - add diagrams, write the story

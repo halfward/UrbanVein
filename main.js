@@ -32,7 +32,6 @@ let glassLayer = L.featureGroup().setZIndex(5);
 let woodLayer = L.featureGroup().setZIndex(1); 
 
 
-
 const nycBounds = L.latLngBounds(
     [40.3774, -74.5591], // SW corner
     [41.0176, -73.4004]  // NE corner
@@ -198,7 +197,7 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
     function getOpacityForZoom(zoom) {
         if (zoom <= 11) return 0.15;
         if (zoom === 12) return 0.45;
-        return 0.65;
+        return 0.55;
     }
 
     mainMap.on('zoomend', function() {
@@ -639,23 +638,48 @@ let xrayLegend = document.getElementById("xray-legend");
 let xrayRoadsLegend = document.getElementById("xray-roads-legend");
 
 
+const ShiftedTileLayer = L.TileLayer.extend({
+    initialize: function(url, options) {
+        this._xShift = options.xShift || 0; // in tile fractions
+        this._yShift = options.yShift || 0;
+        L.TileLayer.prototype.initialize.call(this, url, options);
+    },
+
+    _setZoomTransform: function(level, center, zoom) {
+        // Call the default behavior
+        L.TileLayer.prototype._setZoomTransform.call(this, level, center, zoom);
+
+        // Now apply shift based on zoom level
+        const tileSize = this.getTileSize();
+        const xOffset = this._xShift * tileSize.x;
+        const yOffset = this._yShift * tileSize.y;
+
+        // Apply CSS transform to tile container
+        level.el.style.transform += ` translate(${xOffset}px, ${yOffset}px)`;
+    }
+});
 
 
-const xraySatelliteLayer = L.tileLayer(
+const xraySatelliteLayer = new ShiftedTileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', 
     {
         attribution: 'Tiles &copy; Esri',
-        pane: 'xrayPane'
+        pane: 'xrayPane',
+        xShift: 0,
+        yShift: 0.1 // move tiles slightly downward
     }
 );
 
-const xrayEsriLayer = L.tileLayer(
+const xrayEsriLayer = new ShiftedTileLayer(
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', 
     {
         attribution: 'Tiles &copy; Esri',
-        pane: 'xrayPane'
+        pane: 'xrayPane',
+        xShift: 0,
+        yShift: 0.05
     }
 );
+
 // Define zoning layer (GeoJSON)
 let xrayZoningLayer; // Declare globally for toggle functionality
 
@@ -860,7 +884,7 @@ fetch('data/transportation_roads.geojson')
         });
 
         const bufferLayer = L.geoJSON(data, {
-            pane: 'xrayRoadsPane', // Use interactive pane for the buffers
+            pane: 'xrayRoadsPane',
             style: {
                 color: '#000000',
                 weight: 15,
@@ -868,25 +892,33 @@ fetch('data/transportation_roads.geojson')
             },
             onEachFeature: (feature, layer) => {
                 const name = feature.properties.Route_Name || 'Unnamed Route';
-
+        
                 layer.on('click', function (e) {
-                    // Close existing popup if it exists
                     if (currentRoadPopup && mainMap.hasLayer(currentRoadPopup)) {
                         currentRoadPopup.remove();
                     }
-
+        
                     currentRoadPopup = L.popup({
-                        pane: 'xrayRoadsPane', // Use interactive pane for popups
+                        pane: 'xrayRoadsPane',
                         closeButton: false,
                         autoClose: false,
                         closeOnClick: false
                     })
                         .setLatLng(e.latlng)
                         .setContent(`<strong>${name}</strong>`)
-                        .openOn(mainMap); // Open on mainMap instead of xrayMap
+                        .openOn(mainMap);
                 });
+            },
+            filter: (feature) => {
+                // Optional: skip features if needed
+                return true;
+            },
+            coordsToLatLng: function (coords) {
+                // Nudge lat/lng downward slightly (e.g., 0.0001° south)
+                return L.latLng(coords[1] - 0.00120, coords[0]);
             }
         });
+        
 
         xrayRoadsLayer = L.layerGroup([visibleLayer, bufferLayer]);
     })
@@ -1441,6 +1473,27 @@ mainMap.addLayer(markerMap);
 
 // Mini maps--------------------------------
 // Initialize Mini Esri Map
+// Custom TileLayer class that allows fractional shifting
+const MiniShiftedTileLayer = L.TileLayer.extend({
+    initialize: function (url, options) {
+        this._xShift = options.xShift || 0; // Fraction of tile
+        this._yShift = options.yShift || 0;
+        L.TileLayer.prototype.initialize.call(this, url, options);
+    },
+
+    _setZoomTransform: function (level, center, zoom) {
+        L.TileLayer.prototype._setZoomTransform.call(this, level, center, zoom);
+
+        const tileSize = this.getTileSize();
+        const xOffset = this._xShift * tileSize.x;
+        const yOffset = this._yShift * tileSize.y;
+
+        // Apply extra transform
+        level.el.style.transform += ` translate(${xOffset}px, ${yOffset}px)`;
+    }
+});
+
+// Initialize Esri Topo Preview
 let esriMap = L.map("esri-preview", {
     center: mainMap.getCenter(),
     zoom: 17,
@@ -1455,15 +1508,21 @@ let esriMap = L.map("esri-preview", {
     keyboard: false,
     interactive: false,
 });
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA'
-}).addTo(esriMap);
+
+new MiniShiftedTileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA',
+        xShift: 0,
+        yShift: 0.2 // Adjust this as needed (positive = down, negative = up)
+    }
+).addTo(esriMap);
 
 // Initialize Mini Satellite Map
 let satelliteMap = L.map("satellite-preview", {
     center: mainMap.getCenter(),
     zoom: mainMap.getZoom(),
-    zoomSnap: 0, // Allow fractional zoom levels
+    zoomSnap: 0,
     zoomDelta: 0.1,
     zoomControl: false,
     attributionControl: false,
@@ -1474,9 +1533,15 @@ let satelliteMap = L.map("satellite-preview", {
     keyboard: false,
     interactive: false,
 });
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri',
-}).addTo(satelliteMap);
+
+new MiniShiftedTileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+        attribution: 'Tiles &copy; Esri',
+        xShift: 0,
+        yShift: 0.2
+    }
+).addTo(satelliteMap);
 
 // Update previews based on cursor movement
 mainMap.on("mousemove", function (e) {
@@ -1484,6 +1549,7 @@ mainMap.on("mousemove", function (e) {
     esriMap.setView(cursorLatLng, 17.25);
     satelliteMap.setView(cursorLatLng, 17.25);
 });
+
 
 
 

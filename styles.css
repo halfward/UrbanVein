@@ -548,7 +548,7 @@ pre[class*="language-"], code[class*="language-"] {
 }
 
 
-.panelTitle {
+/* .panelTitle {
     margin: 0 !important;
     display: flex;
     align-items: center;
@@ -566,11 +566,27 @@ pre[class*="language-"], code[class*="language-"] {
     border-top-right-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
-.panelTitle.expanded {
+} */
+.panelTitle {
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    padding: 7px;
+    padding-left: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
     color: black;
     background-color: rgba(220, 225, 230, 0.9);
-
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px #bfcdcd solid;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.panelTitle.expanded {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
@@ -585,9 +601,9 @@ pre[class*="language-"], code[class*="language-"] {
 .guide-icon:hover {
     opacity: 1;
 }
-.panelTitle .guide-icon, .panelTitle img {
+/* .panelTitle .guide-icon, .panelTitle img {
     filter: invert(1);
-}
+} */
 .panelTitle.expanded .guide-icon, .panelTitle.expanded img {
     filter: invert(0);
 }
@@ -918,22 +934,55 @@ pre[class*="language-"], code[class*="language-"] {
 
 
 /* X-ray story markers----------------------------- */
-.xray-marker {
-    position: relative;
+#xray-marker-toggle{
+    position: absolute;
+    left: 27px;
+    top: 175px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-family: Inter, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px); 
+    border-radius: 30px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+    padding: 10px;
+    border: #e1e4e4 1px solid;
     cursor: pointer;
-    text-align: center;
-    width: 30px;
-    height: 30px;
-    pointer-events: none;
-    z-index: 1; /* base z-index */
+    width: 27px;
+    height: 27px;
+    z-index: 1002;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 0.1s ease;
 }
-.xray-marker:hover {
-    z-index: 9999;
+.xray-marker-toggle-icon {
+    width: 29px;
+    height: 29px;
+    margin-right: 10px;
+}
+#xray-marker-toggle:hover {
+    width: 160px;
 }
 
+/* Interactiity container */
+.xray-marker {
+    position: relative;
+    pointer-events: auto;
+    z-index: 1; 
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .xray-marker-icon {
     position: relative;
-    z-index: 2; /* icon is always above tooltip */
+    z-index: 2;
     pointer-events: auto;
     width: 30px;
     height: 30px;
@@ -941,21 +990,46 @@ pre[class*="language-"], code[class*="language-"] {
     background-size: cover;
     border-radius: 50%;
     display: inline-block;
-    transition: transform 0.2s ease, filter 0.2s ease;
+    opacity: 0;
+    transform: scale(0);
+    transition: transform 0.4s ease, filter 0.2s ease, opacity 0.4s ease;
 }
+.xray-marker-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transform-origin: center center;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    background: black;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    z-index: 3;
+}
+.xray-marker:hover .xray-marker-label {
+    opacity: 0;
+}
+.xray-marker:hover .xray-marker-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
 
 .xray-marker-info {
     position: absolute;
-    bottom: -5px;
-    left: -5px;
+    bottom: 40px;
+    left: 40px;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: row;
     width: 0;
     height: 0;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
+    border: #bfcdcd 1px solid;
+    background: rgba(223, 228, 232, 0.75);
+    backdrop-filter: blur(8px);
     padding: 0;
     border-radius: 10px;
     font-size: 0.8rem;
@@ -964,79 +1038,86 @@ pre[class*="language-"], code[class*="language-"] {
     white-space: normal;
     text-wrap: normal;
     opacity: 0;
+    height: 0;
+    overflow: hidden;
     transition: opacity 0.5s ease;
-    z-index: 1; /* stays below icon, above map */
+    z-index: 1;
 }
-
 .xray-marker:hover .xray-marker-info {
-    width: 400px;
-    height: auto;
-    padding: 12px 50px;
+    width: 600px;
+    height: 200px;
+    padding: 8px;
     opacity: 1;
 }
-.xray-marker:hover .xray-marker-icon {
-    transform: rotate(60deg);
-    filter: invert(1);
-}
-
-
-
-
 .xray-marker-info.tooltip-top {
     bottom: auto;
-    top: -5px;
+    top: 40px;
 }
 .xray-marker-info.tooltip-right {
     left: auto;
-    right: -5px;
+    right: 40px;
+}
+
+
+.marker-image-source {
+    position: absolute;
+    bottom: 8px;
+    width: 194px;
+    font-size: 0.6rem;
+    line-height: 0.6rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    padding: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    white-space: normal; 
+    word-break: break-word;
+    font-family: Inter, sans-serif;
+}
+.marker-image-source a {
+    color: black;
+}
+.marker-image img {
+    height: 200px;
+    width: 200px !important;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.marker-text-content {
+    display: flex;
+    flex-direction: column;
+    margin-left: 15px;
+    margin-right: 10px;
+    font-family: Inter, sans-serif;
 }
 .marker-header {
     display: flex;
     flex-direction: row;
     align-items: center;
-    border-bottom: white solid 1px;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 .marker-name {
-    font-family: Inter, sans-serif;
     font-size: 0.9rem;
-    font-weight: 500;
-}
-.marker-spacing {
-    flex-grow: 1;
-}
-.marker-materials {
-    display: flex;
-    gap: 5px;
-}
-.material {
-    font-family: Inter, sans-serif;
-    font-size: 0.8rem;
-    line-height: 0.9rem;
     font-weight: 600;
-    padding: 3px;
-    padding-left: 9px;
-    padding-right: 9px;
-    border-radius: 10px;
-    color: black;
 }
 .marker-story {
-    font-family: Inter, sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     line-height: 0.9rem;
-    font-weight: 300;
-    margin-bottom: 15px;
+    font-weight: 400;
+    margin-bottom: 5px;
 }
-.marker-references a {
-    font-family: Inter, sans-serif;
-    font-size: 0.8rem;
-    line-height: 0.9rem;
-    font-weight: 300;
-    color: white !important;
+.marker-references, .marker-references a {
+    font-size: 0.75rem !important;
+    line-height: 0.9rem !important;
+    font-weight: 400;
+    color: black !important;
+    transition: color 0.1s ease;
 }
 .marker-references a:hover {
-    color: lightgray !important; 
+    color: #8f9a9a!important; 
 }
 
 
@@ -1621,13 +1702,13 @@ sup {
     flex-direction: column;
     position: absolute;
     justify-content: flex-end;
-    gap: 0px;
+    gap: 0;
     z-index: 1000;
     bottom: 20px;
     background-color: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(20px); 
-    padding: 3px;
-    border-radius: 18px;
+    /* padding: 3px; */
+    border-radius: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
     height: 31px;
     width: 450px;
@@ -1668,7 +1749,7 @@ sup {
     padding-top: 1px;
     padding-left: 12px;
     padding-right: 12px;
-    border-radius: 20px;
+    border-radius: 15px;
     gap: 5px;
     transform: translate(65px, 210px);
 }
@@ -1772,42 +1853,45 @@ canvas {
     display: block;
 }
 
-.mainMap-layers-button {
+.mainMap-layers-button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.mainMap-layers-button, #mainMap-guide {
     font-family: Inter, sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    padding: 7px;
-    padding-left: 15px;
-    padding-right: 15px;
-    border-radius: 16px;
-    color: #555;
-    background-color: #bfcdcd;
+    height: 31px;
+    padding-left: 19px;
+    padding-right: 19px;
+    color: #8f9a9a;
+    background-color: rgba(220, 225, 230, 0.5);
     border: none;
     cursor: pointer;
+    transition: color 0.3s ease;
 }
-.mainMap-layers-button:hover {
-    background-color: black;
-    color: white;
+.mainMap-layers-button:hover, .mainMap-layers-button.active {
+    color:black;
+    background-color: rgba(203, 208, 212, 0.9);;
 }
-.mainMap-layers-button.active {
-    color: white;
-    background-color: black;
+
+/* #mainMap-guide:hover .mainMap-guide-icon, #mainMap-layers.expanded .mainMap-guide-icon {
+    filter: invert(1);
+} */
+#mainMap-guide:hover, #mainMap-layers.expanded #mainMap-guide {
+    background-color: rgba(203, 208, 212, 0.9);
 }
-#mainMap-2a, #mainMap-1940a {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-    margin-left: 4px;
-}
-#mainMap-2b, #mainMap-1940b {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
+#mainMap-guide {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 .mainMap-guide-icon {
-    height: 25px;
-    margin-left: 11px;
-    margin-bottom: -7px;
-    opacity: 0.3;
-    transition: opacity 0.1s ease;
+    height: 20px;
+    aspect-ratio: 1;
 }
 .mainMap-guide-icon:hover{
     opacity: 1;
@@ -1825,7 +1909,7 @@ canvas {
 #custom-geocoder-container {
     position: absolute;
     left: 27px;
-    top: 120px !important;
+    top: 115px !important;
     pointer-events: none;
 }
 .leaflet-control-geocoder {

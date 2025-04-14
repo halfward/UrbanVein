@@ -41,6 +41,9 @@ const mainMap = L.map('mainMap', {
     zoom: 13,
     minZoom: 11,
     maxZoom: 19,
+    zoomSnap: 0.5, 
+    zoomDelta: 0.5,   
+    wheelPxPerZoomLevel: 120,
     renderer: L.canvas(),
     preferCanvas: true,
     maxBounds: nycBounds,
@@ -1317,7 +1320,7 @@ function updateTooltipDirection(marker, tooltipEl) {
     const projected = mainMap.latLngToContainerPoint(marker.getLatLng());
     const mapContainer = mainMap.getContainer().getBoundingClientRect();
     const verticalBuffer = 250; 
-    const horizontalBuffer = 450; 
+    const horizontalBuffer = 750; 
 
     // Remove previous directional classes
     tooltipEl.classList.remove("tooltip-top", "tooltip-right");
@@ -1334,127 +1337,134 @@ function updateTooltipDirection(marker, tooltipEl) {
 
 
 
+// Markers-------------------------------------------------------
+const xrayMarkers = [];
 
-// Load marker GeoJSON data
-fetch('data/marker-data-20250311-a.geojson')
-    .then(response => response.json())
-    .then(data => {
-        data.features.forEach(feature => {
-            let properties = feature.properties;
-            
-            // Check if 'marker-latlon' exists and is correctly formatted
-            if (!properties['marker-latlon'] || !properties['marker-latlon'].includes(',')) {
-                return; // Skip this feature
-            }
-            
-            let [lng, lat] = properties['marker-latlon'].split(',').map(coord => parseFloat(coord.trim()));
-            
-            // Ensure parsed lat/lng are valid numbers
+
+fetch('data/marker-data-20250413.csv')
+    .then(response => response.text())
+    .then(csvText => {
+        const parsed = Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true
+        });
+
+        parsed.data.forEach(row => {
+            const lat = parseFloat(row.MarkerLat);
+            const lng = parseFloat(row.MarkerLon);
+
             if (isNaN(lat) || isNaN(lng)) {
-                console.warn('Invalid lat/lng values for feature:', properties);
+                console.warn('Invalid lat/lng:', row.MarkerLat, row.MarkerLon);
                 return;
             }
 
-            // Function to get background color based on material
-            function getMaterialColor(material) {
-                const colors = {
-                    brick: '#ff6000',
-                    concrete: '#ffff00',
-                    glass: '#33ff4e',
-                    stone: '#337eff',
-                    steel: '#bf00ff'
-                };
-                return colors[material.toLowerCase()] || '#fff'; // Default to white if not found
+            const markerName = row.MarkerName || '';
+            const markerTitle = row.MarkerTitle || '';
+            const markerStory = row.MarkerStory || '';
+            const markerRefName = row.MarkerRefName || '';
+            const markerRefLink = row.MarkerRefLink || '';
+            const markerImage = row.MarkerImage || '';
+            const markerImageSource = row.MarkerAttribution || '';
+            let shapeGeoJson = null;
+            if (row.MarkerShape && (row.MarkerShape.trim().startsWith("{") || row.MarkerShape.trim().startsWith("["))) {
+                try {
+                    shapeGeoJson = JSON.parse(row.MarkerShape);
+                } catch (e) {
+                    console.warn("Invalid JSON in MarkerShape:", row.MarkerShape);
+                }
             }
 
-            // Split materials by commas and create a flex row
-            let materialsArray = properties.materials ? properties.materials.split(',').map(material => material.trim()) : [];
-            let materialsHtml = materialsArray.map(material => {
-                let backgroundColor = getMaterialColor(material);
-                return `<div class="material" style="background-color: ${backgroundColor};">${material}</div>`;
-            }).join('');
-
-            // Create marker info HTML
-            let markerHtml = ` 
-                <div class="xray-marker" id="marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}">
+            const markerHtml = `
+                <div class="xray-marker" id="marker-${markerName.replace(/\s+/g, '-').toLowerCase()}">
+                    <div class="xray-marker-label">${markerName}</div>
                     <div class="xray-marker-icon"></div>
                     <div class="xray-marker-info">
-                        <div class="marker-header">
-                            <div class="marker-name">${properties.Name}</div>
-                            <div class="marker-spacing"></div>
-                            <div class="marker-materials" style="display: flex; flex-wrap: wrap; gap: 5px;">
-                                ${materialsHtml}
+                    <div class="marker-image-source">${markerImageSource}</div>
+                        <div class="marker-image">
+                            <img src="${markerImage}" alt="${markerName}">
+                        </div>
+                        <div class="marker-text-content">
+                            <div class="marker-header">
+                                <div class="marker-name">${markerName}: ${markerTitle}</div>
+                            </div>
+                            <div class="marker-story">${markerStory}</div>
+                            <div class="marker-references">
+                                Also see: <a href="${markerRefLink}" target="_blank">${markerRefName}</a>
                             </div>
                         </div>
-                        <div class="marker-story">${properties.story}</div>
-                        <div class="marker-references">
-                            See: 
-                            <a href="${properties['refA-link']}" target="_blank">${properties['refA-name']}</a>`;
+                    </div>
+                </div>
+            `;
 
-            // Check if the second reference link exists before adding it
-            if (properties['refB-link']) {
-                markerHtml += `, <a href="${properties['refB-link']}" target="_blank">${properties['refB-name']}</a>`;
-            }
-            
-            markerHtml += `</div></div></div>`;
 
-            // Create the marker
-            let marker = L.marker([lat, lng], {
+            const marker = L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: "custom-xray-marker",
                     html: markerHtml,
                     iconSize: [30, 30],
-                    iconAnchor: [30, 30],
+                    iconAnchor: [15, 30],
                     zIndexOffset: 1001
                 }),
                 interactive: true,
-                pane: 'markerPane'  
+                pane: 'markerPane'
             });
 
-            // Store reference to the GeoJSON shape associated with the marker
-            let shapeLayer = L.geoJSON(feature.geometry, {
-                style: {
-                    color: 'transparent',  // Initially no border color
-                    fillOpacity: 0,        // No fill color
-                    weight: 2,             // Border width
-                    zIndexOffset: 1001
-                },
-                pane: 'markerPane'  
-            }).addTo(markerMap);
+            let shapeLayer;
+            if (shapeGeoJson) {
+                shapeLayer = L.geoJSON(shapeGeoJson, {
+                    style: function (feature) {
+                        const isMultiLine = feature.geometry && feature.geometry.type === "MultiLineString";
+                        return {
+                            color: 'transparent',
+                            fillOpacity: 0,
+                            weight: isMultiLine ? 0 : 0,  // default weight on init
+                            zIndexOffset: -1
+                        };
+                    },
+                    pane: 'markerPane'
+                }).addTo(markerMap);
+            }
 
-            // Hover event to highlight the shape's border on marker hover
             marker.on("mouseover", function () {
-                // Highlight the shape's border
-                shapeLayer.setStyle({ color: 'black', weight: 2 });
-                
-                // Raise this marker above others
-                marker.getElement().style.zIndex = '10000'; // Higher than the pane's z-index
-                
-                const markerId = `marker-${properties.Name.replace(/\s+/g, '-').toLowerCase()}`;
-                const markerEl = document.getElementById(markerId);
-                const tooltipEl = markerEl?.querySelector(".xray-marker-info");
-            
+                if (shapeLayer) {
+                    shapeLayer.setStyle(function (feature) {
+                        const isMultiLine = feature.geometry && feature.geometry.type === "MultiLineString";
+                        return {
+                            color: 'black',
+                            fillOpacity: 0.4,
+                            weight: isMultiLine ? 3 : 0
+                        };
+                    });
+                }
+
+                marker.getElement().style.zIndex = '10000';
+
+                const tooltipEl = marker.getElement()?.querySelector(".xray-marker-info");
                 if (tooltipEl) {
                     updateTooltipDirection(marker, tooltipEl);
                 }
             });
-            
+
             marker.on("mouseout", function () {
-                // Reset the shape's border color
-                shapeLayer.setStyle({ color: 'transparent', weight: 2 });
-                
-                // Reset this marker's z-index to default
-                marker.getElement().style.zIndex = ''; // This will revert to the pane's z-index
-            });  
+                if (shapeLayer) {
+                    shapeLayer.setStyle({
+                        color: 'transparent',
+                        weight: 0,
+                        fillOpacity: 0,
+                    });
+                }
+                marker.getElement().style.zIndex = '';
+            });
+
 
             markerMap.addLayer(marker);
+            xrayMarkers.push(marker);
         });
     })
-    .catch(error => console.error('Error loading GeoJSON:', error));
+    .catch(error => console.error('Error loading CSV:', error));
 
 
-
-// Ensure markerMap is rendered on top
+// Ensure markerMap pane is rendered above others
 markerMap.getPane = function () {
     let pane = mainMap.getPane('markerPane');
     if (!pane) {
@@ -1465,6 +1475,37 @@ markerMap.getPane = function () {
 };
 
 mainMap.addLayer(markerMap);
+
+
+
+// Marker toggle
+let markersVisible = true;
+
+document.getElementById("xray-marker-toggle").addEventListener("click", () => {
+    markersVisible = !markersVisible;
+
+    xrayMarkers.forEach(marker => {
+        if (markersVisible) {
+            markerMap.addLayer(marker);
+        } else {
+            markerMap.removeLayer(marker);
+        }
+    });
+
+    const toggleEl = document.getElementById("xray-marker-toggle");
+    const iconEl = toggleEl.querySelector("img");
+    const textEl = toggleEl.querySelector("span");
+
+    if (markersVisible) {
+        iconEl.src = "images/markers_off.svg";
+        iconEl.alt = "Markers Off";
+        textEl.textContent = "Turn off markers";
+    } else {
+        iconEl.src = "images/markers_on.svg";
+        iconEl.alt = "Markers On";
+        textEl.textContent = "Turn on markers";
+    }
+});
 
 
 

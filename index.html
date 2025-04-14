@@ -225,6 +225,9 @@
                         <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC MapPLUTO data</a><br>
                         by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
                         <br><br>
+                        <a href="https://carbonleadershipforum.org/clf-material-baselines-2023/">Carbon Leadership Forum Material Baselines for North  America / August 2023</a><br>
+                        by <a href="https://carbonleadershipforum.org/">Carbon Leadership Forum (CLF)</a>
+                        <br><br>
                         <a href="https://data2.nhgis.org/">NYC Census data 2020</a><br>
                         by <a href="https://www.nhgis.org/">The National Historical Geographic Information System (NHGIS)</a>
                         <br><br>
@@ -235,13 +238,16 @@
                         originally uploaded by Sam Lerner Dreamer</a>
                     </p>
 
-                    <h3>▘Basemap Background</h3>
+                    <h3>▘Marker Shapes & Background</h3>
                     <p>
-                        <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">New York State civil boundaries</a><br>
-                        by <a href="https://gis.ny.gov/">new york state GIS resources</a>
+                        <a href="https://nycopendata.socrata.com/Recreation/Parks-Properties/enfh-gkve/about_data">Parks Properties</a><br>
+                        by <a href="https://www.nycgovparks.org/">NYC Department of Parks and Recreation (DPR)</a>
                         <br><br>
-                        <a href="https://njogis-newjersey.opendata.arcgis.com/datasets/middlesexcounty::nj-counties/about">nj counties</a><br>
-                        by <a href="https://njgin.nj.gov/njgin/about/ogis/">nj office of information technology, office of gis (njogis)</a>
+                        <a href="https://gisdata.ny.gov/GISData/State/Civil_Boundaries/NYS_Civil_Boundaries.shp.zip">New York State Civil Boundaries</a><br>
+                        by <a href="https://gis.ny.gov/">New York State GIS Resources</a>
+                        <br><br>
+                        <a href="https://njogis-newjersey.opendata.arcgis.com/datasets/middlesexcounty::nj-counties/about">NJ Counties</a><br>
+                        by <a href="https://njgin.nj.gov/njgin/about/ogis/">NJ Office of Information Technology, Office of gGis (NJOGIS)</a>
                     </p>
     
                     <h3>▘X-Ray Layers</h3>
@@ -571,7 +577,8 @@
     <div id="marker-container" style="position: absolute; top: 0; left: 0; pointer-events: none;">
         <!-- Marker elements will be appended here -->
     </div>
-    
+    <div class="xray-marker-label">${row.MarkerName}</div>
+    <div class="xray-marker-icon"></div>
 
     <div id="xray-roads-legend" class="xray-legend">
         <div id="xray-roads-legend-guide">Click to show road names</div>
@@ -637,24 +644,32 @@
                 </div>
                 <canvas id="numFloorsChart" height="250"></canvas>
             </div>
-            <div>
+            <div class="mainMap-layers-button-container">
                 <button class="mainMap-layers-button" id="mainMap-all">ALL</button>
                 <button class="mainMap-layers-button" id="mainMap-2a">≤2F</button>
                 <button class="mainMap-layers-button" id="mainMap-2b">>2F</button>
                 <button class="mainMap-layers-button" id="mainMap-1940a">PRE-1940</button>
                 <button class="mainMap-layers-button" id="mainMap-1940b">POST-1940</button>
-                <img src="images/guide.svg" alt="guide" class="mainMap-guide-icon">
+                <button id="mainMap-guide">
+                    <img src="images/guide.svg" alt="guide" class="mainMap-guide-icon">
+                </button>
             </div>
         </div>
     </div>
 
     <div id="mainMap"></div>
     <div id="custom-geocoder-container" style="position: absolute; top: 10px; right: 10px; z-index: 1000;"></div>
+    <div id="xray-marker-toggle">
+        <img src="images/markers_off.svg" alt="Markers Off" class="xray-marker-toggle-icon">
+        <span>Turn off markers</span>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="main.js"></script>

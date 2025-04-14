@@ -1,16 +1,21 @@
 to-do:
 - carbon footprint: CLF baselines and buliding occupancy
-- data refinement for NYCHA buildings & delete airports and military bases
+- data refinement for NYCHA buildings (re-add some) & delete airports and military bases
 
+- marker layer toggle off option
+- gradual zoom in and out
 - qgis printout w/ blending modes
 - zoomed-in case study on load?
-- add staten island neighborhoods
-- add markers (& link images) (& tours?)
 - add diagrams, write the story
+- add pattern pics after data refinement
 - refine tones.js / soundtrap
+- bug: interactive x-ray will prevent tile info from updating
 - bug: layer toggle first time wont work
 - bug: need to merge the route and station layers for the subway and the railway layers
 - bug: the road name tooltip stays even after switching the x-ray off
+
+0.5.4 (2025-04-13 marker update)
+- added map markers
 
 0.5.3 (2025-04-10 further refinements)
 - changed the site address to nycbuildingmaterials.com.

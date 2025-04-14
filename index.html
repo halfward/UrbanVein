@@ -319,12 +319,16 @@
                 <button class="control-button">
                     <img src="images/panel-expand.svg" alt="toggle" class="control-icon" id="toggleIcon">
                 </button>
-                <!-- <div class="control-text">database</div> -->
+            </div>
+            <div id="custom-geocoder-container"></div>
+            <div class="control-toggle" id="xray-marker-toggle">
+                <img src="images/markers_off.svg" alt="Markers Off" class="xray-marker-toggle-icon">
+                <span>Turn off markers</span>
             </div>
         </div>
     </div>
 
-
+    
 
 
     <div id="panelContainer">
@@ -658,11 +662,6 @@
     </div>
 
     <div id="mainMap"></div>
-    <div id="custom-geocoder-container" style="position: absolute; top: 10px; right: 10px; z-index: 1000;"></div>
-    <div id="xray-marker-toggle">
-        <img src="images/markers_off.svg" alt="Markers Off" class="xray-marker-toggle-icon">
-        <span>Turn off markers</span>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

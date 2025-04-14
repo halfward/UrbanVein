@@ -571,18 +571,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Panel collapse
-function togglePanel(panelToggleId, panelContentId, panelTitleId) {
+function togglePanel(panelToggleId, panelContentId, panelTitleId, panelId) {
     const panelTitle = document.getElementById(panelTitleId);
     const panelContent = document.getElementById(panelContentId);
     const panelToggle = document.getElementById(panelToggleId);
+    const panel = panelId ? document.getElementById(panelId) : null;
 
     panelTitle.addEventListener("click", function () {
         if (panelContent.classList.contains("expanded")) {
             panelContent.style.maxHeight = "0px";
             setTimeout(() => panelContent.classList.remove("expanded"), 300); // Delay removing class after transition
+            
+            // Remove class from the panel if it exists and is the building panel
+            if (panel && panelId === "panelBuilding") {
+                panel.classList.remove("expanded");
+            }
         } else {
             panelContent.classList.add("expanded");
             panelContent.style.maxHeight = panelContent.scrollHeight + "px";
+            
+            // Add class to the panel with a 0.5s delay if it exists and is the building panel
+            if (panel && panelId === "panelBuilding") {
+                setTimeout(() => {
+                    panel.classList.add("expanded");
+                }, 500); // 500ms delay for adding the expanded class
+            }
         }
 
         panelToggle.classList.toggle("rotated");
@@ -594,15 +607,21 @@ function togglePanel(panelToggleId, panelContentId, panelTitleId) {
     panelContent.style.maxHeight = panelContent.scrollHeight + "px";
     panelToggle.classList.add("rotated");
     panelTitle.classList.add("expanded");
+    
+    // Add class to the panel on auto-expand with delay if it exists and is the building panel
+    if (panel && panelId === "panelBuilding") {
+        setTimeout(() => {
+            panel.classList.add("expanded");
+        }, 100); // 500ms delay for adding the expanded class on load
+    }
 }
 
 // Apply the toggle logic for each panel and auto-expand
 document.addEventListener("DOMContentLoaded", function () {
-    togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding");
+    togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding", "panelBuilding");
     togglePanel("panelToggleMaterial", "panelContentMaterial", "panelTitleMaterial");
     togglePanel("panelToggleInfo", "panelContentInfo", "panelTitleInfo");
 });
-
 
 
 
@@ -1760,7 +1779,7 @@ fetch('data/tile_data_100m_20250408.geojson.gz')
                 document.querySelectorAll('.mainMap-layers-button').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
                 
-                console.log(`Active button: ${button.id}, Active column: ${getActiveMaterialsColumn()}`);
+                // console.log(`Active button: ${button.id}, Active column: ${getActiveMaterialsColumn()}`);
                 
                 // If lastFeature exists, reapply the radar size update with the new column
                 if (lastFeature) {
@@ -2149,7 +2168,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     sections.forEach(section => observer.observe(section));
 });
-
 
 
 

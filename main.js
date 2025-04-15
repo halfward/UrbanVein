@@ -738,11 +738,13 @@ fetch('data/nyzd.geojson.gz')
     .catch(error => console.error('Error loading or decompressing GeoJSON:', error));
 
 // Define subway layers (GeoJSON)
-let xraySubwayLayer, xraySubwayStationsLayer;
+let xraySubwayLayer;
 
-fetch('data/transportation_subway_routes.geojson')
+fetch('data/transportation_subway_combined.geojson')
     .then(response => response.json())
     .then(data => {
+        console.log("Subway data loaded:", data);
+        
         const subwayColors = {
             "1": "#EE352E", "2": "#EE352E", "3": "#EE352E",
             "4": "#00933C", "5": "#00933C", "6": "#00933C",
@@ -756,43 +758,86 @@ fetch('data/transportation_subway_routes.geojson')
             "S": "#808183"
         };
 
+        // First, sort the features so points come after lines
+        // This helps with initial rendering order
+        data.features.sort((a, b) => {
+            if (a.geometry.type === "Point" && 
+               (b.geometry.type === "LineString" || b.geometry.type === "MultiLineString")) {
+                return 1; // Points come after lines
+            }
+            if ((a.geometry.type === "LineString" || a.geometry.type === "MultiLineString") && 
+                b.geometry.type === "Point") {
+                return -1; // Lines come before points
+            }
+            return 0;
+        });
+        
         xraySubwayLayer = L.geoJSON(data, {
-            pane: 'xrayPane', // Use the custom pane
+            pane: 'xrayPane',
             style: (feature) => {
-                const lineSymbol = feature.properties.rt_symbol;
-                const color = subwayColors[lineSymbol] || "#000000";
+                // Check if the feature is a LineString (route)
+                if (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString") {
+                    const lineSymbol = feature.properties.rt_symbol;
+                    const color = subwayColors[lineSymbol] || "#000000";
+                    return {
+                        weight: 3,
+                        color: color,
+                        opacity: 1,
+                        fillOpacity: 0,
+                        interactive: false
+                    };
+                }
+                
+                // Default style for other geometry types
                 return {
-                    weight: 3, 
-                    color: color, 
-                    opacity: 1,         
-                    fillOpacity: 0,     
-                    fillColor: 'transparent',
-                    interactive: false 
+                    weight: 1,
+                    color: "#000000",
+                    opacity: 0.5
                 };
+            },
+            pointToLayer: (feature, latlng) => {
+                // Check if the feature is a Point (station)
+                if (feature.geometry.type === "Point") {
+                    return L.circleMarker(latlng, {
+                        radius: 5,
+                        fillColor: "#FFFFFF",
+                        color: "#000000",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 1,
+                        interactive: false,
+                        className: 'subway-station-marker' // Add a class for CSS targeting
+                    });
+                }
+                return null;
+            },
+            onEachFeature: (feature, layer) => {
+                // If this is a point feature (station), bring it to front and set higher z-index
+                if (feature.geometry.type === "Point") {
+                    // Use event to ensure this happens after rendering
+                    layer.on('add', function() {
+                        this.bringToFront();
+                        
+                        // Access the SVG element and set z-index
+                        if (this._path) {
+                            this._path.setAttribute('style', this._path.getAttribute('style') + '; z-index: 1000;');
+                        }
+                    });
+                }
             }
         });
-
-        fetch('data/transportation_subway_stops.geojson')
-            .then(response => response.json())
-            .then(stationData => {
-                xraySubwayStationsLayer = L.geoJSON(stationData, {
-                    pane: 'xrayPane', // Use the custom pane
-                    pointToLayer: (feature, latlng) => {
-                        return L.circleMarker(latlng, {
-                            radius: 5,
-                            fillColor: "#FFFFFF", 
-                            color: "#000000", 
-                            weight: 2,
-                            opacity: 1,    
-                            fillOpacity: 1,
-                            interactive: false 
-                        });
-                    }
-                });
-            })
-            .catch(error => console.error('Error loading subway stations:', error));
+        
+        // Add CSS to ensure stations are always on top
+        const style = document.createElement('style');
+        style.textContent = `
+            .subway-station-marker {
+                z-index: 1000 !important;
+            }
+        `;
+        document.head.appendChild(style);
     })
-    .catch(error => console.error('Error loading subway lines:', error));
+    .catch(error => console.error('Error loading combined subway data:', error));
+
 
 // Define railway layers (GeoJSON)
 let xrayRailwayLayer, xrayRailwayStationsLayer, xrayRailwayStationLabelsLayer;
@@ -992,9 +1037,11 @@ document.addEventListener("mousemove", function (e) {
         const revealSize = 350;
         const cornerRadius = 15;
         
-        // Get the pane element
-        const paneElement = mainMap.getPane('xrayPane');
-
+        // Get all relevant panes
+        const xrayPane = mainMap.getPane('xrayPane');
+        const xrayLabelsPane = mainMap.getPane('xrayLabelsPane');
+        const xrayRoadsPane = mainMap.getPane('xrayRoadsPane');
+        
         // Convert page coordinates to map container coordinates
         const mapContainer = mainMap.getContainer();
         const rect = mapContainer.getBoundingClientRect();
@@ -1006,7 +1053,7 @@ document.addEventListener("mousemove", function (e) {
         // Convert container coordinates to map layer point
         const layerPoint = mainMap.containerPointToLayerPoint(containerPoint);
         
-        // Apply clip-path to the pane element
+        // Create the clip-path value
         const clipPathValue = `inset(
             calc(${layerPoint.y}px - ${revealSize / 2}px) 
             calc(100% - ${layerPoint.x}px - ${revealSize / 2}px) 
@@ -1015,14 +1062,19 @@ document.addEventListener("mousemove", function (e) {
             round ${cornerRadius}px
         )`;
         
-        paneElement.style.clipPath = clipPathValue;
-        paneElement.style.webkitClipPath = clipPathValue;
-        
-        // Also apply the clip path to all SVG and shape elements within the pane
-        const clipTargets = paneElement.querySelectorAll('svg, g, path, circle, rect, line, polyline, polygon');
-        clipTargets.forEach(el => {
-            el.style.clipPath = clipPathValue;
-            el.style.webkitClipPath = clipPathValue;
+        // Apply clip-path to all relevant panes
+        [xrayPane, xrayLabelsPane].forEach(pane => {
+            if (pane) {
+                pane.style.clipPath = clipPathValue;
+                pane.style.webkitClipPath = clipPathValue;
+                
+                // Also apply the clip path to all SVG and shape elements within the pane
+                const clipTargets = pane.querySelectorAll('svg, g, path, circle, rect, line, polyline, polygon');
+                clipTargets.forEach(el => {
+                    el.style.clipPath = clipPathValue;
+                    el.style.webkitClipPath = clipPathValue;
+                });
+            }
         });
 
         // Position legend near cursor if visible
@@ -1058,7 +1110,6 @@ function updateXray(mode) {
         removeLayerIfExists(xrayEsriLayer);
         removeLayerIfExists(xrayZoningLayer);
         removeLayerIfExists(xraySubwayLayer);
-        removeLayerIfExists(xraySubwayStationsLayer);
         removeLayerIfExists(xrayRailwayLayer);
         removeLayerIfExists(xrayRailwayStationsLayer);
         removeLayerIfExists(xrayRailwayStationLabelsLayer);
@@ -1078,7 +1129,6 @@ function updateXray(mode) {
         removeLayerIfExists(xrayEsriLayer);
         removeLayerIfExists(xrayZoningLayer);
         removeLayerIfExists(xraySubwayLayer);
-        removeLayerIfExists(xraySubwayStationsLayer);
         removeLayerIfExists(xrayRailwayLayer);
         removeLayerIfExists(xrayRailwayStationsLayer);
         removeLayerIfExists(xrayRailwayStationLabelsLayer);
@@ -1092,7 +1142,6 @@ function updateXray(mode) {
             xrayEsriLayer.addTo(mainMap);
         } else if (mode === "subway") {
             if (xraySubwayLayer) xraySubwayLayer.addTo(mainMap);
-            if (xraySubwayStationsLayer) xraySubwayStationsLayer.addTo(mainMap);
         } else if (mode === "railway") {
             if (xrayRailwayLayer) xrayRailwayLayer.addTo(mainMap);
             if (xrayRailwayStationsLayer) xrayRailwayStationsLayer.addTo(mainMap);

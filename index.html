@@ -320,7 +320,13 @@
                     <img src="images/panel-expand.svg" alt="toggle" class="control-icon" id="toggleIcon">
                 </button>
             </div>
+            <div class="control-panel-white">
+                <div class="control-panel-black"></div>
+            </div>
             <div id="custom-geocoder-container"></div>
+            <div class="control-panel-white">
+                <div class="control-panel-black"></div>
+            </div>
             <div class="control-toggle" id="xray-marker-toggle">
                 <img src="images/markers_off.svg" alt="Markers Off" class="xray-marker-toggle-icon">
                 <span>Turn off markers</span>
@@ -342,18 +348,6 @@
             </div>
             <div class="panelContent" id="panelContentBuilding">
                 <div class="panelContentWrapper" id="dropdown-container" style="display: flex; flex-direction: column;">
-                    <!-- <div class="close-container">
-                        <button class="label-xray" id="xray-none">
-                            <img src="images/panel-collapse.svg" alt="exit">
-                        </button>
-                        <button class="label-xray" id="xray-none">
-                            <img src="images/panel-collapse.svg" alt="exit">
-                        </button>
-                        <button class="label-xray" id="xray-none">
-                            <img src="images/panel-collapse.svg" alt="exit">
-                        </button>
-                    </div>
-                     -->
                     <div class="custom-dropdown" id="map-dropdown">
                         <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
                         <img src="images/layer-map.svg" class="layer-icon">
@@ -388,7 +382,7 @@
             </div>
         </div>
         <div id="tooltip" class="tooltip">
-            Each of the five materials is organized into six categories using a method called quantile binning. in this method, the data is divided into equal-sized groups, so each bin contains roughly the same number of data points. For example, brick is divided into six bins, ranging from 1 to 6, with each bin containing an equal portion of the data. the other four materials are also divided into their own six bins. The values for each bin differ because the maximum weight of each material varies.
+            Dot sizes represent the concentration of each material type. They don’t compare weights between different materials, but show how much of a material is used relative to other parts of NYC in its own category.
         </div>
 
         <div id="panelMaterial">
@@ -500,6 +494,7 @@
                             </div>
                         </div>
                     </div>
+                    <div id="value-unit"></div>
                 </div>
             </div>
         </div>
@@ -662,6 +657,8 @@
     </div>
 
     <div id="mainMap"></div>
+    <button class="mainMap-layers-button" id="mainMap-carbon" style="position: absolute; bottom: 100px; left:50vw; z-index: 2000;">CARBON</button>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

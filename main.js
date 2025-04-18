@@ -130,10 +130,19 @@ const layerState = {
 
 // Updated size multipliers mapping directly to the level values (1-6)
 const sizeMultipliers = [0.25, 0.5, 0.75, 1, 1.3, 1.8];
+const carbonOpacities = {
+    0.25: 0.06, // Smallest size -> lowest opacity
+    0.5: 0.12,
+    0.75: 0.18,
+    1: 0.24,
+    1.3: 0.30,
+    1.8: 0.40  // Largest size -> highest opacity
+};
 let geojsonData = null;
 
+
 // Function to add material markers
-const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup, offset = null) => {
+const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup, offset = null, isCarbonView = false) => {
     const filteredFeatures = geojsonData.features.filter(feature => feature.properties[columnName] > 0);
 
     let index = 0;
@@ -149,7 +158,8 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
             const feature = filteredFeatures[index];
             const coordinates = feature.geometry.coordinates;
             const materialsLvlValue = feature.properties[columnName].toString(); // Ensure it's a string
-            const sizeMultiplier = sizeMultipliers[materialsLvlValue[materialColumns[material]] - 1]; // Use the correct digit for each material
+            const materialLevel = materialsLvlValue[materialColumns[material]];
+            const sizeMultiplier = sizeMultipliers[materialLevel - 1]; // Use the correct digit for each material
 
             let lat = coordinates[1];
             let lng = coordinates[0];
@@ -163,12 +173,20 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
                 const baseRadius = getBaseRadiusForZoom(currentZoom);
                 const minRadius = 1;
 
+                // Calculate opacity based on size multiplier if in carbon view
+                let opacity;
+                if (isCarbonView) {
+                    opacity = carbonOpacities[sizeMultiplier];
+                } else {
+                    opacity = getOpacityForZoom(currentZoom);
+                }
+
                 const marker = L.circleMarker([lat, lng], {
                     radius: Math.max(baseRadius * sizeMultiplier, minRadius),
                     color: color,
                     fillColor: color,
                     weight: 0,
-                    fillOpacity: getOpacityForZoom(currentZoom),
+                    fillOpacity: opacity,
                     opacity: 1,
                     className: `leaflet-circle-${material}`,
                     interactive: false
@@ -177,7 +195,9 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
                 markers.push({ 
                     marker, 
                     sizeMultiplier,
-                    featureId: feature.id || index // Store feature ID or index for future reference
+                    materialLevel, // Store the material level for opacity calculations
+                    featureId: feature.id || index, // Store feature ID or index for future reference
+                    isCarbonView  // Store whether this marker was created in carbon view
                 });
 
                 marker.addTo(materialLayerGroup);
@@ -211,7 +231,16 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
         markers.forEach(item => {
             const newRadius = Math.max(baseRadius * item.sizeMultiplier, minRadius);
             item.marker.setRadius(newRadius);
-            item.marker.setStyle({ fillOpacity: getOpacityForZoom(currentZoom) });
+            
+            // Calculate opacity based on the size if in carbon view
+            let opacity;
+            if (item.isCarbonView) {
+                opacity = carbonOpacities[item.sizeMultiplier];
+            } else {
+                opacity = getOpacityForZoom(currentZoom);
+            }
+            
+            item.marker.setStyle({ fillOpacity: opacity });
         });
     });
 
@@ -240,6 +269,8 @@ function getActiveMaterialColumn() {
         return 'materials<=1940-lvl';
     } else if (document.getElementById('mainMap-1940b').classList.contains('active')) {
         return 'materials>1940-lvl';
+    } else if (document.getElementById('mainMap-carbon').classList.contains('active')) {
+        return 'materials-carbon-lvl';
     } else if (document.getElementById('mainMap-all').classList.contains('active')) {
         return 'materials-lvl';  // Default to 'materials-lvl' when 'ALL' is active
     }
@@ -290,14 +321,17 @@ function refreshMarkers() {
     // Get the active column
     const newMaterialColumn = getActiveMaterialColumn();
     
+    // Check if carbon view is active
+    const isCarbonView = document.getElementById('mainMap-carbon').classList.contains('active');
+    
     // If we already have markers loaded, we'll update them rather than reload everything
     if (markerReferences.steel) {
-        updateExistingMarkers(newMaterialColumn);
+        updateExistingMarkers(newMaterialColumn, isCarbonView);
         return;
     }
     
     // Initial load of GeoJSON data
-    fetch('data/centroid_data_100m_material_20250323.geojson.gz')
+    fetch('data/centroid_data_100m_material_20250417.geojson.gz')
         .then(response => response.arrayBuffer())
         .then(buffer => {
             // Decompress the gzipped file using pako
@@ -311,10 +345,13 @@ function refreshMarkers() {
 
             // Process the GeoJSON data
             Object.keys(materialColumns).forEach(material => {
+                // Use black for all materials if carbon view is active
+                const color = isCarbonView ? '#000000' : materialColors[material];
+                
                 markerReferences[material] = addMaterialMarkers(
                     geojsonData,
                     material,
-                    materialColors[material],
+                    color,
                     newMaterialColumn,
                     (() => {
                         switch (material) {
@@ -325,7 +362,8 @@ function refreshMarkers() {
                             case 'wood': return woodLayer;
                         }
                     })(),
-                    materialOffsets[material]
+                    materialOffsets[material],
+                    isCarbonView // Pass the carbon view flag
                 );
             });
         })
@@ -335,7 +373,7 @@ function refreshMarkers() {
 }
 
 // Function to update existing markers with new size values
-function updateExistingMarkers(newColumnName) {
+function updateExistingMarkers(newColumnName, isCarbonView = false) {
     if (!window.materialGeoJsonData) return;
     
     const geojsonData = window.materialGeoJsonData;
@@ -355,6 +393,9 @@ function updateExistingMarkers(newColumnName) {
             featureMap[feature.id || idx] = feature;
         });
         
+        // Update color for all markers based on carbon view
+        const color = isCarbonView ? '#000000' : materialColors[material];
+        
         // Update each marker
         markers.forEach(item => {
             const feature = featureMap[item.featureId];
@@ -362,11 +403,30 @@ function updateExistingMarkers(newColumnName) {
             
             // Get the new size multiplier based on the new column
             const materialsLvlValue = feature.properties[newColumnName]?.toString() || "0";
-            const newSizeMultiplier = materialsLvlValue[materialColumns[material]] > 0 ? 
-                sizeMultipliers[materialsLvlValue[materialColumns[material]] - 1] : 0;
+            const materialLevel = materialsLvlValue[materialColumns[material]];
+            const newSizeMultiplier = materialLevel > 0 ? 
+                sizeMultipliers[materialLevel - 1] : 0;
             
             const currentRadius = item.marker._radius || item.marker.getRadius();
             const targetRadius = Math.max(baseRadius * newSizeMultiplier, minRadius);
+            
+            // Set opacity based on size if in carbon view
+            let targetOpacity;
+            if (isCarbonView && newSizeMultiplier > 0) {
+                targetOpacity = carbonOpacities[newSizeMultiplier]; 
+            } else {
+                targetOpacity = getOpacityForZoom(currentZoom);
+            }
+            
+            // Update color for carbon view
+            item.marker.setStyle({ 
+                color: color,
+                fillColor: color
+            });
+            
+            // Store the carbon view state and new material level
+            item.isCarbonView = isCarbonView;
+            item.materialLevel = materialLevel;
             
             // If the feature no longer has this material, fade it out
             if (newSizeMultiplier === 0) {
@@ -378,12 +438,19 @@ function updateExistingMarkers(newColumnName) {
             else if (item.sizeMultiplier === 0 && newSizeMultiplier > 0) {
                 item.marker.setRadius(0);
                 item.marker.setStyle({ fillOpacity: 0 });
-                animateMarkerOpacity(item.marker, 0, getOpacityForZoom(currentZoom), 300);
+                animateMarkerOpacity(item.marker, 0, targetOpacity, 300);
                 animateMarkerTransition(item.marker, 0, targetRadius);
             } 
-            // Otherwise just animate the size change
-            else if (currentRadius !== targetRadius) {
-                animateMarkerTransition(item.marker, currentRadius, targetRadius);
+            // Otherwise just animate the size change and update opacity
+            else {
+                if (currentRadius !== targetRadius) {
+                    animateMarkerTransition(item.marker, currentRadius, targetRadius);
+                }
+                
+                // If opacity needs to change (e.g., switching to/from carbon view or size changed)
+                if (item.marker.options.fillOpacity !== targetOpacity) {
+                    animateMarkerOpacity(item.marker, item.marker.options.fillOpacity, targetOpacity, 300);
+                }
             }
             
             // Update the stored size multiplier
@@ -588,7 +655,12 @@ function togglePanel(panelToggleId, panelContentId, panelTitleId, panelId) {
             }
         } else {
             panelContent.classList.add("expanded");
-            panelContent.style.maxHeight = panelContent.scrollHeight + "px";
+            let extraHeight = 0;
+            if (panelContentId === "panelContentMaterial") {
+                extraHeight = 15;
+            }
+            panelContent.style.maxHeight = (panelContent.scrollHeight + extraHeight) + "px";
+
             
             // Add class to the panel with a 0.5s delay if it exists and is the building panel
             if (panel && panelId === "panelBuilding") {
@@ -604,7 +676,11 @@ function togglePanel(panelToggleId, panelContentId, panelTitleId, panelId) {
 
     // Auto-expand on load
     panelContent.classList.add("expanded");
-    panelContent.style.maxHeight = panelContent.scrollHeight + "px";
+    let autoExtraHeight = 0;
+    if (panelContentId === "panelContentMaterial") {
+            autoExtraHeight = 15;
+        }
+    panelContent.style.maxHeight = (panelContent.scrollHeight + autoExtraHeight) + "px";
     panelToggle.classList.add("rotated");
     panelTitle.classList.add("expanded");
     
@@ -743,7 +819,6 @@ let xraySubwayLayer;
 fetch('data/transportation_subway_combined.geojson')
     .then(response => response.json())
     .then(data => {
-        console.log("Subway data loaded:", data);
         
         const subwayColors = {
             "1": "#EE352E", "2": "#EE352E", "3": "#EE352E",
@@ -1035,8 +1110,8 @@ document.addEventListener("mousemove", function (e) {
         const mouseX = e.pageX;
         const mouseY = e.pageY;
         const revealSize = 350;
-        const cornerRadius = 15;
-        
+        const cornerRadius = 6;
+
         // Get all relevant panes
         const xrayPane = mainMap.getPane('xrayPane');
         const xrayLabelsPane = mainMap.getPane('xrayLabelsPane');
@@ -1049,6 +1124,11 @@ document.addEventListener("mousemove", function (e) {
             mouseX - rect.left - window.pageXOffset,
             mouseY - rect.top - window.pageYOffset
         );
+
+        // Move the visible mask element with the cursor
+        xrayMaskElement.style.left = `${mouseX - revealSize / 2}px`;
+        xrayMaskElement.style.top = `${mouseY - revealSize / 2}px`;
+        xrayMaskElement.style.display = 'block';
 
         // Convert container coordinates to map layer point
         const layerPoint = mainMap.containerPointToLayerPoint(containerPoint);
@@ -1695,36 +1775,101 @@ fetch('data/NY+NJ_Shoreline.geojson.gz')
 
 
 // Traffic lights: Toggle -------------------------------------------
-// Function to handle toggle changes for radar rings and radar base
-// Function to handle toggling both radar elements and map layers
-function handleToggle(toggleId, radarRingClass, radarRingMaterial, radarBaseId, materialKey) {
-    document.getElementById(toggleId).addEventListener('change', function () {
-        const radarRing = document.querySelector(`.${radarRingClass}.${radarRingMaterial}`);
-        const radarBase = document.getElementById(radarBaseId);
-
-        if (radarRing && radarBase) {
-            if (!this.checked) {
-                radarRing.classList.add('inactive');  
-                radarBase.classList.add('inactive');
-            } else {
-                radarRing.classList.remove('inactive');  
-                radarBase.classList.remove('inactive');
-            }
+// Function to toggle carbon class on material elements
+function toggleCarbonClass(isCarbon) {
+    // List of all the material types
+    const materials = ['wood', 'brick', 'concrete', 'glass', 'steel'];
+    
+    // For each material, update the corresponding elements
+    materials.forEach(material => {
+      // Update the radar base element
+      const radarBase = document.getElementById(`radar-${material}`);
+      if (radarBase) {
+        if (isCarbon) {
+          radarBase.classList.add('carbon');
+        } else {
+          radarBase.classList.remove('carbon');
         }
-
-        // Update map layer visibility state
-        layerState[materialKey] = this.checked;
-        updateLayerVisibility(); // Ensure correct visibility and order
+      }
+      
+      // Update the radar ring element
+      const radarRing = document.querySelector(`.radar-ring.${material}`);
+      if (radarRing) {
+        if (isCarbon) {
+          radarRing.classList.add('ring-carbon');
+        } else {
+          radarRing.classList.remove('ring-carbon');
+        }
+      }
+      
+      // Update value display elements if they exist
+      const valueDisplay = document.getElementById(`value-${material}`);
+      if (valueDisplay) {
+        if (isCarbon) {
+          valueDisplay.classList.add('carbon');
+        } else {
+          valueDisplay.classList.remove('carbon');
+        }
+      }
     });
-}
-
-// Assign handlers for each toggle (radar + map layers)
-handleToggle('toggle1', 'radar-ring', 'brick', 'radar-brick', 'brick');   
-handleToggle('toggle2', 'radar-ring', 'concrete', 'radar-concrete', 'concrete'); 
-handleToggle('toggle3', 'radar-ring', 'glass', 'radar-glass', 'glass');    
-handleToggle('toggle4', 'radar-ring', 'wood', 'radar-wood', 'wood'); 
-handleToggle('toggle5', 'radar-ring', 'steel', 'radar-steel', 'steel');
-
+  }
+  
+  // Function to check map state and update classes accordingly
+  function checkMapStateAndUpdateClasses() {
+    const isCarbon = document.getElementById('mainMap-carbon')?.classList.contains('active');
+    toggleCarbonClass(isCarbon);
+  }
+  
+  // Update classes when page loads
+  document.addEventListener('DOMContentLoaded', checkMapStateAndUpdateClasses);
+  
+  // Modified toggle handler to work with carbon classes
+  function handleToggle(toggleId, radarRingClass, radarRingMaterial, radarBaseId, materialKey) {
+    document.getElementById(toggleId).addEventListener('change', function () {
+      const radarRing = document.querySelector(`.${radarRingClass}.${radarRingMaterial}`);
+      const radarBase = document.getElementById(radarBaseId);
+  
+      if (radarRing && radarBase) {
+        if (!this.checked) {
+          radarRing.classList.add('inactive');  
+          radarBase.classList.add('inactive');
+        } else {
+          radarRing.classList.remove('inactive');  
+          radarBase.classList.remove('inactive');
+        }
+      }
+  
+      // Update map layer visibility state
+      layerState[materialKey] = this.checked;
+      updateLayerVisibility(); // Ensure correct visibility and order
+    });
+  }
+  
+  // Keep your original toggle handlers
+  handleToggle('toggle1', 'radar-ring', 'brick', 'radar-brick', 'brick');   
+  handleToggle('toggle2', 'radar-ring', 'concrete', 'radar-concrete', 'concrete'); 
+  handleToggle('toggle3', 'radar-ring', 'glass', 'radar-glass', 'glass');    
+  handleToggle('toggle4', 'radar-ring', 'wood', 'radar-wood', 'wood'); 
+  handleToggle('toggle5', 'radar-ring', 'steel', 'radar-steel', 'steel');
+  
+  // Add listener for map type changes
+  // This should be called whenever the map type changes
+  function setupMapTypeListeners() {
+    // Example: If you have buttons to switch map types
+    const mapButtons = document.querySelectorAll('[id^="mainMap-"]');
+    mapButtons.forEach(button => {
+      button.addEventListener('click', checkMapStateAndUpdateClasses);
+    });
+    
+    // Or if you have a specific carbon map toggle
+    const carbonMapButton = document.getElementById('carbonMapButton');
+    if (carbonMapButton) {
+      carbonMapButton.addEventListener('click', checkMapStateAndUpdateClasses);
+    }
+  }
+  
+  // Call this after the DOM is loaded
+  document.addEventListener('DOMContentLoaded', setupMapTypeListeners);
 
 
 // Traffic lights Update, & Hex tile info update -------------------------------------------
@@ -1739,7 +1884,7 @@ var layer1 = L.geoJSON(null, {
 }).addTo(mainMap);
 
 let quantiles = {};
-let materialTypes = ["brick", "concrete", "glass", "steel", "wood"]; // Material order
+let materialTypes = ["brick", "concrete", "glass", "steel", "wood"]; // Material order of the data
 
 // Throttle function
 function throttle(callback, delay) {
@@ -1757,7 +1902,7 @@ function sanitizeJson(data) {
     return data.replace(/NaN/g, "null");  // Replace NaN with null (or other appropriate value)
 }
 
-fetch('data/tile_data_100m_20250408.geojson.gz')
+fetch('data/tile_data_100m_20250417.geojson.gz')
     .then(response => response.arrayBuffer())
     .then(buffer => {
         const decompressed = pako.ungzip(new Uint8Array(buffer), { to: 'string' });
@@ -1796,6 +1941,8 @@ fetch('data/tile_data_100m_20250408.geojson.gz')
                 return "materials<=1940-lvl";
             } else if (document.getElementById('mainMap-1940b')?.classList.contains('active')) {
                 return "materials>1940-lvl";
+            } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
+                return "materials-carbon-lvl";
             } else {
                 return "materials-lvl"; // Default to "materials-lvl" if no specific filter is active
             }
@@ -1867,31 +2014,57 @@ fetch('data/tile_data_100m_20250408.geojson.gz')
             }, 1000);
         
             // Throttled function for updating values (300ms)
-            const handleMouseOver = throttle(function (e, feature) {  // Accept 'feature' as parameter
+            const handleMouseOver = throttle(function (e, feature) {
                 let targetLayer = e.target;
-                
-                // Define the materials and their corresponding IDs
-                const materials = {
-                    "value-steel": `${feature.properties["steel-txt"]} tonnes`,
-                    "value-brick": `${feature.properties["brick-txt"]} tonnes`, 
-                    "value-concrete": `${feature.properties["concrete-txt"]} tonnes`,  
-                    "value-glass": `${feature.properties["glass-txt"]} tonnes`, 
-                    "value-wood": `${feature.properties["wood-txt"]} tonnes`, 
-                };
-                // Loop through the materials object and update the textContent for each ID
+
+                // Determine mode suffix based on active map
+                let suffix = '';
+                if (document.getElementById('mainMap-2a')?.classList.contains('active')) {
+                    suffix = '<=2';
+                } else if (document.getElementById('mainMap-2b')?.classList.contains('active')) {
+                    suffix = '>2';
+                } else if (document.getElementById('mainMap-1940a')?.classList.contains('active')) {
+                    suffix = '<=1940';
+                } else if (document.getElementById('mainMap-1940b')?.classList.contains('active')) {
+                    suffix = '>1940';
+                } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
+                    suffix = '-carbon';
+                }
+
+                // Determine unit
+                const isCarbonMode = suffix === '-carbon';
+                const unit = isCarbonMode ? 'Unit: kgCO2e' : 'Unit: Metric ton (~1.1 US ton)';
+
+                // Update unit display separately
+                const unitElement = document.getElementById('value-unit');
+                if (unitElement) {
+                    unitElement.textContent = unit;
+                }
+
+                // Get all relevant properties
+                const props = feature.properties;
+
+                // Material keys
+                const materialKeys = ['steel', 'brick', 'concrete', 'glass', 'wood'];
+
+                // Generate dynamic material values (without unit)
+                const materials = {};
+                materialKeys.forEach((material) => {
+                    const key = suffix ? `${material}${suffix}-txt` : `${material}-txt`;
+                    materials[`value-${material}`] = props[key] ?? '';
+                });
+
+                // Update material DOM elements
                 Object.entries(materials).forEach(([id, value]) => {
                     const element = document.getElementById(id);
                     if (element) {
-                        element.textContent = value !== null && value !== undefined ? value : "";  // Ensure no null or undefined values
+                        element.textContent = value.toString().trim();
                     } else {
                         console.warn(`Element with ID ${id} not found.`);
                     }
                 });
-        
-                // Get all relevant properties
-                const props = feature.properties;
-        
-                // Define a mapping of property names to element IDs
+
+                // Update other fields
                 const fields = {
                     "borough": props.Borough,
                     "neighborhood": props.Neighborhood,
@@ -1901,17 +2074,18 @@ fetch('data/tile_data_100m_20250408.geojson.gz')
                     "numfloors": `${props.NumFloors_Mean} / ${props.NumFloors_Median}`,
                     "yearbuilt": `${props.YearBuilt_Mean} / ${props.YearBuilt_Median}`,
                 };
-        
-                // Update all elements in a single loop
+
                 Object.entries(fields).forEach(([id, value]) => {
-                    document.getElementById(id).innerHTML = value;
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = value;
                 });
-        
-                // Trigger a radar size update using requestAnimationFrame
+
+                // Trigger radar update
                 lastFeature = feature;
-                cancelAnimationFrame(animationFrameId);  // Cancel any previous requestAnimationFrame
-                animationFrameId = requestAnimationFrame(() => updateRadarSizes(lastFeature));  // Schedule update
-            }, 300); // 300ms throttle interval    
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = requestAnimationFrame(() => updateRadarSizes(lastFeature));
+            }, 300);
+
 
             // Mouseout handler
             layer.on('mouseout', function (e) {
@@ -2464,11 +2638,11 @@ function updatePanelTitle() {
         panelTitle.innerHTML = 'TILE COMPOSITION: PRE-1940';
     } else if (document.getElementById('mainMap-1940b')?.classList.contains('active')) {
         panelTitle.innerHTML = 'TILE COMPOSITION: POST-1940';
+    } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
+        panelTitle.innerHTML = 'TILE COMPOSITION: CARBON';
     } else {
         panelTitle.innerHTML = 'TILE COMPOSITION'; // Default for 'ALL'
     }
-
-    console.log('Updated title:', panelTitle.innerHTML);
 }
 
 // Attach event listeners to each button

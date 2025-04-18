@@ -1,16 +1,24 @@
 to-do:
-- carbon footprint: CLF baselines and buliding occupancy
-- data refinement for NYCHA buildings (re-add some) & delete airports and military bases
+- carbon: buliding occupancy
+- data refinement for NYCHA buildings (& re-add some) & delete airports and military bases
 - add pattern pics after data refinement
 - qgis printout w/ blending modes
 
 - add diagrams, write the story
+- use quotes for pois
 - refine tones.js / soundtrap
 - bug: some zoom levels don't look good
 - bug: interactive x-ray will prevent tile info from updating
 - bug: layer toggle first time wont work
 - bug: need to merge the route and station layers for the subway and the railway layers
 - bug: the road name tooltip stays even after switching the x-ray off
+
+0.5.6 (2025-04-18 carbon adjustment)
+- changed the carbon layer's colors to greyscale.
+- bug fix: the tile composition values now update with the layer filters correctly.
+
+0.5.5 (2025-04-17 carbon update)
+- added CLF carbon footprint data.
 
 0.5.4 (2025-04-13 marker update)
 - added 40 map markers.

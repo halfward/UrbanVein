@@ -271,6 +271,8 @@ function getActiveMaterialColumn() {
         return 'materials>1940-lvl';
     } else if (document.getElementById('mainMap-carbon').classList.contains('active')) {
         return 'materials-carbon-lvl';
+    } else if (document.getElementById('mainMap-carbon-pp').classList.contains('active')) {
+        return 'materials-carbon-pp-lvl';
     } else if (document.getElementById('mainMap-all').classList.contains('active')) {
         return 'materials-lvl';  // Default to 'materials-lvl' when 'ALL' is active
     }
@@ -322,8 +324,10 @@ function refreshMarkers() {
     const newMaterialColumn = getActiveMaterialColumn();
     
     // Check if carbon view is active
-    const isCarbonView = document.getElementById('mainMap-carbon').classList.contains('active');
-    
+    const isCarbonView =
+    document.getElementById('mainMap-carbon').classList.contains('active') ||
+    document.getElementById('mainMap-carbon-pp').classList.contains('active');
+      
     // If we already have markers loaded, we'll update them rather than reload everything
     if (markerReferences.steel) {
         updateExistingMarkers(newMaterialColumn, isCarbonView);
@@ -331,7 +335,7 @@ function refreshMarkers() {
     }
     
     // Initial load of GeoJSON data
-    fetch('data/centroid_data_100m_material_20250417.geojson.gz')
+    fetch('data/centroid_data_100m_material_20250419.geojson.gz')
         .then(response => response.arrayBuffer())
         .then(buffer => {
             // Decompress the gzipped file using pako
@@ -1816,9 +1820,13 @@ function toggleCarbonClass(isCarbon) {
   
   // Function to check map state and update classes accordingly
   function checkMapStateAndUpdateClasses() {
-    const isCarbon = document.getElementById('mainMap-carbon')?.classList.contains('active');
+    const isCarbon =
+      document.getElementById('mainMap-carbon')?.classList.contains('active') ||
+      document.getElementById('mainMap-carbon-pp')?.classList.contains('active');
+  
     toggleCarbonClass(isCarbon);
   }
+  
   
   // Update classes when page loads
   document.addEventListener('DOMContentLoaded', checkMapStateAndUpdateClasses);
@@ -1902,7 +1910,7 @@ function sanitizeJson(data) {
     return data.replace(/NaN/g, "null");  // Replace NaN with null (or other appropriate value)
 }
 
-fetch('data/tile_data_100m_20250417.geojson.gz')
+fetch('data/tile_data_100m_20250419.geojson.gz')
     .then(response => response.arrayBuffer())
     .then(buffer => {
         const decompressed = pako.ungzip(new Uint8Array(buffer), { to: 'string' });
@@ -1943,6 +1951,8 @@ fetch('data/tile_data_100m_20250417.geojson.gz')
                 return "materials>1940-lvl";
             } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
                 return "materials-carbon-lvl";
+            } else if (document.getElementById('mainMap-carbon-pp')?.classList.contains('active')) {
+                return "materials-carbon-pp-lvl";
             } else {
                 return "materials-lvl"; // Default to "materials-lvl" if no specific filter is active
             }
@@ -2029,10 +2039,12 @@ fetch('data/tile_data_100m_20250417.geojson.gz')
                     suffix = '>1940';
                 } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
                     suffix = '-carbon';
+                } else if (document.getElementById('mainMap-carbon-pp')?.classList.contains('active')) {
+                    suffix = '-carbon/p';
                 }
 
                 // Determine unit
-                const isCarbonMode = suffix === '-carbon';
+                const isCarbonMode = ['-carbon', '-carbon-pp'].includes(suffix);
                 const unit = isCarbonMode ? 'Unit: kgCO2e' : 'Unit: Metric ton (~1.1 US ton)';
 
                 // Update unit display separately
@@ -2640,6 +2652,8 @@ function updatePanelTitle() {
         panelTitle.innerHTML = 'TILE COMPOSITION: POST-1940';
     } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
         panelTitle.innerHTML = 'TILE COMPOSITION: CARBON';
+    } else if (document.getElementById('mainMap-carbon-pp')?.classList.contains('active')) {
+        panelTitle.innerHTML = 'TILE COMPOSITION: CARBON/P';
     } else {
         panelTitle.innerHTML = 'TILE COMPOSITION'; // Default for 'ALL'
     }

@@ -37,7 +37,7 @@ const nycBounds = L.latLngBounds(
     [41.0176, -73.4004]  // NE corner
 );
 const mainMap = L.map('mainMap', {
-    center: [40.7128, -73.9460],
+    center: [40.7128, -73.8960],
     zoom: 13,
     minZoom: 11,
     maxZoom: 19,
@@ -1493,7 +1493,7 @@ function updateTooltipDirection(marker, tooltipEl) {
 const xrayMarkers = [];
 
 
-fetch('data/marker-data-20250413.csv')
+fetch('data/marker-data-20250421.csv')
     .then(response => response.text())
     .then(csvText => {
         const parsed = Papa.parse(csvText, {
@@ -1510,11 +1510,12 @@ fetch('data/marker-data-20250413.csv')
                 return;
             }
 
-            const markerName = row.MarkerName || '';
+            const markerName = row.MarkerQuote || '';
             const markerTitle = row.MarkerTitle || '';
             const markerStory = row.MarkerStory || '';
             const markerRefName = row.MarkerRefName || '';
             const markerRefLink = row.MarkerRefLink || '';
+            const markerRefYear = row.MarkerRefYear || '';
             const markerImage = row.MarkerImage || '';
             const markerImageSource = row.MarkerAttribution || '';
             let shapeGeoJson = null;
@@ -1537,11 +1538,11 @@ fetch('data/marker-data-20250413.csv')
                         </div>
                         <div class="marker-text-content">
                             <div class="marker-header">
-                                <div class="marker-name">${markerName}: ${markerTitle}</div>
+                                <div class="marker-name">${markerTitle}</div>
                             </div>
                             <div class="marker-story">${markerStory}</div>
                             <div class="marker-references">
-                                Also see: <a href="${markerRefLink}" target="_blank">${markerRefName}</a>
+                                See: <a href="${markerRefLink}" target="_blank">${markerRefName} (${markerRefYear})</a>
                             </div>
                         </div>
                     </div>
@@ -1910,7 +1911,7 @@ function sanitizeJson(data) {
     return data.replace(/NaN/g, "null");  // Replace NaN with null (or other appropriate value)
 }
 
-fetch('data/tile_data_100m_20250419.geojson.gz')
+fetch('data/tile_data_100m_20250420.geojson.gz')
     .then(response => response.arrayBuffer())
     .then(buffer => {
         const decompressed = pako.ungzip(new Uint8Array(buffer), { to: 'string' });
@@ -2040,12 +2041,18 @@ fetch('data/tile_data_100m_20250419.geojson.gz')
                 } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
                     suffix = '-carbon';
                 } else if (document.getElementById('mainMap-carbon-pp')?.classList.contains('active')) {
-                    suffix = '-carbon/p';
+                    suffix = '-carbon-pp';
                 }
 
                 // Determine unit
-                const isCarbonMode = ['-carbon', '-carbon-pp'].includes(suffix);
-                const unit = isCarbonMode ? 'Unit: kgCO2e' : 'Unit: Metric ton (~1.1 US ton)';
+                let unit;
+                if (suffix === '-carbon-pp') {
+                unit = 'Unit: kgCO2e/person';
+                } else if (['-carbon', '-carbon-pp'].includes(suffix)) {
+                unit = 'Unit: kgCO2e';
+                } else {
+                unit = 'Unit: Metric ton (~1.1 US ton)';
+                }
 
                 // Update unit display separately
                 const unitElement = document.getElementById('value-unit');
@@ -2410,15 +2417,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Sidebar------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function() {
-    let isSidebarExpanded = true; // Sidebar starts expanded
+    let isSidebarExpanded = false; // Sidebar starts collapsed
 
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("control-toggle");
     const toggleIcon = document.getElementById("toggleIcon");
 
-    // Ensure sidebar starts expanded
-    sidebar.classList.add("expanded"); 
-    toggleIcon.src = "images/panel-collapse.svg"; // Show collapse icon
+    // Ensure sidebar starts collapsed
+    // sidebar.classList.add("expanded"); 
+    toggleIcon.src = "images/panel-expand.svg"; // Show expand icon
 
     toggleButton.addEventListener("click", function() {
         if (isSidebarExpanded) {

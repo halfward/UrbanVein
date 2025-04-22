@@ -17,7 +17,7 @@ buttons.forEach(button => {
 });
 
 // Set the "ALL" button as active on page load
-document.getElementById('mainMap-all').classList.add('active');
+document.getElementById('filter-none-title').classList.add('active');
 
 
 
@@ -261,22 +261,38 @@ const markerReferences = {
 
 // Function to get the appropriate column based on active button
 function getActiveMaterialColumn() {
-    if (document.getElementById('mainMap-2a').classList.contains('active')) {
-        return 'materials<=2-lvl';
-    } else if (document.getElementById('mainMap-2b').classList.contains('active')) {
-        return 'materials>2-lvl';
-    } else if (document.getElementById('mainMap-1940a').classList.contains('active')) {
-        return 'materials<=1940-lvl';
-    } else if (document.getElementById('mainMap-1940b').classList.contains('active')) {
-        return 'materials>1940-lvl';
-    } else if (document.getElementById('mainMap-carbon').classList.contains('active')) {
-        return 'materials-carbon-lvl';
-    } else if (document.getElementById('mainMap-carbon-pp').classList.contains('active')) {
-        return 'materials-carbon-pp-lvl';
-    } else if (document.getElementById('mainMap-all').classList.contains('active')) {
-        return 'materials-lvl';  // Default to 'materials-lvl' when 'ALL' is active
+    const defaultBtn = document.getElementById('filter-none-title');
+    const allButtons = [
+        'mainMap-2a',
+        'mainMap-2b',
+        'mainMap-1940a',
+        'mainMap-1940b',
+        'mainMap-carbon',
+        'mainMap-carbon-pp',
+    ];
+
+    for (const btnId of allButtons) {
+        if (document.getElementById(btnId).classList.contains('active')) {
+            defaultBtn.classList.remove('active'); // Remove active from 'ALL'
+            switch (btnId) {
+                case 'mainMap-2a': return 'materials<=2-lvl';
+                case 'mainMap-2b': return 'materials>2-lvl';
+                case 'mainMap-1940a': return 'materials<=1940-lvl';
+                case 'mainMap-1940b': return 'materials>1940-lvl';
+                case 'mainMap-carbon': return 'materials-carbon-lvl';
+                case 'mainMap-carbon-pp': return 'materials-carbon-pp-lvl';
+            }
+        }
     }
+
+    // If no other active button, fallback to 'ALL'
+    if (defaultBtn.classList.contains('active')) {
+        return 'materials-lvl';
+    }
+
+    return null;
 }
+
 
 // Add this to store animation IDs for each marker
 const animationTracker = new Map();
@@ -514,14 +530,16 @@ function getOpacityForZoom(zoom) {
     return 0.65;
 }
 
-// Set up event listeners on the buttons
-document.querySelectorAll('.mainMap-layers-button').forEach(button => {
+// Set up event listeners on all relevant buttons including 'filter-none-title'
+document.querySelectorAll('.mainMap-layers-button, #filter-none-title').forEach(button => {
     button.addEventListener('click', function () {
-        // Update active class on button click
-        document.querySelectorAll('.mainMap-layers-button').forEach(btn => btn.classList.remove('active'));
+        // Remove 'active' from all buttons
+        document.querySelectorAll('.mainMap-layers-button, #filter-none-title').forEach(btn => btn.classList.remove('active'));
+        
+        // Add 'active' to the clicked one
         button.classList.add('active');
 
-        // Refresh markers when the active button changes
+        // Refresh markers
         refreshMarkers();
     });
 });
@@ -699,6 +717,7 @@ function togglePanel(panelToggleId, panelContentId, panelTitleId, panelId) {
 // Apply the toggle logic for each panel and auto-expand
 document.addEventListener("DOMContentLoaded", function () {
     togglePanel("panelToggleBuilding", "panelContentBuilding", "panelTitleBuilding", "panelBuilding");
+    togglePanel("panelToggleFilter", "panelContentFilter", "panelTitleFilter");
     togglePanel("panelToggleMaterial", "panelContentMaterial", "panelTitleMaterial");
     togglePanel("panelToggleInfo", "panelContentInfo", "panelTitleInfo");
 });
@@ -707,25 +726,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // Material panel tooltip
-const guideIcon = document.querySelector(".guide-icon");
-const tooltip = document.getElementById("tooltip");
+const guideIcon = document.getElementById("guide-icon-material");
 
 guideIcon.addEventListener("mouseenter", () => {
+    const tooltip = getCurrentTooltip();
     tooltip.style.display = "block";
 });
 
 guideIcon.addEventListener("mousemove", (e) => {
+    const tooltip = getCurrentTooltip();
     const tooltipWidth = tooltip.offsetWidth;
     const tooltipHeight = tooltip.offsetHeight;
 
-    // Position so the bottom-right corner sticks to the cursor
     tooltip.style.left = `${e.clientX - tooltipWidth}px`;
     tooltip.style.top = `${e.clientY - tooltipHeight}px`;
 });
 
 guideIcon.addEventListener("mouseleave", () => {
+    const tooltip = getCurrentTooltip();
     tooltip.style.display = "none";
 });
+
+function getCurrentTooltip() {
+    const isCarbon = document.getElementById("mainMap-carbon")?.classList.contains("active");
+    const isCarbonPP = document.getElementById("mainMap-carbon-pp")?.classList.contains("active");
+    return (isCarbon || isCarbonPP)
+        ? document.getElementById("tooltip-carbon")
+        : document.getElementById("tooltip");
+}
+
 
 
 
@@ -1113,8 +1142,8 @@ document.addEventListener("mousemove", function (e) {
     if (xrayMaskElement.style.display === "block") {
         const mouseX = e.pageX;
         const mouseY = e.pageY;
-        const revealSize = 350;
-        const cornerRadius = 6;
+        const revealSize = 300;
+        const cornerRadius = 150;
 
         // Get all relevant panes
         const xrayPane = mainMap.getPane('xrayPane');
@@ -1511,6 +1540,7 @@ fetch('data/marker-data-20250421.csv')
             }
 
             const markerName = row.MarkerQuote || '';
+            const markerNameLink = row.MarkerQuoteLink || '';
             const markerTitle = row.MarkerTitle || '';
             const markerStory = row.MarkerStory || '';
             const markerRefName = row.MarkerRefName || '';
@@ -1536,9 +1566,17 @@ fetch('data/marker-data-20250421.csv')
                         <div class="marker-image">
                             <img src="${markerImage}" alt="${markerName}">
                         </div>
+                        
                         <div class="marker-text-content">
                             <div class="marker-header">
-                                <div class="marker-name">${markerTitle}</div>
+                                <div class="marker-name">
+                                ${markerTitle}
+                                </div>
+                                <div class="marker-quote-ref">
+                                    <a href="${markerNameLink}" target="_blank">
+                                        QUOTE ORIGIN
+                                    </a>
+                                </div>
                             </div>
                             <div class="marker-story">${markerStory}</div>
                             <div class="marker-references">
@@ -1584,7 +1622,7 @@ fetch('data/marker-data-20250421.csv')
                         const isMultiLine = feature.geometry && feature.geometry.type === "MultiLineString";
                         return {
                             color: 'black',
-                            fillOpacity: 0.4,
+                            fillOpacity: 0.25,
                             weight: isMultiLine ? 3 : 0
                         };
                     });
@@ -2044,21 +2082,21 @@ fetch('data/tile_data_100m_20250420.geojson.gz')
                     suffix = '-carbon-pp';
                 }
 
-                // Determine unit
-                let unit;
-                if (suffix === '-carbon-pp') {
-                unit = 'Unit: kgCO2e/person';
-                } else if (['-carbon', '-carbon-pp'].includes(suffix)) {
-                unit = 'Unit: kgCO2e';
-                } else {
-                unit = 'Unit: Metric ton (~1.1 US ton)';
-                }
+                // // Determine unit
+                // let unit;
+                // if (suffix === '-carbon-pp') {
+                // unit = 'Unit: kgCO2e/person';
+                // } else if (['-carbon', '-carbon-pp'].includes(suffix)) {
+                // unit = 'Unit: kgCO2e';
+                // } else {
+                // unit = 'Unit: Metric ton (~1.1 US ton)';
+                // }
 
-                // Update unit display separately
-                const unitElement = document.getElementById('value-unit');
-                if (unitElement) {
-                    unitElement.textContent = unit;
-                }
+                // // Update unit display separately
+                // const unitElement = document.getElementById('value-unit');
+                // if (unitElement) {
+                //     unitElement.textContent = unit;
+                // }
 
                 // Get all relevant properties
                 const props = feature.properties;
@@ -2650,19 +2688,19 @@ function updatePanelTitle() {
     }
 
     if (document.getElementById('mainMap-2a')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: ≤ 2F';
+        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
     } else if (document.getElementById('mainMap-2b')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: > 2F';
+        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
     } else if (document.getElementById('mainMap-1940a')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: PRE-1940';
+        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
     } else if (document.getElementById('mainMap-1940b')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: POST-1940';
+        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
     } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: CARBON';
+        panelTitle.innerHTML = 'TILE COMPOSITION: KgCO2e';
     } else if (document.getElementById('mainMap-carbon-pp')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: CARBON/P';
+        panelTitle.innerHTML = 'TILE COMPOSITION: KgCO2e';
     } else {
-        panelTitle.innerHTML = 'TILE COMPOSITION'; // Default for 'ALL'
+        panelTitle.innerHTML = 'TILE COMPOSITION: Metric Ton'; // Default for 'ALL'
     }
 }
 

@@ -4,13 +4,13 @@ to-do:
 - qgis printout w/ blending modes
 
 - refine UI
-- poi links
-- add diagrams, write the story
+- guide icon
 - bug: some zoom levels don't look good
 - bug: interactive x-ray will prevent tile info from updating
 - bug: layer toggle first time wont work
 - bug: need to merge the route and station layers for the subway and the railway layers
 - bug: the road name tooltip stays even after switching the x-ray off
+- add diagrams, write the story
 - refine tones.js / soundtrap
 
 0.5.6 (2025-04-18 carbon update 2)

@@ -220,22 +220,22 @@
                 <div class="scrollable-text-data">
                     <h3>▘Material Estimate & Tile Data</a> </h3>
                     <p>
-                        NYC Building Material Estimate<br>
-                        by Hao Lee
-                        <br><br>
                         <a href="https://doi.org/10.5281/zenodo.10124952">The Regional Assessment of buildings’ Material Intensities (RASMI)</a><br>
                         by <a href="https://doi.org/10.1038/s41597-024-03190-7">Tomer Fishman, Alessio Mastrucci, Yoav Peled, Shoshanna Saxe, Bas van Ruijven</a>
                         <br><br>
                         <a href="https://www.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page">NYC MapPLUTO data</a><br>
                         by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
                         <br><br>
-                        <a href="https://carbonleadershipforum.org/clf-material-baselines-2023/">Carbon Leadership Forum Material Baselines for North  America / August 2023</a><br>
+                        <a href="https://carbonleadershipforum.org/clf-material-baselines-2023/">Carbon Leadership Forum Material Baselines for North  America (August 2023)</a><br>
                         by <a href="https://carbonleadershipforum.org/">Carbon Leadership Forum (CLF)</a>
                         <br><br>
-                        <a href="https://data2.nhgis.org/">NYC Census data 2020</a><br>
+                        <a href="https://data2.nhgis.org/">NYC Census data (2020)</a><br>
                         by <a href="https://www.nhgis.org/">The National Historical Geographic Information System (NHGIS)</a>
                         <br><br>
-                        <a href="https://data.cityofnewyork.us/City-Government/2020-Census-Tracts-Mapped/weqx-t5xr">NYC Census Tracts 2020</a><br>
+                        <a href="https://data.cityofnewyork.us/Environment/NYC-Building-Energy-and-Water-Data-Disclosure-for-/5zyy-y8am/about_data">NYC Building Energy and Water Data Disclosure for Local Law 84 (2022-24)</a><br>
+                        by <a href="https://www.nyc.gov/site/buildings/index.page">NYC Department of Buildings (DOB)</a>
+                        <br><br>
+                        <a href="https://data.cityofnewyork.us/City-Government/2020-Census-Tracts-Mapped/weqx-t5xr">NYC Census Tracts (2020)</a><br>
                         by <a href="https://www.nyc.gov/site/planning/index.page">NYC Department of City Planning</a>
                         <br><br>
                         <a href="https://www.google.com/maps/d/u/0/viewer?mid=1c8sYYoYTy-_b7ml3O5Y5ArkS3eRM1W0&ll=40.73677714231287%2C-73.8026375970926&z=14">NYC Neighborhoods Map</a><br>
@@ -388,15 +388,43 @@
         <div id="tooltip" class="tooltip">
             Dot sizes represent the concentration of each material type. They don’t compare weights between different materials, but show how much of a material is used relative to other parts of NYC in its own category.
         </div>
+        <div id="tooltip-carbon" class="tooltip">
+            Dot sizes represent the concentration of each material’s embodied carbon. Unlike the material view, these dots can be compared across different material types—they all share the same color and scale, allowing direct comparison of carbon impact regardless of material category.
+        </div>
+
+        <div id="panelFilter">
+            <button id="filter-none-title">
+                CLEAR
+            </button>
+            <div class="panelTitle" id="panelTitleFilter">
+                MAP FILTER
+                <img src="images/guide.png" alt="guide" class="guide-icon" id="guide-icon-filter">
+                <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleFilter">
+            </div>
+            <div class="panelContent" id="panelContentFilter">
+                <div class="panelContentWrapper" style="padding-top: 0; height: 59px;">
+                    <div class="filter-container">
+                        <button class="mainMap-layers-button" id="mainMap-2a">≤ 2F</button>
+                        <button class="mainMap-layers-button" id="mainMap-2b">> 2F</button>
+                        <button class="mainMap-layers-button" id="mainMap-1940a">≤ 1940</button>
+                        <button class="mainMap-layers-button" id="mainMap-1940b">> 1940</button>
+                    </div>
+                    <div class="filter-container">
+                        <button class="mainMap-layers-button" id="mainMap-carbon">Embodied Carbon</button>
+                        <button class="mainMap-layers-button" id="mainMap-carbon-pp">Carbon / Person</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div id="panelMaterial">
             <div class="panelTitle" id="panelTitleMaterial">
                 <div id="panelTitleMaterial-dynamic"></div>
-                <img src="images/guide.svg" alt="guide" class="guide-icon">
+                <img src="images/guide.png" alt="guide" class="guide-icon" id="guide-icon-material">
                 <img src="images/collapse.svg" alt="collapse" class="panelToggle" id="panelToggleMaterial">
             </div>
             <div class="panelContent" id="panelContentMaterial">
-                <div class="panelContentWrapper" style="padding-top: 0;">
+                <div class="panelContentWrapper" style="padding-top: 0; height: 105px;">
                     <div id="toggle-box">
                         <!-- <div class="icon-container">
                             <img src="images/material-brick.svg" class="material-icon">
@@ -498,7 +526,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="value-unit"></div>
+                    <!-- <div id="value-unit"></div> -->
                 </div>
             </div>
         </div>
@@ -542,7 +570,7 @@
                             <div class="info-text line"></div>
                             <div class="info-text right" id="population"></div>
                         </div>                  
-                        <div class="info-text-container" style="margin-top: 10px;">
+                        <div class="info-text-container">
                             <div class="info-text left">Zoning types</div>
                             <div class="info-text line"></div>
                             <div class="info-text right" id="zonedist"></div>
@@ -648,22 +676,13 @@
                 <canvas id="numFloorsChart" height="250"></canvas>
             </div>
             <div class="mainMap-layers-button-container">
-                <button class="mainMap-layers-button" id="mainMap-all">ALL</button>
-                <button class="mainMap-layers-button" id="mainMap-2a">≤2F</button>
-                <button class="mainMap-layers-button" id="mainMap-2b">>2F</button>
-                <button class="mainMap-layers-button" id="mainMap-1940a">PRE-1940</button>
-                <button class="mainMap-layers-button" id="mainMap-1940b">POST-1940</button>
-                <button id="mainMap-guide">
-                    <img src="images/guide.svg" alt="guide" class="mainMap-guide-icon">
+                    <img src="images/guide.png" alt="guide" class="mainMap-guide-icon">
                 </button>
             </div>
         </div>
     </div>
 
     <div id="mainMap"></div>
-    <button class="mainMap-layers-button" id="mainMap-carbon" style="position: absolute; bottom: 100px; left:50vw; z-index: 2000;">CARBON</button>
-    <button class="mainMap-layers-button" id="mainMap-carbon-pp" style="position: absolute; bottom: 60px; left:50vw; z-index: 2000;">CARBON/P</button>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

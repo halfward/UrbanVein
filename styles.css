@@ -652,7 +652,7 @@ pre[class*="language-"], code[class*="language-"] {
 #panelContainer {
     position: absolute;
     right: 10px;
-    bottom: 20px;
+    bottom: 10px;
     display: flex;
     flex-direction: column; 
     /* gap: 7px;  */
@@ -671,7 +671,7 @@ pre[class*="language-"], code[class*="language-"] {
 #panelContainer > *:first-child {
     margin-top: auto; /* Pushes all content to the bottom */
 }
-#panelBuilding, #panelMaterial, #panelTile {
+#panelBuilding, #panelFilter, #panelMaterial, #panelTile {
     position: relative;
     width: 300px;
     background-color: rgba(250, 250, 250, 0.9);
@@ -682,7 +682,6 @@ pre[class*="language-"], code[class*="language-"] {
 #panelBuilding {
     display: flex;
     flex-direction: column;
-
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
 }
@@ -717,7 +716,7 @@ pre[class*="language-"], code[class*="language-"] {
     margin: 0 !important;
     display: flex;
     align-items: center;
-    padding: 7px;
+    padding: 6px;
     padding-left: 15px;
     font-size: 0.8rem;
     font-weight: 600;
@@ -745,14 +744,15 @@ pre[class*="language-"], code[class*="language-"] {
 .guide-icon {
     position: relative;
     margin-left: 9px;
-    width: 15px;
-    height: auto;
+    width: 16px;
+    height: 16px;
     transition: opacity 0.3s ease;
-    opacity: 0.3;
+    opacity: 0.5;
 }
 .guide-icon:hover {
     opacity: 1;
 }
+
 /* .panelTitle .guide-icon, .panelTitle img {
     filter: invert(1);
 } */
@@ -775,12 +775,13 @@ pre[class*="language-"], code[class*="language-"] {
     padding: 15px;
     padding-left: 20px;
     padding-right: 20px;
+    font-size: 0.8rem;
 }
 .panelToggle {
     position: absolute;
     height: 0.5rem;
     right: 15px;
-    top: 11px;
+    top: 10px;
     cursor: pointer;
     transform: rotate(180deg);
 }
@@ -848,27 +849,38 @@ pre[class*="language-"], code[class*="language-"] {
 .label-xray.active img {
     opacity: 0.25;
 }
-#xray-none-title {
+#xray-none-title, #filter-none-title {
     position: absolute;
     font-size: 0.6rem;
     font-weight: 700;
     right: 160px;
-    top: 8px;
+    top: 6px;
     width: auto;
-    height: auto;
+    height: 16px;
     opacity: 1;
     background-color: #8f9a9a;
     border-radius: 20px;
+    border: none;
     padding: 2px;
     padding-left: 4px;
     padding-right: 4px;
     color: white;
     transition: opacity 0.1s ease;
 }
-#xray-none-title.active {
+#filter-none-title {
+    right: 138px;
+}
+#filter-none-title img {
+    width: 16px;
+    transition: opacity 0.3s ease;
+}
+#filter-none-title.active img {
+    opacity: 0.25;
+}
+#xray-none-title.active, #filter-none-title.active {
     display: none;
 }
-#xray-none-title:hover {
+#xray-none-title:hover, #filter-none-title:hover {
     opacity: 0.5;
 }
 /* #xray-none-title.invert-style {
@@ -891,6 +903,9 @@ pre[class*="language-"], code[class*="language-"] {
     font-size: 0.8rem;
     border-radius: 13px;
     /* transition: width 0.3s ease-in; */
+}
+.custom-dropdown:nth-child(3) {
+    margin-bottom: 0;
 }
 .custom-dropdown:hover {
     /* border-bottom-left-radius: 0; */
@@ -967,10 +982,10 @@ pre[class*="language-"], code[class*="language-"] {
 
 
 #xray-mask-element {
-    width: 348px;
-    height: 348px;
+    width: 298px;
+    height: 298px;
     border: 1px solid rgba(255, 255, 255, 0.8); /* or black, or anything */
-    border-radius: 6px;
+    border-radius: 50%;
     background: rgba(0, 0, 0, 0.05); 
     position: absolute;
     pointer-events: none;
@@ -1215,6 +1230,25 @@ pre[class*="language-"], code[class*="language-"] {
     width: 200px !important;
     object-fit: cover;
     border-radius: 4px;
+}
+.marker-quote-ref a {
+    text-align: center;
+    margin-left: 10px;
+    padding: 3px;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 0.5rem;
+    font-weight: 500;
+    line-height: 0.6rem;
+    border: #888 1px solid;
+    border-radius: 20px;
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s ease, border 0.2s ease;
+}
+.marker-quote-ref a:hover{
+    color: black;
+    border: black 1px solid;
 }
 .marker-text-content {
     display: flex;
@@ -1750,7 +1784,7 @@ sup {
     left: 10px;
 }
 .leaflet-bottom{
-    bottom: 20px;
+    bottom: 10px;
     border-radius: 3px;
 }
 .leaflet-bottom.leaflet-left {
@@ -1765,7 +1799,7 @@ sup {
     bottom: 22px !important;
     left: 122px !important;
     position: fixed !important;
-    bottom: 23px !important;
+    bottom: 13px !important;
     box-shadow: none;
     border: none !important;
 }
@@ -2026,7 +2060,67 @@ canvas {
     justify-content: space-between;
     align-items: center;
 }
-.mainMap-layers-button, #mainMap-guide {
+#mainMap-guide {
+    font-family: Inter, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    height: 31px;
+    padding-left: 19px;
+    padding-right: 19px;
+    color: #8f9a9a;
+    background-color: rgba(220, 225, 230, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.filter-title {
+    margin-top: 10px;
+    margin-bottom: 3px;
+}
+.filter-container {
+    display: flex;
+    gap: 0;
+}
+.filter-container:nth-child(1) {
+    margin-top: 15px;
+    margin-bottom: 3px;
+}
+.mainMap-layers-button {
+    margin: 0;
+    flex-grow: 1;
+    font-family: Inter, sans-serif;
+    font-size: 0.8rem;
+    padding: 5px;
+    color: #8f9a9a;
+    background-color: white;
+    border: #e1e4e4 1px solid;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.mainMap-layers-button:hover {
+    color:black;
+    background-color: #ecefef
+}
+.mainMap-layers-button.active {
+    color: black
+}
+#mainMap-all{
+    border-radius: 13px;
+}
+#mainMap-2a, #mainMap-1940a, #mainMap-carbon {
+    border-top-left-radius: 13px;
+    border-bottom-left-radius: 13px;
+    border-right: none;
+}
+#mainMap-1940a {
+    margin-left: 3px;
+}
+#mainMap-2b, #mainMap-1940b, #mainMap-carbon-pp  {
+    border-top-right-radius: 13px;
+    border-bottom-right-radius: 13px;
+}
+
+/* .mainMap-layers-button {
     font-family: Inter, sans-serif;
     font-size: 0.85rem;
     font-weight: 600;
@@ -2042,7 +2136,7 @@ canvas {
 .mainMap-layers-button:hover, .mainMap-layers-button.active {
     color:black;
     background-color: rgba(203, 208, 212, 0.9);;
-}
+} */
 
 /* #mainMap-guide:hover .mainMap-guide-icon, #mainMap-layers.expanded .mainMap-guide-icon {
     filter: invert(1);

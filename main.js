@@ -1400,12 +1400,12 @@ const observer = new MutationObserver(() => {
 observer.observe(panelTitle, { attributes: true });
 
 // Set the "ESRI Topographic" option as active by default
-document.addEventListener("DOMContentLoaded", () => {
-    const esriOption = document.querySelector(".dropdown-option[data-value='esri-topo']");
-    if (esriOption) {
-        esriOption.click(); // Simulate a click on the ESRI Topographic option
-    }
-});
+// document.addEventListener("DOMContentLoaded", () => {
+//     const esriOption = document.querySelector(".dropdown-option[data-value='esri-topo']");
+//     if (esriOption) {
+//         esriOption.click(); // Simulate a click on the ESRI Topographic option
+//     }
+// });
 
 
 
@@ -1520,7 +1520,6 @@ function updateTooltipDirection(marker, tooltipEl) {
 
 // Markers-------------------------------------------------------
 const xrayMarkers = [];
-
 
 fetch('data/marker-data-20250421.csv')
     .then(response => response.text())
@@ -1650,6 +1649,13 @@ fetch('data/marker-data-20250421.csv')
 
             markerMap.addLayer(marker);
             xrayMarkers.push(marker);
+            
+            const labelEl = marker.getElement()?.querySelector(".xray-marker-label");
+            if (labelEl) {
+                labelEl.addEventListener("mouseenter", () => {
+                    labelEl.classList.add("visited");
+                });
+            }
         });
     })
     .catch(error => console.error('Error loading CSV:', error));
@@ -2179,23 +2185,6 @@ fetch('data/tile_data_100m_20250420.geojson.gz')
 
 
 
-
-
-
-
-// Layer Info Expansion---------------------------------------------------------------
-const layerGuideIcon = document.querySelector('.mainMap-guide-icon');
-const layersContainer = document.querySelector('#mainMap-layers');
-
-// Toggle the expanded class on click
-layerGuideIcon.addEventListener('click', function() {
-    layersContainer.classList.toggle('expanded');
-});
-
-
-
-
-
 // Layer Info Charts------------------------------------
 const ctx = document.getElementById('numFloorsChart');
 
@@ -2379,6 +2368,47 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Intro scroll-----------
+document.getElementById("button-img-previous").addEventListener("click", () => {
+    scrollToImage("previous");
+});
+
+document.getElementById("button-img-next").addEventListener("click", () => {
+    scrollToImage("next");
+});
+
+function scrollToImage(direction) {
+    const images = [...document.querySelectorAll(".image-full, .image-narrow")];
+    const centerY = window.innerHeight / 2;
+
+    let closestIndex = -1;
+    let minDistance = Infinity;
+
+    // Find image closest to center of screen
+    images.forEach((img, index) => {
+        const rect = img.getBoundingClientRect();
+        const imageCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(imageCenter - centerY);
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestIndex = index;
+        }
+    });
+
+    // Calculate target index
+    let targetIndex = direction === "next" ? closestIndex + 1 : closestIndex - 1;
+
+    if (targetIndex >= 0 && targetIndex < images.length) {
+        images[targetIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
+
+
+
+
+
+
 // Version History------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function () {
     const versionHistory = document.getElementById("version-history");
@@ -2431,7 +2461,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const observerOptions = {
         root: null,
         rootMargin: "0px",
-        threshold: 0.2, // Adjust for better sensitivity
+        threshold: 0.1, // Adjust for better sensitivity
     };
 
     const observer = new IntersectionObserver(entries => {
@@ -2462,16 +2492,15 @@ document.addEventListener("DOMContentLoaded", function() {
     const toggleIcon = document.getElementById("toggleIcon");
 
     // Ensure sidebar starts collapsed
-    // sidebar.classList.add("expanded"); 
-    toggleIcon.src = "images/panel-expand.svg"; // Show expand icon
+    toggleIcon.src = "images/panel-collapse.svg"; // Show expand icon
 
     toggleButton.addEventListener("click", function() {
         if (isSidebarExpanded) {
             sidebar.classList.remove("expanded"); // Collapse
-            toggleIcon.src = "images/panel-expand.svg"; // Change icon to expand
+            toggleIcon.src = "images/panel-collapse.svg"; // Change icon to expand
         } else {
             sidebar.classList.add("expanded"); // Expand
-            toggleIcon.src = "images/panel-collapse.svg"; // Change icon to collapse
+            toggleIcon.src = "images/panel-expand.svg"; // Change icon to collapse
         }
         isSidebarExpanded = !isSidebarExpanded;
     });

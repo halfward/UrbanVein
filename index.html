@@ -39,6 +39,17 @@
             <div class="intro-chapter-line"></div>
             <button class="chapter-button" id="btn-who" data-target="chapter-who">WHO</button>
         </div>
+        <div class="intro-button-container bottom">
+            <button class="button-img" id="button-img-previous">
+                <img src="images/collapse.svg" alt="previous">
+            </button>
+            <button class="button-img" id="button-img-line">
+                <div id="button-img-line2"></div>
+            </button>
+            <button class="button-img" id="button-img-next">
+                <img src="images/collapse.svg" alt="next">
+            </button>
+        </div>
         <div class="intro-text"></div>
         <script>
             fetch("articles/intro.md")
@@ -321,7 +332,7 @@
         <div id="control-panel">
             <div class="control-toggle" id="control-toggle">
                 <button class="control-button">
-                    <img src="images/panel-expand.svg" alt="toggle" class="control-icon" id="toggleIcon">
+                    <img src="images/panel-collapse.svg" alt="toggle" class="control-icon" id="toggleIcon">
                 </button>
             </div>
             <div class="control-panel-white">
@@ -390,6 +401,11 @@
         </div>
         <div id="tooltip-carbon" class="tooltip">
             Dot sizes represent the concentration of each material’s embodied carbon. Unlike the material view, these dots can be compared across different material types—they all share the same color and scale, allowing direct comparison of carbon impact regardless of material category.
+        </div>
+        <div id="tooltip-chart" class="tooltip">
+            Over <b>75%</b> of the city's buildings are <b>two stories or less</b>,<br> and more than <b>50%</b> were built <b>before 1940</b>.
+            <br>
+            Over <b>50%</b> of the materials come from <b>two or fewer story buildings</b>, nearly <b>70%</b> of which are from buildings built <b>before 1940</b>. 
         </div>
 
         <div id="panelFilter">
@@ -640,47 +656,7 @@
             <div class="xray-legend-li">Park</div>
         </ul>
     </div>
-    
-    <div id="mainMap-layers-container">
-        <div id="mainMap-layers">
-            <div id="mainMap-layers-diagram">
-                <div id="mainMap-layers-diagram-text">
-                    <div style="font-size: 0.9rem; margin-bottom: 10px; font-weight: 600; display: flex; flex-direction: row; align-items: center;">
-                        NYC Buildings Are Short and Old.
-                        <div class="mainMap-toggle-container">
-                            <input type="checkbox" id="toggleMap" class="mainMap-toggle-input">
-                            <label id="mainMap-toggle-short" for="toggleMap">SHORT</label>
-                            <label for="toggleMap" class="mainMap-toggle-label"></label>
-                            <label id="mainMap-toggle-old" for="toggleMap">OLD</label>
-                          </div>
-                    </div>
-                    <div id="mainMap-layers-diagram-legend">
-                        <div id="mainMap-layers-diagram-legendA"></div>
-                        Building Count
-                    </div>
-                    <p>
-                        Over <b>75%</b> of the city's buildings are <b>two stories or less</b>,<br> and more than <b>50%</b> were built <b>before 1940</b>. 
-                    </p>
-                    <div id="mainMap-layers-diagram-legend">
-                        <div id="mainMap-layers-diagram-legendB"></div>
-                        <div id="mainMap-layers-diagram-legendC"></div>
-                        <div id="mainMap-layers-diagram-legendD"></div>
-                        <div id="mainMap-layers-diagram-legendE"></div>
-                        <div id="mainMap-layers-diagram-legendF"></div>
-                        Building Material Weight
-                    </div>
-                    <p>
-                        Over <b>50%</b> of the materials come from <b>two or fewer story buildings</b>, nearly <b>70%</b> of which are from buildings built <b>before 1940</b>. 
-                    </p>
-                </div>
-                <canvas id="numFloorsChart" height="250"></canvas>
-            </div>
-            <div class="mainMap-layers-button-container">
-                    <img src="images/guide.png" alt="guide" class="mainMap-guide-icon">
-                </button>
-            </div>
-        </div>
-    </div>
+
 
     <div id="mainMap"></div>
 

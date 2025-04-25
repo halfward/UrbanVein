@@ -120,6 +120,10 @@
         <p>
             This project became the final push behind NYC Building Materials. I realized I could build a web platform that reintroduces users to New York City through a purely material lens: combining interactive tools like x-ray masks, GIS data analysis, and web-based visualization techniques. It'll invite users to engage with critical questions of sustainability and urban identity, presenting those data in an interactive, participatory manner.
         </p>
+        <img class="image-full" src="articles/images" alt="NYC Building Materials">
+        <div class="image-figure">
+            NYC Building Materials as of April 2025.
+        </div>
     </div>
 </section>
 
@@ -147,10 +151,12 @@
             encode data, clustering, five clusters
             I’m combining the Regional Assessment of buildings’ Material Intensities (RASMI) by Tomer Fishman et al. with my own clustering of NYC buildings using the PLUTO dataset from NYC OpenData. The result is a custom dataset that assigns material profiles to every land lot in the city—essentially creating BIM-like information for the entire built environment of NYC.
         </p>
-        <img class="image-full" src="articles/images/comparison-01.png" alt="Comparison-Queens" style="margin-bottom: 10px">
-        <img class="image-full" src="articles/images/comparison-02.png" alt="Comparison-Brooklyn">
+        <div class="image-full" style="display: flex; flex-direction: column">
+            <img src="articles/images/comparison-01.png" alt="Comparison-Queens" style="margin-bottom: 5px">
+            <img src="articles/images/comparison-02.png" alt="Comparison-Brooklyn">
+        </div>
         <div class="image-figure">
-        The differences between loosely clustering and assigning materials, and what a more thoughtful, step-by-step process can actually achieve.
+            The differences between loosely clustering and assigning materials, and what a more thoughtful, step-by-step process can actually achieve. The upper figure shows part of Queens; the lower, Brooklyn.
         </div>
     </div>
     <blockquote>
@@ -161,12 +167,18 @@
             <b>Part 2 of 4: Visualizing Material Data</b>
             <br><br>
             To bring this data to life, I’m using d3.js to visualize it in a hex-tile format. 
-            <b>How To Visualize Multiple Layers On A Single Canvas?</b><br>
-            visualization archive. inspos. one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
+            How To Visualize Multiple Layers On A Single Canvas? one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
         </p>
-        <img class="image-full" src="articles/images/viz-history.png" alt="Visualization History">
+        <img class="image-full" src="articles/images/viz-history-1.png" alt="Visualization History">
         <div class="image-figure">
-        A series of visualization experiments in QGIS, ranging from single-color and two-tone maps to five-color palettes and finally a chromatic aberration effect.
+            A series of visualization experiments in QGIS, ranging from single-color and two-tone maps to five-color palettes and finally a chromatic aberration effect.
+        </div>
+        <p>
+            Then I settled on using a hexagon grid for the visualization.
+        </p>
+        <img class="image-full" src="articles/images/viz-history-2.png" alt="Visualization History">
+        <div class="image-figure">
+            A series of visualization experiments in QGIS, ranging from single-color and two-tone maps to five-color palettes and finally a chromatic aberration effect.
         </div>
     </div>
     <div class="subchapter">
@@ -297,7 +309,8 @@
         <p>
             <b>References</b>
             <br><br>
-            <h3>▘visuals/interactivity</h3>
+            <p>
+                <b>Visuals/Interactivity</b><br>
                 <a href="https://climate-conflict.org/www/data-pages/hazards">climate-conflict-vulnerability index</a> by <a href="https://truth-and-beauty.net/">moritz stefaner</a>
                 <br>
                 <a href="https://www.artic.edu/artworks/204516/atlas-of-the-new-dutch-water-defence-line">atlas of the new dutch water defence line</a>
@@ -315,69 +328,73 @@
                 <br>
                 <a href="https://www.are.na/mario-giampieri/g4dp-f24-precedent-presentations">g4dp f24 precedent presentations</a>
                 are.na channel curated by the fall '24 gis for design practices group at gsapp columbia</a>
-            <h3>▘gis/mapping</h3>
-                <a href="https://designpractices.org/">gis for design practices</a>
-                <br>
+            </p>
+            <p>
+                <b>GIS/Mapping</b><br>
+                <a href="https://designpractices.org/">gis for design practices</a> 
                 by dare brawley and mario giampieri
-                <br><br>
+                <br>
                 <a href="https://mappinghny.com/">mapping historical new york</a>
-                <br>
                 by <a href="https://c4sr.columbia.edu/">center for spatial research</a>
-                <br><br>
-                <a href="https://centerforspatialresearch.github.io/asianAmericans/">asian american dot density map</a><br>
+                <br>
+                <a href="https://centerforspatialresearch.github.io/asianAmericans/">asian american dot density map</a>
                 by jia zhang
-                <br><br>
+                <br>
                 <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">nyc construction dashboard 2022</a>
-                <br>
                 by dob analytics
-            <h3>▘material estimation & circular economy</h3>
-                <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/jiec.13456">city-scale assessment of the material and environmental footprint of buildings using an advanced building information model: a case study from canberra, australia</a><br>
+            </p>
+            <p>
+                <b>Material Estimation & Circular Economy</b><br>
+                <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/jiec.13456">city-scale assessment of the material and environmental footprint of buildings using an advanced building information model: a case study from canberra, australia</a>
                 by natthanij soonsawad, raymundo marcos-martinez, and heinz schandl
-                <br><br>
+                <br>
                 <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/bamb_materialspassports_bestpractice.pdf#page=54">materials passports - best practices</a>
-                <br>
                 by matthias heinrich and werner lang
-                <br><br>
-                <a href="https://www.sciencedirect.com/science/article/abs/pii/S2210670723000665">estimating the recoverable value of in-situ building materials</a><br>
+                <br>
+                <a href="https://www.sciencedirect.com/science/article/abs/pii/S2210670723000665">estimating the recoverable value of in-situ building materials</a>
                 by aida mollaei, chris bachmann, and carl haas
-                <br><br>
+                <br>
                 <a href="https://www.rsmeans.com/">rsmeans data</a>
-                <br>
                 by <a href="https://www.gordian.com/">gordian</a>
-                <br><br>
+                <br>
                 <a href="https://www.circularise.com/industry/construction">circularise</a>
-                <br>
                 by <a href="https://www.circularise.com">circularise</a>
-                <br><br>
-                <a href="https://www.zillow.com/z/zestimate/">zestimate</a>
                 <br>
+                <a href="https://www.zillow.com/z/zestimate/">zestimate</a>
                 by <a href="https://www.zillow.com">zillow</a>
-            <h3>▘speculation</h3>
-                <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">roadmap 2050</a><br>
+            </p>
+            <p>
+                <b>Speculation</b><br>
+                <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">roadmap 2050</a>
                 by <a href="https://www.oma.com/">oma</a>
-            <h3>▘js libraries</h3>
-                <a href="https://leafletjs.com/">leaflet</a><br>
+            </p>
+            <p>
+                <b>JavaScript Libraries</b><br>
+                <a href="https://leafletjs.com/">Leaflet</a>
                 originally created by <a href="https://agafonkin.com/">volodymyr agafonkin</a>
-                <br><br>
-                <a href="https://github.com/Norkart/Leaflet-MiniMap">leaflet-minimap</a><br>
+                <br>
+                <a href="https://github.com/Norkart/Leaflet-MiniMap">leaflet-minimap</a>
                 originally created by <a href="https://www.robpvn.net/">robert nordan</a>
-                <br><br>
-                <a href="https://github.com/perliedman/leaflet-control-geocoder">leaflet control geocoder</a><br>
+                <br>
+                <a href="https://github.com/perliedman/leaflet-control-geocoder">leaflet control geocoder</a>
                 originally created by <a href="https://www.liedman.net/">per liedman</a>
-                <br><br>
-                <a href="https://d3js.org/">d3</a><br>
+                <br>
+                <a href="https://d3js.org/">d3</a>
                 by <a href="https://bost.ocks.org/mike/">mike bostock</a> and <a href="https://observablehq.com/">observable, inc.</a>
-                <br><br>
-                <a href="https://github.com/mrcagney/geohexgrid">geohexgrid</a><br>
+                <br>
+                <a href="https://github.com/mrcagney/geohexgrid">geohexgrid</a>
                 by <a href="https://www.mrcagney.com/team/alex-raichev/">alex raichev</a> at <a href="https://www.mrcagney.com/">mrcagney</a>
-                <br><br>
-                <a href="https://www.chartjs.org/">chart</a><br>
+                <br>
+                <a href="https://www.chartjs.org/">chart</a>
                 by <a href="https://github.com/etimberg">evert timberg</a> and <a href="https://github.com/chartjs/Chart.js/graphs/contributors">github contributors</a>
-                <br><br>
-                <a href="https://splidejs.com/">splide</a><br>
+                <br>
+                <a href="https://splidejs.com/">splide</a>
                 by <a href="https://github.com/NaotoshiFujita">naotoshi fujita</a>
-            <h3>▘columbia gsapp m.s.cdp</h3>
+            </p>
+            <p>
+                <b>Columbia GSAPP M.S.Computational Design Practices</b><br>
                 <a href="https://gsapp-cdp.github.io/archive/">capstone project archive</a>
+            </p>
         </p>
     </div>
 </section>

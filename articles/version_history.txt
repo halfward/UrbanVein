@@ -1,6 +1,6 @@
 to-do:
 - add pattern pics after data refinement
-- qgis printout
+- write the story
 
 - bug: clear doesnt bring back the traffic colors
 - bug: some zoom levels don't look good
@@ -8,10 +8,10 @@ to-do:
 - bug: layer toggle first time wont work
 - bug: need to merge the route and station layers for the subway and the railway layers
 - bug: the road name tooltip stays even after switching the x-ray off
-- write the story
 - refine tones.js / soundtrap
 
 0.5.6 (2025-04-18 carbon update 2)
+- major story update.
 - added a "visited" style to marker labels.
 - added worker data to the dataset.
 - added embodied carbon per person.

@@ -680,9 +680,8 @@ pre[class*="language-"], code[class*="language-"] {
     margin-top: 15px;
     width: 100%; 
 }
-.pattern-legend {
+.pattern-legend img {
     margin-right: 10px;
-    background-color: black;
     width: 85px;
     height: 85px;
     border-radius: 6px;
@@ -1206,14 +1205,15 @@ pre[class*="language-"], code[class*="language-"] {
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(5px);
     /* color: white; */
-    padding: 2px 6px;
-    border-radius: 2px;
+    padding: 2px 9px;
+    border-radius: 20px;
     transition: opacity 0.3s ease;
     white-space: nowrap;
     z-index: 3;
 }
 .xray-marker-label.visited {
     color: grey;
+    font-weight: 500;
   }
 .xray-marker:hover .xray-marker-label {
     opacity: 0;
@@ -1648,7 +1648,7 @@ pre[class*="language-"], code[class*="language-"] {
 }
 .line {
     flex-grow: 1; 
-    border-bottom: 1px solid #bfcdcd; 
+    border-bottom: 1px solid #e1e4e4; 
     margin: 0 6px; 
 }
 

@@ -1,6 +1,4 @@
 to-do:
-- add pattern pics after data refinement
-- write the story
 
 - bug: clear doesnt bring back the traffic colors
 - bug: some zoom levels don't look good

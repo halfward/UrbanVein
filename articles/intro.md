@@ -79,7 +79,7 @@
         <p>
             <b>Creating A Local Building Material Platform</b>
             <br><br>
-            Fast foward six years later, I'm in New York studying computational design in GSAPP Columbia. In my Colloquium design class, there’s a reading I keep coming back to—mainly because of how the author frames local data as something shaped by dynamic, ongoing societal participation. Out of all the great readings in that class, that one really stuck with me:
+            Fast foward six years later, I'm studying computational design in GSAPP Columbia. In my Colloquium class, there’s a reading I keep coming back to, mainly because of how the author frames local data as something shaped by dynamic, ongoing societal participation. Out of all the great readings in that class, that one really stuck with me:
             <blockquote>
                 All data are local. Indeed, data are cultural artifacts created by people, and their dutiful machines, at a time, in a place, and with the instruments at hand for audiences that are conditioned to receive them. -Yanni Loukissas, “From Data Sets to Data Settings,” in All Data are Local
             </blockquote>
@@ -120,7 +120,7 @@
         <p>
             This project became the final push behind NYC Building Materials. I realized I could build a web platform that reintroduces users to New York City through a purely material lens: combining interactive tools like x-ray masks, GIS data analysis, and web-based visualization techniques. It'll invite users to engage with critical questions of sustainability and urban identity, presenting those data in an interactive, participatory manner.
         </p>
-        <img class="image-full" src="articles/images" alt="NYC Building Materials">
+        <img class="image-full" src="articles/images/layout-final.png" alt="NYC Building Materials">
         <div class="image-figure">
             NYC Building Materials as of April 2025.
         </div>
@@ -135,29 +135,50 @@
         <p>
             <b>Missing Data</b>
             <br><br>
-            At its core, the project is about rethinking how we interact with the city—acknowledging the environmental cost of demolition and construction, and encouraging more thoughtful, sustainable choices. Of course, to build this kind of platform, I needed data—but there isn’t a ready-made dataset that maps NYC’s building materials at the lot* level. So I decided to create my own.
+            At its core, this project functions like a city-wide BIM model; looser in scope, but built for comparison and exploration. To make something like this work, I needed data. While NYC Open Data offers a wide range of public datasets, none mapped building materials at the lot* level. So, I decided to build that dataset myself.
             <br><br>
             *Lot (building lot): a plot of land designated for constructing a building, often a house or other structure.
         </p>
         <img class="image-full" src="articles/images/data-structure.png" alt="Data Structure">
         <div class="image-figure">
-        An overview of the processing and visualization structure.
+        An overview of the data processing and visualization structure.
         </div>
     </div>
     <div class="subchapter">
         <p>
             <b>Part 1 of 4: Using K-Prototype to Cluster Buildings And Assigning Material Profiles with Educated Estimations</b>
             <br><br>
-            encode data, clustering, five clusters
-            I’m combining the Regional Assessment of buildings’ Material Intensities (RASMI) by Tomer Fishman et al. with my own clustering of NYC buildings using the PLUTO dataset from NYC OpenData. The result is a custom dataset that assigns material profiles to every land lot in the city—essentially creating BIM-like information for the entire built environment of NYC.
+            To estimate building materials across NYC, I first needed to cluster buildings by type. This step helps define the range of building typologies before assigning material compositions using external datasets. While it's possible to categorize buildings directly using PLUTO data, such as age, use type, land use, and ownership, clustering provides a more holistic view of the city's building landscape that also helps prioritize which clusters to flesh out in more detail for accurate material estimation.<br>
+            By using Python's scikit-learn K-Prototype clustering, NYC buildings could be defined in six clusters, and their general characteristics are as follows:<br>
+            1. One- and Two-Family Residential Homes (70.64%)<br>
+            The vast majority of buildings in this category are located in residential zones, primarily constructed between the 1920s and 1960s. These low-rise homes make up over 70% of the building stock, reflecting suburban-style developments across the outer boroughs.
+            <br>
+            2. Multi-Family Elevator and Mixed Residential-Commercial Buildings (16.33%)<br>
+            Found mainly in residential zones, these structures blend residential units with ground-floor retail or community use, and most were built between 1910 and 1930.
+            <br>
+            3. Commercial and Office Buildings (7.53%)<br>
+            Concentrated in commercial zones, these mid-20th-century buildings—dating from roughly 1925 to 1970, representing a mix of retail corridors, office blocks, and business centers.
+            <br>
+            4. Multi-Family Walk-Up Apartments (2.61%)<br>
+            These buildings, lacking elevators and generally rising three to five stories, are a staple of older residential neighborhoods built between 1910 and 1960.
+            <br>
+            5. Industrial and Manufacturing Facilities (1.58%)<br>
+            Located in industrial zones, these buildings were largely constructed between 1930 and 1970. They speak to NYC’s industrial past, now often adapted for creative or logistical uses.
+            <br>
+            6. Public Facilities and Institutional Buildings (1.31%)<br>
+            Schools, churches, libraries, and other civic structures make up this final category. Though placed within residential zones, their functions stand apart. Most were built between 1925 and 1965, during periods of public infrastructure expansion.
+            <br>
         </p>
         <div class="image-full" style="display: flex; flex-direction: column">
             <img src="articles/images/comparison-01.png" alt="Comparison-Queens" style="margin-bottom: 5px">
             <img src="articles/images/comparison-02.png" alt="Comparison-Brooklyn">
         </div>
         <div class="image-figure">
-            The differences between loosely clustering and assigning materials, and what a more thoughtful, step-by-step process can actually achieve. The upper figure shows part of Queens; the lower, Brooklyn.
+            A comparison between estimating building data with and without clustering first. The top figure highlights a section of Queens; the bottom, Brooklyn.
         </div>
+        <p>
+            For the next step, I’m combining the Regional Assessment of buildings’ Material Intensities (RASMI) by Tomer Fishman et al.—a dataset that blends empirical material studies with synthetic estimates expanded through a random forest model—with my own building clusters. Each cluster is then further divided by building age, borough, height, ownership, and use type to define more precise material profiles. The result is a custom dataset that assigns estimated quantities of timber, glass, concrete, masonry, and steel to every land lot in the city, effectively creating BIM-like data for the entire built environment of NYC.
+        </p>
     </div>
     <blockquote>
         All things are related, but nearby things are more related than distant things. - Walter Tobler, First Law of Geography.
@@ -166,37 +187,30 @@
         <p>
             <b>Part 2 of 4: Visualizing Material Data</b>
             <br><br>
-            To bring this data to life, I’m using d3.js to visualize it in a hex-tile format. 
-            How To Visualize Multiple Layers On A Single Canvas? one of the key challenges of this project was to develop a clear and effective visual style for overlaying multiple layers of material information onto a single map. the goal was to ensure that users could easily distinguish and interact with each layer. the visualization process was mainly conducted in qgis, culminating in a web presentation format using d3.js.
+            Now that I had the data, the next step was figuring out how to visualize all five materials on a single map. One of my main goals was to make sure users could clearly distinguish and interact with each material layer. At first, I experimented with heatmaps and dot density maps, taking cues from Jia Zhang’s excellent <a href="https://centerforspatialresearch.github.io/asianAmericans/">Asian American Dot Density Map</a>,but they didn’t quite translate, either contextually or visually, for mapping building materials.
         </p>
         <img class="image-full" src="articles/images/viz-history-1.png" alt="Visualization History">
         <div class="image-figure">
-            A series of visualization experiments in QGIS, ranging from single-color and two-tone maps to five-color palettes and finally a chromatic aberration effect.
+            The first phase of visualization experiments in QGIS included heatmaps, dot-density maps, and grid-based approaches.
         </div>
         <p>
-            Then I settled on using a hexagon grid for the visualization.
+            Then, I remembered how Civilization uses hex grids for both gameplay and visualization (old habits die hard,) especially its adjacency mechanics, both on a gameplay and theoretical level. Wanting to emphasize a purely material lens for NYC, and to move away from the rigidity of gridiron layouts from common map visualizations, I settled on a hexagon grid with overlapping dots as the core visual language for this project.
         </p>
         <img class="image-full" src="articles/images/viz-history-2.png" alt="Visualization History">
         <div class="image-figure">
-            A series of visualization experiments in QGIS, ranging from single-color and two-tone maps to five-color palettes and finally a chromatic aberration effect.
+            The second phase of visualization experiments in QGIS, ranging from single-color and two-tone maps to five-color palettes and finally a chromatic aberration effect.
         </div>
     </div>
     <div class="subchapter">
         <p>
             <b>Part 3 of 4: Platform Interactions</b>
             <br><br>
-            Earlier, I mentioned how strategy games influenced this project—especially their intuitive UI design. Two features that really stood out to me were X-ray views and info panels. These tools make it easy to compare different layers and tiles, and I wanted to bring that same clarity and interactivity into this platform. 
-            <b>Interactivity</b><br>
-            chart funciton. <br>
-            I started NYC Building Materials wanting to make a map space with minimal ui. In the earlier phases, ... Always view the tile info on hover.
+            Earlier, I mentioned how strategy games influenced this project (by now, it’s probably clear I’m really a huge gamer.) Two UI features that really stood out to me were X-ray views—layer toggles that follow your cursor with a mask—and info panels, which dynamically update based on what feature you’re hovering over. These tools make it easy to compare layers and tiles at a glance, and I wanted to bring that same sense of clarity and interactivity into this platform.
         </p>
         <img class="image-full" src="articles/images/demo-hover.gif" alt="Early UI">
         <div class="image-figure">
-        An early iteration of the hover interaction featured a rose chart using Chart.js to visualize tile details. The design was ultimately scrapped, as the chart’s shape made it difficult for users to intuitively connect the data with the map.
+        An early iteration of the hover interaction featured a rose chart using Chart.js to visualize tile details. The design was ultimately scrapped and replaced with a five-dot visualization, as the rose chart’s shape made it difficult for users to intuitively connect the data with the map's dotted visuals.
         </div>
-        <p>
-            One feature I’ve always wanted in a map platform is the ability to toggle a mask that reveals different layers—like using a magnifying glass in a detective game to uncover hidden details. It feels more fluid and spontaneous than a fixed draggable comparison line, and more intuitive than toggling layers and adjusting their opacities. Essentially, the approach involves stacking multiple map panes and linking the mask to the cursor’s position.
-        </p>
         <img class="image-full" src="articles/images/demo-xray.gif" alt="Early UI">
         <div class="image-figure">
         An early iteration of the x-ray function, which used separate Leaflet maps instead of map panes within the same map, hence the slight lag in performance.
@@ -206,18 +220,22 @@
         <p>
             <b>Part 4 of 4: Story Markers</b>
             <br><br>
-            During playtesting, one piece of feedback stood out: users weren’t always sure what the platform was trying to communicate. It lacked enough context to guide them, or a clear statement of purpose. That led me to develop a system of “story markers”—small, material-themed monikers that only reveal their names and histories when clicked. They add a layer of narrative and discovery, helping users not just explore material distributions, but also uncover the why and how behind them: essentially a way of telling NYC’s story through the lens of what it’s made of.
+            During playtesting, one piece of feedback stood out: users weren’t always sure what the platform was trying to communicate. It lacked enough context and didn’t clearly convey its purpose. That led me to develop a system of ‘story markers’—small, material-themed monikers that feature quotes from The New York Times, tied to the material history of specific regions. These markers reveal their names, backstories, and references on hover, adding a layer of narrative and discovery. They help users explore the distribution of materials and understand the why and how behind them, essentially telling NYC’s story through the lens of what it’s made of.
         </p>
+        <img class="image-full" src="articles/images/markers.gif" alt="Marker Study">
+        <div class="image-figure">
+        The markers also change appearance after being viewed, adding a sense of progression and discovery—like uncovering clues in a city-wide investigation. It brings a bit of exploration flair to the platform, encouraging users to dive deeper.
+        </div>
         <img class="image-full" src="articles/images/markers.png" alt="Marker Study">
         <div class="image-figure">
-        One of the guiding principles in assigning POI markers was to avoid selections based on mass media visibility or digital prominence. Instead, emphasis was placed solely on the visual interest of each material’s spatial distribution.
+        An early Illustrator study of distributing the markers. One of the guiding principles in assigning POI markers was to avoid selections based on mass media visibility or digital prominence. Instead, emphasis was placed solely on the visual interest of each material’s spatial distribution.
         </div>
     </div>
     <div class="subchapter">
         <p>
-            <b>NYC Buildings Are Short and Old</b>
+            <b>Extra Findings Along the Way: NYC Buildings Are Short and Old</b>
             <br><br>
-            Let's 
+            While analyzing the PLUTO dataset, I discovered that the majority of NYC’s buildings—by sheer count—are timber residentials built before 1940. It’s a striking contrast to the steel-and-glass city often portrayed in media, which really only captures a sliver of Manhattan. The reality is that NYC’s built environment is far more nuanced, with a rich variety of building types and materials spread across the five boroughs. That’s one of the key takeaways I had while building this material platform—and I hope you’ll uncover a few surprising insights of your own as you explore its features.
         </p>
         <img class="image-full" src="https://upload.wikimedia.org/wikipedia/commons/a/a5/West_side_of_Manhattan_from_Hudson_Commons_%2895103p%29.jpg" alt="NYC Tall & New">
         <div class="image-figure">
@@ -276,7 +294,7 @@
         <p>
             <b>A Three-Semester Support</b>
             <br><br>
-            NYC Building Materials is a project I developed during my <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">Master of Science in Computational Design Practices (M.S.CDP)</a> at Columbia University’s Graduate School of Architecture, Planning, and Preservation (GSAPP). The CDP program is structured around a three-semester core course—Colloquium I, II, and III—which serves as the foundation for developing a capstone project throughout the program.
+            I'm <a href="https://halfward.github.io/haoLee/">Hao Lee</a>, a licensed Taiwanese architect, artist, translator, film enthusiast, and heavy gamer. NYC Building Materials is a project I developed during my <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">Master of Science in Computational Design Practices (M.S.CDP)</a> at Columbia University’s Graduate School of Architecture, Planning, and Preservation (GSAPP). The CDP program is structured around a three-semester core course—Colloquium I, II, and III—which serves as the foundation for developing a capstone project throughout the program.
             <br>
             Over the course of three semesters, I shaped NYC Building Materials from concept to execution. In the first semester, I focused on defining the project's core ideas, while the second and third semesters were dedicated to implementation and refinement. With this structure in mind, I intentionally selected electives that would support and enhance the project.
             <br>
@@ -311,94 +329,94 @@
             <br><br>
             <p>
                 <b>Visuals/Interactivity</b><br>
-                <a href="https://climate-conflict.org/www/data-pages/hazards">climate-conflict-vulnerability index</a> by <a href="https://truth-and-beauty.net/">moritz stefaner</a>
+                <a href="https://climate-conflict.org/www/data-pages/hazards">Climate-Conflict Vulnerability Index</a> by <a href="https://truth-and-beauty.net/">Moritz Stefaner</a>
                 <br>
-                <a href="https://www.artic.edu/artworks/204516/atlas-of-the-new-dutch-water-defence-line">atlas of the new dutch water defence line</a>
-                by <a href="https://www.joostgrootens.nl/">joost grootens</a>
+                <a href="https://www.artic.edu/artworks/204516/atlas-of-the-new-dutch-water-defence-line">Atlas of the New Dutch Water Defence Line</a>
+                by <a href="https://www.joostgrootens.nl/">Joost Grootens</a>
                 <br>
-                <a href="https://civilization.2k.com/">sid meier's civilization series</a>
+                <a href="https://civilization.2k.com/">Sid Meier's Civilization Series</a>
                 <br>
-                by <a href="https://firaxis.com/">firaxis games</a>
+                by <a href="https://firaxis.com/">Firaxis Games</a>
                 <br>
                 <a href="https://rimworldgame.com/">RimWorld</a>
-                by <a href="https://ludeon.com/blog/">ludeon studios</a>
+                by <a href="https://ludeon.com/blog/">Ludeon Studios</a>
                 <br>
-                <a href="https://www.marathonthegame.com/y3vmGPNRxH3RNTqLkq5PFXZy">marathon</a>
-                by <a href="https://www.bungie.net/7">bungie</a>
+                <a href="https://www.marathonthegame.com/y3vmGPNRxH3RNTqLkq5PFXZy">Marathon</a>
+                by <a href="https://www.bungie.net/7">Bungie</a>
                 <br>
-                <a href="https://www.are.na/mario-giampieri/g4dp-f24-precedent-presentations">g4dp f24 precedent presentations</a>
-                are.na channel curated by the fall '24 gis for design practices group at gsapp columbia</a>
+                <a href="https://www.are.na/mario-giampieri/g4dp-f24-precedent-presentations">G4DP F24 Precedent Presentations</a>
+                are.na channel curated by the Fall '24 GIS for Design Practices group at GSAPP Columbia</a>
             </p>
             <p>
                 <b>GIS/Mapping</b><br>
-                <a href="https://designpractices.org/">gis for design practices</a> 
-                by dare brawley and mario giampieri
+                <a href="https://designpractices.org/">GIS for Design Practices</a> 
+                by Dare Brawley and Mario Giampieri
                 <br>
-                <a href="https://mappinghny.com/">mapping historical new york</a>
-                by <a href="https://c4sr.columbia.edu/">center for spatial research</a>
+                <a href="https://mappinghny.com/">Mapping Historical New York</a>
+                by <a href="https://c4sr.columbia.edu/">Center for Spatial Research</a>
                 <br>
-                <a href="https://centerforspatialresearch.github.io/asianAmericans/">asian american dot density map</a>
-                by jia zhang
+                <a href="https://centerforspatialresearch.github.io/asianAmericans/">Asian American Dot Density Map</a>
+                by Jia Zhang
                 <br>
-                <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">nyc construction dashboard 2022</a>
-                by dob analytics
+                <a href="https://www.nyc.gov/assets/buildings/html/dob-development-report-2022.html">NYC Construction Dashboard 2022</a>
+                by DOB Analytics
             </p>
             <p>
                 <b>Material Estimation & Circular Economy</b><br>
-                <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/jiec.13456">city-scale assessment of the material and environmental footprint of buildings using an advanced building information model: a case study from canberra, australia</a>
-                by natthanij soonsawad, raymundo marcos-martinez, and heinz schandl
+                <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/jiec.13456">City-Scale Assessment of the Material and Environmental Footprint of Buildings Using an Advanced Building Information Model: A Case Study from Canberra, Australia</a>
+                by Natthanij Soonsawad, Raymundo Marcos-Martinez, and Heinz Schandl
                 <br>
-                <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/bamb_materialspassports_bestpractice.pdf#page=54">materials passports - best practices</a>
-                by matthias heinrich and werner lang
+                <a href="https://www.bamb2020.eu/wp-content/uploads/2019/02/bamb_materialspassports_bestpractice.pdf#page=54">Materials Passports - Best Practices</a>
+                by Matthias Heinrich and Werner Lang
                 <br>
-                <a href="https://www.sciencedirect.com/science/article/abs/pii/S2210670723000665">estimating the recoverable value of in-situ building materials</a>
-                by aida mollaei, chris bachmann, and carl haas
+                <a href="https://www.sciencedirect.com/science/article/abs/pii/S2210670723000665">Estimating the Recoverable Value of In-Situ Building Materials</a>
+                by Aida Mollaei, Chris Bachmann, and Carl Haas
                 <br>
-                <a href="https://www.rsmeans.com/">rsmeans data</a>
-                by <a href="https://www.gordian.com/">gordian</a>
+                <a href="https://www.rsmeans.com/">RSMeans Data</a>
+                by <a href="https://www.gordian.com/">Gordian</a>
                 <br>
-                <a href="https://www.circularise.com/industry/construction">circularise</a>
-                by <a href="https://www.circularise.com">circularise</a>
+                <a href="https://www.circularise.com/industry/construction">Circularise</a>
+                by <a href="https://www.circularise.com">Circularise</a>
                 <br>
-                <a href="https://www.zillow.com/z/zestimate/">zestimate</a>
-                by <a href="https://www.zillow.com">zillow</a>
+                <a href="https://www.zillow.com/z/zestimate/">Zestimate</a>
+                by <a href="https://www.zillow.com">Zillow</a>
             </p>
             <p>
                 <b>Speculation</b><br>
-                <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">roadmap 2050</a>
-                by <a href="https://www.oma.com/">oma</a>
+                <a href="https://www.oma.com/publications/roadmap-2050-a-practical-guide-to-a-prosperous-low-carbon-europe">Roadmap 2050</a>
+                by <a href="https://www.oma.com/">OMA</a>
             </p>
             <p>
                 <b>JavaScript Libraries</b><br>
                 <a href="https://leafletjs.com/">Leaflet</a>
-                originally created by <a href="https://agafonkin.com/">volodymyr agafonkin</a>
+                originally created by <a href="https://agafonkin.com/">Volodymyr Agafonkin</a>
                 <br>
-                <a href="https://github.com/Norkart/Leaflet-MiniMap">leaflet-minimap</a>
-                originally created by <a href="https://www.robpvn.net/">robert nordan</a>
+                <a href="https://github.com/Norkart/Leaflet-MiniMap">Leaflet-MiniMap</a>
+                originally created by <a href="https://www.robpvn.net/">Robert Nordan</a>
                 <br>
-                <a href="https://github.com/perliedman/leaflet-control-geocoder">leaflet control geocoder</a>
-                originally created by <a href="https://www.liedman.net/">per liedman</a>
+                <a href="https://github.com/perliedman/leaflet-control-geocoder">Leaflet-Control-Geocoder</a>
+                originally created by <a href="https://www.liedman.net/">Per Liedman</a>
                 <br>
-                <a href="https://d3js.org/">d3</a>
-                by <a href="https://bost.ocks.org/mike/">mike bostock</a> and <a href="https://observablehq.com/">observable, inc.</a>
+                <a href="https://d3js.org/">D3</a>
+                by <a href="https://bost.ocks.org/mike/">Mike Bostock</a> and <a href="https://observablehq.com/">Observable, Inc.</a>
                 <br>
-                <a href="https://github.com/mrcagney/geohexgrid">geohexgrid</a>
-                by <a href="https://www.mrcagney.com/team/alex-raichev/">alex raichev</a> at <a href="https://www.mrcagney.com/">mrcagney</a>
+                <a href="https://github.com/mrcagney/geohexgrid">GeoHexGrid</a>
+                by <a href="https://www.mrcagney.com/team/alex-raichev/">Alex Raichev</a> at <a href="https://www.mrcagney.com/">MRCagney</a>
                 <br>
-                <a href="https://www.chartjs.org/">chart</a>
-                by <a href="https://github.com/etimberg">evert timberg</a> and <a href="https://github.com/chartjs/Chart.js/graphs/contributors">github contributors</a>
+                <a href="https://www.chartjs.org/">Chart</a>
+                by <a href="https://github.com/etimberg">Evert Timberg</a> and <a href="https://github.com/chartjs/Chart.js/graphs/contributors">GitHub Contributors</a>
                 <br>
-                <a href="https://splidejs.com/">splide</a>
-                by <a href="https://github.com/NaotoshiFujita">naotoshi fujita</a>
+                <a href="https://splidejs.com/">Splide</a>
+                by <a href="https://github.com/NaotoshiFujita">Naotoshi Fujita</a>
             </p>
             <p>
                 <b>Columbia GSAPP M.S.Computational Design Practices</b><br>
-                <a href="https://gsapp-cdp.github.io/archive/">capstone project archive</a>
+                <a href="https://gsapp-cdp.github.io/archive/">Capstone Project Archive</a>
             </p>
         </p>
     </div>
 </section>
 
-<p>
+<p style="margin-bottom: 50px; padding: 25px; font-style: italic;">
     Most, if not all, of this project is built on open data. Without the availability of pre-existing data and online documentation, at least 95% of my development time would have been spent on field research alone. While field research is invaluable, relying solely on it would limit the possibilities of creating a comprehensive computational project within just three semesters at Columbia. To me, one of the greatest strengths of America’s scientific community is its commitment to transparency and the willingness to investigate and document data. This openness to sharing information has not only fueled scientific and creative breakthroughs but also played a crucial role in uncovering and combating social injustices and inequalities. With NYC Building Materials, I aim to honor the government bodies, non-profits, academics, and individuals who contribute to this vital data-sharing ecosystem. It is through their dedication to open data that we can drive progress and stability.
 </p>

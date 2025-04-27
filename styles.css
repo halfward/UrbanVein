@@ -859,7 +859,9 @@ pre[class*="language-"], code[class*="language-"] {
     z-index: 10000;
     pointer-events: none; 
 }
-
+#tooltip-chart {
+    width: 450px;
+}
 
 /* Panel: x-ray---------------------------------- */
 #panelContentBuilding {
@@ -965,6 +967,7 @@ pre[class*="language-"], code[class*="language-"] {
     /* border-bottom-left-radius: 0; */
 }
 .dropdown-selected {
+    display: flex;
     margin-left: 25px;
     background: white;
     color: grey;
@@ -972,6 +975,13 @@ pre[class*="language-"], code[class*="language-"] {
 }
 .dropdown-selected.active {
     color: black;
+}
+.dropdown-selected-note {
+    font-weight: 700;
+    font-size: 0.5rem;
+    margin-left: 3px;
+    color: #888;
+    transform: translateY(-3px);
 }
 /* .custom-dropdown.expanded {
     width: 210px;
@@ -1055,9 +1065,10 @@ pre[class*="language-"], code[class*="language-"] {
     opacity: 0.35;
     pointer-events: none;
 }
-#xray-roads-legend {
+#xray-legend, #xray-roads-legend {
     position: absolute;
     display: none;
+    width: 136px;
     z-index: 999;
     pointer-events: none;
     margin-top: 15px;
@@ -1066,6 +1077,7 @@ pre[class*="language-"], code[class*="language-"] {
     padding: 5px;
     padding-bottom: 9px;
     border-radius: 10px;
+    transform: translateX(73px);
 }
 #xray-roads-legend-guide {
     position: absolute;
@@ -1080,7 +1092,7 @@ pre[class*="language-"], code[class*="language-"] {
     white-space: nowrap;
     overflow: visible;  
 }
-#xray-roads-legend ul {
+#xray-legend ul, #xray-roads-legend ul {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1107,11 +1119,10 @@ pre[class*="language-"], code[class*="language-"] {
 .xray-road-line {
     width: 20px;
     height: 0;
-    border-top: 3px solid red; 
+    border-top: 5px solid black; 
 }
-
 #xray-road-legendB {
-    border-top: 3px solid blue; 
+    border-top: 2px solid black; 
 }
 #xray-road-legendC {
     border-top: 3px solid black; 
@@ -1121,19 +1132,17 @@ pre[class*="language-"], code[class*="language-"] {
 }
 
 
-#xray-legend {
-    position: absolute;
-    display: none;
-    z-index: 999;
+
+.xray-legend-li {
+    flex: 1;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 3px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-top: 0px;
     pointer-events: none;
-    width: 352px;
-}
-#xray-legend ul {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0;
 }
 .xray-legend-li {
     flex: 1;
@@ -1146,22 +1155,21 @@ pre[class*="language-"], code[class*="language-"] {
     margin-top: 0px;
     pointer-events: none;
 }
-.xray-legend-li:first-child {
-    background-color: gold;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+.xray-zoning-line {
+    width: 20px;
+    height: 0;
+    border-top: 9px solid gold; 
 }
-.xray-legend-li:nth-child(2) {
-    background-color: tomato;
+#xray-zoning-legendB {
+    border-top: 9px solid tomato; 
 }
-.xray-legend-li:nth-child(3) {
-    background-color: violet;
+#xray-zoning-legendC {
+    border-top: 9px solid violet; 
 }
-.xray-legend-li:nth-child(4) {
-    background-color: yellowgreen;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
+#xray-zoning-legendD {
+    border-top: 9px solid yellowgreen; 
 }
+
 
 
 
@@ -1849,6 +1857,12 @@ sup {
 .leaflet-bottom.leaflet-left {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
 }
+
+.leaflet-pane.xrayPane {
+    pointer-events: none !important;
+}
+
+
 
 /* Leaflet controls -----------------------------------------------*/
 .leaflet-bottom {

@@ -212,14 +212,14 @@ const addMaterialMarkers = (geojsonData, material, color, columnName, layerGroup
     }
 
     function getBaseRadiusForZoom(zoom) {
-        if (zoom === 11) return 0.95 * Math.pow(2, zoom - 11);
-        if (zoom === 12) return 0.65 * Math.pow(2, zoom - 11);
+        if (zoom <= 11) return 0.95 * Math.pow(2, zoom - 11);
+        if (zoom <= 12) return 0.65 * Math.pow(2, zoom - 11);
         return 0.4 * Math.pow(2, zoom - 11); // Scales exponentially with zoom
     }
 
     function getOpacityForZoom(zoom) {
         if (zoom <= 11) return 0.15;
-        if (zoom === 12) return 0.45;
+        if (zoom <= 12) return 0.45;
         return 0.55;
     }
 
@@ -725,7 +725,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-// Material panel tooltip
+// Tooltip: Material panel
 const guideIcon = document.getElementById("guide-icon-material");
 
 guideIcon.addEventListener("mouseenter", () => {
@@ -756,15 +756,42 @@ function getCurrentTooltip() {
 }
 
 
+// Tooltip: Filter panel
+const guideIconFilter = document.getElementById("guide-icon-filter");
+
+guideIconFilter.addEventListener("mouseenter", () => {
+    const tooltip = getFilterTooltip();
+    tooltip.style.display = "block";
+});
+
+guideIconFilter.addEventListener("mousemove", (e) => {
+    const tooltip = getFilterTooltip();
+    const tooltipWidth = tooltip.offsetWidth;
+    const tooltipHeight = tooltip.offsetHeight;
+
+    tooltip.style.left = `${e.clientX - tooltipWidth}px`;
+    tooltip.style.top = `${e.clientY - tooltipHeight}px`;
+});
+
+guideIconFilter.addEventListener("mouseleave", () => {
+    const tooltip = getFilterTooltip();
+    tooltip.style.display = "none";
+});
+
+function getFilterTooltip() {
+    return document.getElementById("tooltip-chart");
+}
 
 
 // ----------------------------------------------------------------------
 
-// X-ray mask div-----------------------------------------------------
+// X-ray mask div---------------------------------------------
 // Create custom pane for xray layers first (add this at the beginning of your script)
 mainMap.createPane('xrayPane');
 mainMap.getPane('xrayPane').style.zIndex = 400; // Above base map, below controls
-mainMap.getPane('xrayPane').style.pointerEvents = 'none'; // Prevent interaction with xray layers by default
+mainMap.getPane('xrayPane').style.pointerEvents = 'none'; 
+
+// Prevent interaction with xray layers by default
 let xrayLegend = document.getElementById("xray-legend");
 let xrayRoadsLegend = document.getElementById("xray-roads-legend");
 
@@ -895,13 +922,6 @@ fetch('data/transportation_subway_combined.geojson')
                         interactive: false
                     };
                 }
-                
-                // Default style for other geometry types
-                return {
-                    weight: 1,
-                    color: "#000000",
-                    opacity: 0.5
-                };
             },
             pointToLayer: (feature, latlng) => {
                 // Check if the feature is a Point (station)
@@ -914,7 +934,7 @@ fetch('data/transportation_subway_combined.geojson')
                         opacity: 1,
                         fillOpacity: 1,
                         interactive: false,
-                        className: 'subway-station-marker' // Add a class for CSS targeting
+                        className: 'subway-station-marker'
                     });
                 }
                 return null;
@@ -934,14 +954,7 @@ fetch('data/transportation_subway_combined.geojson')
                 }
             }
         });
-        
-        // Add CSS to ensure stations are always on top
-        const style = document.createElement('style');
-        style.textContent = `
-            .subway-station-marker {
-                z-index: 1000 !important;
-            }
-        `;
+        ;
         document.head.appendChild(style);
     })
     .catch(error => console.error('Error loading combined subway data:', error));
@@ -1004,11 +1017,11 @@ fetch('data/transportation_railway_routes.geojson')
                                     font-family: Inter, sans-serif;
                                     font-weight: 500;
                                     font-size: 0.7rem;
-                                    color: black;
-                                    background-color: rgba(255, 255, 255, 0.9);
+                                    color: white;
+                                    background-color: black;
                                     border-radius: 10px;
-                                    padding-left: 6px;
-                                    padding-right: 6px;
+                                    padding-left: 9px;
+                                    padding-right: 9px;
                                     white-space: nowrap;
                                     text-align: center;
                                     position: absolute;
@@ -1032,27 +1045,27 @@ fetch('data/transportation_railway_routes.geojson')
     })
     .catch(error => console.error('Error loading railway lines:', error));
 
+
 // Define road layer (GeoJSON)
 let xrayRoadsLayer;
-let currentRoadPopup = null;
-
-// Create a new pane for interactive road elements
 mainMap.createPane('xrayRoadsPane');
-mainMap.getPane('xrayRoadsPane').style.zIndex = 402; // Above other xray panes
-mainMap.getPane('xrayRoadsPane').style.pointerEvents = 'auto'; // Allow interaction
+mainMap.getPane('xrayRoadsPane').style.zIndex = 402;
+
+// Create a flag to track if we're hovering over roads
+let isHoveringRoads = false;
 
 fetch('data/transportation_roads.geojson')
     .then(response => response.json())
     .then(data => {
         const visibleLayer = L.geoJSON(data, {
-            pane: 'xrayPane', // Use xray pane for visible roads
+            pane: 'xrayPane',
             style: (feature) => {
                 const type = feature.properties.Route_Type;
                 const status = feature.properties.Route_Status;
                 return {
-                    color: type === 1 ? '#FF0000' : '#0000FF',
-                    weight: 3,
-                    dashArray: status === 1 ? null : '4,6',
+                    color: 'black',
+                    weight: type === 1 ? '4' : '2',
+                    dashArray: status === 1 ? null : '1,5',
                     opacity: 1
                 };
             }
@@ -1067,37 +1080,68 @@ fetch('data/transportation_roads.geojson')
             },
             onEachFeature: (feature, layer) => {
                 const name = feature.properties.Route_Name || 'Unnamed Route';
-        
-                layer.on('click', function (e) {
-                    if (currentRoadPopup && mainMap.hasLayer(currentRoadPopup)) {
-                        currentRoadPopup.remove();
+                // const legendGuide = document.getElementById('xray-roads-legend-guide');
+            
+                layer.on('mouseover', function (e) {
+                    isHoveringRoads = true;
+                    if (legendGuide) {
+                        legendGuide.innerHTML = `<strong>${name}</strong>`;
                     }
-        
-                    currentRoadPopup = L.popup({
-                        pane: 'xrayRoadsPane',
-                        closeButton: false,
-                        autoClose: false,
-                        closeOnClick: false
-                    })
-                        .setLatLng(e.latlng)
-                        .setContent(`<strong>${name}</strong>`)
-                        .openOn(mainMap);
+                });
+                
+                layer.on('mouseout', function (e) {
+                    // Only change state if we're not moving to another road feature
+                    if (!e.relatedTarget || !bufferLayer.hasLayer(e.relatedTarget)) {
+                        isHoveringRoads = false;
+                    }
+                    
+                    if (legendGuide) {
+                        legendGuide.innerHTML = '';
+                    }
                 });
             },
-            filter: (feature) => {
-                // Optional: skip features if needed
-                return true;
-            },
+            filter: (feature) => true,
             coordsToLatLng: function (coords) {
-                // Nudge lat/lng downward slightly (e.g., 0.0001° south)
                 return L.latLng(coords[1] - 0.00120, coords[0]);
             }
         });
         
-
         xrayRoadsLayer = L.layerGroup([visibleLayer, bufferLayer]);
+        
+        // Add a mouseout handler for the whole map
+        mainMap.on('mousemove', function(e) {
+            // If we're in road hovering mode but cursor is not actually over a road feature
+            // This helps handle edge cases where mouseout doesn't fire properly
+            // if (isHoveringRoads && !isMouseOverRoad(e, bufferLayer)) {
+            //     isHoveringRoads = false;
+            //     const legendGuide = document.getElementById('xray-roads-legend-guide');
+            //     if (legendGuide) {
+            //         legendGuide.innerHTML = '';
+            //     }
+            // }
+            
+            // Set pointer-events based on whether we're hovering roads
+            mainMap.getPane('xrayRoadsPane').style.pointerEvents = isHoveringRoads ? 'auto' : 'none';
+        });
     })
     .catch(error => console.error('Error loading roads data:', error));
+
+// Helper function to check if mouse is over a road feature
+function isMouseOverRoad(mouseEvent, roadLayer) {
+    let isOver = false;
+    const point = mouseEvent.layerPoint;
+    
+    roadLayer.eachLayer(function(layer) {
+        if (layer.getElement && layer.getElement()) {
+            const bounds = layer.getBounds();
+            if (bounds.contains(mouseEvent.latlng)) {
+                isOver = true;
+            }
+        }
+    });
+    
+    return isOver;
+}
 
 // Define bus routes layer (GeoJSON)
 let xrayBusLayer;
@@ -1114,7 +1158,8 @@ fetch('data/transportation_bus_routes.geojson.gz')
                 const routeColor = feature.properties.color || "#000000";
                 return {
                     weight: 2,
-                    color: routeColor,
+                    // color: routeColor,
+                    color: 'black',
                     opacity: 1,
                     fillOpacity: 0,
                     interactive: false 
@@ -1305,30 +1350,42 @@ let noneButtons = document.querySelectorAll(".label-xray");
 
 // Set "none" button as active by default
 noneButtons.forEach((button) => {
-    button.classList.add("active"); 
+    button.classList.add("active");
 });
 
 // Function to reset all dropdowns
 function resetDropdowns(except = null) {
-    // Reset all dropdowns except the one currently being interacted with
     document.querySelectorAll(".custom-dropdown").forEach(dropdown => {
         if (dropdown !== except) {
             let selectedText = dropdown.querySelector(".dropdown-selected");
-            selectedText.textContent = selectedText.dataset.default; // Reset to category
-            selectedText.style.color = "grey"; // Reset to grey
-
+            const defaultText = selectedText.dataset.default || "";
+            
+            // Preserve only the note div if it exists
+            const noteDiv = selectedText.querySelector(".dropdown-selected-note");
+            let savedNoteDiv = null;
+            if (noteDiv) {
+                savedNoteDiv = noteDiv.cloneNode(true);
+            }
+            
+            // Reset the element to just contain the default text
+            selectedText.textContent = defaultText;
+            
+            // Re-add the note div if it existed
+            if (savedNoteDiv) {
+                selectedText.appendChild(savedNoteDiv);
+            }
+            
+            selectedText.style.color = "grey";
             let layerIcon = dropdown.querySelector(".layer-icon");
             if (layerIcon) {
                 layerIcon.classList.remove("active");
             }
-
             dropdown.dataset.value = "";
         }
     });
 
-    // Always reset "none" buttons, no matter what
+    // Reset "none" buttons
     noneButtons.forEach((button) => {
-        // If a dropdown is *not* being interacted with, "none" should be active
         if (!except) {
             button.classList.add("active");
         } else {
@@ -1336,6 +1393,7 @@ function resetDropdowns(except = null) {
         }
     });
 }
+
 
 // Function to reset X-ray and dropdown selections
 function resetXray() {
@@ -1399,25 +1457,6 @@ const observer = new MutationObserver(() => {
 
 observer.observe(panelTitle, { attributes: true });
 
-// Set the "ESRI Topographic" option as active by default
-// document.addEventListener("DOMContentLoaded", () => {
-//     const esriOption = document.querySelector(".dropdown-option[data-value='esri-topo']");
-//     if (esriOption) {
-//         esriOption.click(); // Simulate a click on the ESRI Topographic option
-//     }
-// });
-
-
-
-
-
-
-
-
-
-
-
-
 // Handle hover delay
 let dropdowns = document.querySelectorAll(".custom-dropdown");
 
@@ -1440,9 +1479,6 @@ dropdowns.forEach(dropdown => {
 document.querySelectorAll(".dropdown-selected").forEach(el => {
     el.dataset.default = el.textContent;
 });
-
-
-
 
 // X-ray layer remove appearance
 document.addEventListener("DOMContentLoaded", function () {
@@ -1475,13 +1511,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
 // X-ray dropdown--------------------
 document.querySelectorAll('input[name="options"]').forEach(radio => {
     radio.addEventListener('change', function() {
         document.getElementById("transport-dropdown").value = this.value;
     });
 });
+
 
 
 
@@ -1823,6 +1859,7 @@ fetch('data/NY+NJ_Shoreline.geojson.gz')
 
 
 
+
 // Traffic lights: Toggle -------------------------------------------
 // Function to toggle carbon class on material elements
 function toggleCarbonClass(isCarbon) {
@@ -1868,7 +1905,6 @@ function toggleCarbonClass(isCarbon) {
     const isCarbon =
       document.getElementById('mainMap-carbon')?.classList.contains('active') ||
       document.getElementById('mainMap-carbon-pp')?.classList.contains('active');
-  
     toggleCarbonClass(isCarbon);
   }
   
@@ -1906,20 +1942,22 @@ function toggleCarbonClass(isCarbon) {
   handleToggle('toggle5', 'radar-ring', 'steel', 'radar-steel', 'steel');
   
   // Add listener for map type changes
-  // This should be called whenever the map type changes
   function setupMapTypeListeners() {
-    // Example: If you have buttons to switch map types
     const mapButtons = document.querySelectorAll('[id^="mainMap-"]');
     mapButtons.forEach(button => {
-      button.addEventListener('click', checkMapStateAndUpdateClasses);
+      button.addEventListener('click', () => {
+        setTimeout(checkMapStateAndUpdateClasses, 50); // small delay
+      });
     });
-    
-    // Or if you have a specific carbon map toggle
+  
     const carbonMapButton = document.getElementById('carbonMapButton');
     if (carbonMapButton) {
-      carbonMapButton.addEventListener('click', checkMapStateAndUpdateClasses);
+      carbonMapButton.addEventListener('click', () => {
+        setTimeout(checkMapStateAndUpdateClasses, 50);
+      });
     }
   }
+  
   
   // Call this after the DOM is loaded
   document.addEventListener('DOMContentLoaded', setupMapTypeListeners);
@@ -2717,19 +2755,19 @@ function updatePanelTitle() {
     }
 
     if (document.getElementById('mainMap-2a')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
+        panelTitle.innerHTML = 'TILE MATERIALS: METRIC TON';
     } else if (document.getElementById('mainMap-2b')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
+        panelTitle.innerHTML = 'TILE MATERIALS: METRIC TON';
     } else if (document.getElementById('mainMap-1940a')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
+        panelTitle.innerHTML = 'TILE MATERIALS: METRIC TON';
     } else if (document.getElementById('mainMap-1940b')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: METRIC TON';
+        panelTitle.innerHTML = 'TILE MATERIALS: METRIC TON';
     } else if (document.getElementById('mainMap-carbon')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: KgCO2e';
+        panelTitle.innerHTML = 'TILE MATERIALS: KgCO2e';
     } else if (document.getElementById('mainMap-carbon-pp')?.classList.contains('active')) {
-        panelTitle.innerHTML = 'TILE COMPOSITION: KgCO2e';
+        panelTitle.innerHTML = 'TILE MATERIALS: KgCO2e / Person';
     } else {
-        panelTitle.innerHTML = 'TILE COMPOSITION: Metric Ton'; // Default for 'ALL'
+        panelTitle.innerHTML = 'TILE MATERIALS: Metric Ton'; // Default for 'ALL'
     }
 }
 

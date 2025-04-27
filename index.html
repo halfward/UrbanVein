@@ -400,7 +400,9 @@
                     <div class="custom-dropdown" id="transport-dropdown">
                         <img src="images/collapse.svg" alt="dropdown" class="dropdownIcon">
                         <img src="images/layer-transport.svg" class="layer-icon">
-                        <div class="dropdown-selected">Transportation</div>
+                        <div class="dropdown-selected">
+                            Transportation
+                        </div>
                         <div class="dropdown-options">
                             <div class="dropdown-option" data-value="subway">MTA Subway</div>
                             <div class="dropdown-option" data-value="railway">MTA Railroads + PATH</div>
@@ -427,9 +429,11 @@
             Dot sizes represent the concentration of each material’s embodied carbon. Unlike the material view, these dots can be compared across different material types—they all share the same color and scale, allowing direct comparison of carbon impact regardless of material category.
         </div>
         <div id="tooltip-chart" class="tooltip">
-            Over <b>75%</b> of the city's buildings are <b>two stories or less</b>,<br> and more than <b>50%</b> were built <b>before 1940</b>.
+            Over 75% of the city's buildings are two stories or less, and more than 50% were built before 1940.
             <br>
-            Over <b>50%</b> of the materials come from <b>two or fewer story buildings</b>, nearly <b>70%</b> of which are from buildings built <b>before 1940</b>. 
+            Over 50% of the materials come from two or fewer story buildings, nearly 70% of which are from buildings built before 1940. 
+            <br>
+            The embodied carbon data comes from the Carbon Leadership Forum’s (CLF) Material Baselines dataset. Per-person values were calculated by dividing total carbon by resident and worker counts—residents from census tract data and workers from energy and water disclosure submissions. However, worker data is limited for factories and does not account for non-stationary workers like drivers.
         </div>
 
         <div id="panelFilter">
@@ -652,7 +656,7 @@
     <div class="xray-marker-icon"></div>
 
     <div id="xray-roads-legend" class="xray-legend">
-        <div id="xray-roads-legend-guide">Click to show road names</div>
+        <!-- <div id="xray-roads-legend-guide">Click to show road names</div> -->
         <ul>
             <div class="xray-roads-legend-li">
                 <span class="xray-road-line" id="xray-road-legendA"></span>
@@ -662,10 +666,10 @@
                 <span class="xray-road-line" id="xray-road-legendB"></span>
                 Major Road
             </div>  
-            <div class="xray-roads-legend-li">
+            <!-- <div class="xray-roads-legend-li">
                 <span class="xray-road-line" id="xray-road-legendC"></span>
                 Existing
-            </div>            
+            </div>             -->
             <div class="xray-roads-legend-li">
                 <span class="xray-road-line" id="xray-road-legendD"></span>
                 Proposed
@@ -674,11 +678,29 @@
     </div>
     <div id="xray-legend" class="xray-legend">
         <ul>
+            <div class="xray-roads-legend-li">
+                <span class="xray-zoning-line" id="xray-zoning-legendA"></span>
+                Residential
+            </div>            
+            <div class="xray-roads-legend-li">
+                <span class="xray-zoning-line" id="xray-zoning-legendB"></span>
+                Commercial
+            </div>  
+            <div class="xray-roads-legend-li">
+                <span class="xray-zoning-line" id="xray-zoning-legendC"></span>
+                Manufacturing
+            </div>            
+            <div class="xray-roads-legend-li">
+                <span class="xray-zoning-line" id="xray-zoning-legendD"></span>
+                Park
+            </div>  
+        </ul>
+        <!-- <ul>
             <div class="xray-legend-li">Residential</div>
             <div class="xray-legend-li">Commercial</div>
             <div class="xray-legend-li">Manufacturing</div>
             <div class="xray-legend-li">Park</div>
-        </ul>
+        </ul> -->
     </div>
 
 

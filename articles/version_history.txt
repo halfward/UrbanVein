@@ -1,12 +1,13 @@
-to-do:
-
-- bug: clear doesnt bring back the traffic colors
-- bug: some zoom levels don't look good
-- bug: interactive x-ray will prevent tile info from updating
+roadmap:
 - bug: layer toggle first time wont work
-- bug: need to merge the route and station layers for the subway and the railway layers
-- bug: the road name tooltip stays even after switching the x-ray off
 - refine tones.js / soundtrap
+
+0.5.7 (2025-04-27 bug fixes)
+- added a tooltip (building distribution and carbon calculation info) for the filter panel.
+- changed the "arterials + major roads" legend to monotone.
+- changed the panel name from "tile composition" to "tile materials".
+- bug fix: added a unit (kgco2e/person) for the carbon/person filter.
+- bug fix: now the clear button for the map filter panel brings back material colors from carbon views.
 
 0.5.6 (2025-04-18 carbon update 2)
 - major story update.

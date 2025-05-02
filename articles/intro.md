@@ -3,7 +3,7 @@
     I've always taken a fondness on how Karl Popper approaches science in terms of replication. Since <a href="https://www.arch.columbia.edu/programs/15-m-s-computational-design-practices">my masters program</a> resides in the "of sciences" realm, it makes sense to adhere to this line of thinking when producing and structuring the design:
 </p>
 <blockquote>
-    We do not take even our own observations quite seriously, or accept them as scientific observations, until we have repeated and tested them. Only by such repetitions can we convince ourselves that we are not dealing with a mere isolated ‘coincidence,' but with events which, on account of their regularity and reproducibility, are in principle inter-subjectively testable.
+    We do not take even our own observations quite seriously, or accept them as scientific observations, until we have repeated and tested them. Only by such repetitions can we convince ourselves that we are not dealing with a mere isolated ‘coincidence,' but with events which, on account of their regularity and reproducibility, are in principle inter-subjectively testable. - Popper, K., 1959. The Logic of Scientific Discovery. Hutchinson, London, p. 23.
 </blockquote>
 <p>
     With that in mind, this article is geared towards explaining how this project came to fruition and documenting it in a way that is clear and concise. 
